@@ -1,0 +1,10 @@
+{
+  "tabs.rocketry_science.main": "Rocketry Science",
+
+  "item.rocketry_science.liquid_hydrogen_bucket": "Liquid Hydrogen Bucket",
+  "item.rocketry_science.liquid_oxygen_bucket": "Liquid Oxygen Bucket",
+  "item.rocketry_science.liquid_nitrogen_bucket": "Liquid Nitrogen Bucket",
+
+  "death.attack.cryogenic": "%1$s undergone rapid crystallization",
+  "death.attack.cryogenic.player": "%1$s undergone rapid crystallization while running away from %2$s"
+}
