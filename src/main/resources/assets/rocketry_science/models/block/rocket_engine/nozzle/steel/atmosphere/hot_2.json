@@ -1,7 +1,6 @@
 {
 	"format_version": "1.21.6",
-	"credit": "Made with Blockbench",
-	"render_type": "minecraft:cutout",
+	"parent": "minecraft:block/block",
 	"texture_size": [64, 64],
 	"textures": {
 		"0": "rocketry_science:block/nozzle/steel/atmosphere/hot_2",
