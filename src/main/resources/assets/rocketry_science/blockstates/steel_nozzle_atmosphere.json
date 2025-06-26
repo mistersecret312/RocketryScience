@@ -5,15 +5,15 @@
       "x": 90
     },
     "facing=north,hot=0,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_active",
       "x": 90
     },
     "facing=north,hot=0,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe",
       "x": 90
     },
     "facing=north,hot=0,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe_active",
       "x": 90
     },
 
@@ -22,15 +22,15 @@
       "x": 90
     },
     "facing=north,hot=1,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_active",
       "x": 90
     },
     "facing=north,hot=1,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe",
       "x": 90
     },
     "facing=north,hot=1,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe_active",
       "x": 90
     },
 
@@ -39,15 +39,15 @@
       "x": 90
     },
     "facing=north,hot=2,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_active",
       "x": 90
     },
     "facing=north,hot=2,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe",
       "x": 90
     },
     "facing=north,hot=2,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe_active",
       "x": 90
     },
 
@@ -56,15 +56,15 @@
       "x": 90
     },
     "facing=north,hot=3,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_active",
       "x": 90
     },
     "facing=north,hot=3,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe",
       "x": 90
     },
     "facing=north,hot=3,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe_active",
       "x": 90
     },
 
@@ -76,17 +76,17 @@
       "y": 180
     },
     "facing=south,hot=0,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_active",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=0,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=0,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe_active",
       "x": 90,
       "y": 180
     },
@@ -97,17 +97,17 @@
       "y": 180
     },
     "facing=south,hot=1,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_active",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=1,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=1,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe_active",
       "x": 90,
       "y": 180
     },
@@ -118,17 +118,17 @@
       "y": 180
     },
     "facing=south,hot=2,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_active",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=2,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=2,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe_active",
       "x": 90,
       "y": 180
     },
@@ -139,17 +139,17 @@
       "y": 180
     },
     "facing=south,hot=3,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_active",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=3,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe",
       "x": 90,
       "y": 180
     },
     "facing=south,hot=3,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe_active",
       "x": 90,
       "y": 180
     },
@@ -162,17 +162,17 @@
       "y": 90
     },
     "facing=east,hot=0,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_active",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=0,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=0,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe_active",
       "x": 90,
       "y": 90
     },
@@ -183,17 +183,17 @@
       "y": 90
     },
     "facing=east,hot=1,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_active",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=1,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=1,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe_active",
       "x": 90,
       "y": 90
     },
@@ -204,17 +204,17 @@
       "y": 90
     },
     "facing=east,hot=2,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_active",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=2,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=2,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe_active",
       "x": 90,
       "y": 90
     },
@@ -225,17 +225,17 @@
       "y": 90
     },
     "facing=east,hot=3,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_active",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=3,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe",
       "x": 90,
       "y": 90
     },
     "facing=east,hot=3,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe_active",
       "x": 90,
       "y": 90
     },
@@ -248,17 +248,17 @@
       "y": 270
     },
     "facing=west,hot=0,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_active",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=0,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=0,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe_active",
       "x": 90,
       "y": 270
     },
@@ -269,17 +269,17 @@
       "y": 270
     },
     "facing=west,hot=1,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_active",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=1,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=1,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe_active",
       "x": 90,
       "y": 270
     },
@@ -290,17 +290,17 @@
       "y": 270
     },
     "facing=west,hot=2,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_active",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=2,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=2,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe_active",
       "x": 90,
       "y": 270
     },
@@ -311,17 +311,17 @@
       "y": 270
     },
     "facing=west,hot=3,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_active",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=3,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe",
       "x": 90,
       "y": 270
     },
     "facing=west,hot=3,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe_active",
       "x": 90,
       "y": 270
     },
@@ -332,52 +332,52 @@
       "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0"
     },
     "facing=up,hot=0,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_active"
     },
     "facing=up,hot=0,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe"
     },
     "facing=up,hot=0,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe_active"
     },
 
     "facing=up,hot=1,active=false,has_pipe=false": {
       "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1"
     },
     "facing=up,hot=1,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_active"
     },
     "facing=up,hot=1,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe"
     },
     "facing=up,hot=1,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe_active"
     },
 
     "facing=up,hot=2,active=false,has_pipe=false": {
       "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2"
     },
     "facing=up,hot=2,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_active"
     },
     "facing=up,hot=2,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe"
     },
     "facing=up,hot=2,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe_active"
     },
 
     "facing=up,hot=3,active=false,has_pipe=false": {
       "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3"
     },
     "facing=up,hot=3,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_active"
     },
     "facing=up,hot=3,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe"
     },
     "facing=up,hot=3,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe_active"
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe_active"
     },
 
 
@@ -387,15 +387,15 @@
       "x": 180
     },
     "facing=down,hot=0,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_active",
       "x": 180
     },
     "facing=down,hot=0,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe",
       "x": 180
     },
     "facing=down,hot=0,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_0_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_0_pipe_active",
       "x": 180
     },
 
@@ -404,15 +404,15 @@
       "x": 180
     },
     "facing=down,hot=1,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_active",
       "x": 180
     },
     "facing=down,hot=1,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe",
       "x": 180
     },
     "facing=down,hot=1,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_1_pipe_active",
       "x": 180
     },
 
@@ -421,15 +421,15 @@
       "x": 180
     },
     "facing=down,hot=2,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_active",
       "x": 180
     },
     "facing=down,hot=2,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe",
       "x": 180
     },
     "facing=down,hot=2,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_2_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_2_pipe_active",
       "x": 180
     },
 
@@ -438,15 +438,15 @@
       "x": 180
     },
     "facing=down,hot=3,active=true,has_pipe=false": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_active",
       "x": 180
     },
     "facing=down,hot=3,active=false,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe",
       "x": 180
     },
     "facing=down,hot=3,active=true,has_pipe=true": {
-      "model": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_3_pipe_active",
+      "model": "rocketry_science:block/rocket_engine/nozzle/steel/atmosphere/hot_3_pipe_active",
       "x": 180
     }
   }

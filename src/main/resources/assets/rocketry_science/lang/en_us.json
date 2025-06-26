@@ -5,6 +5,11 @@
   "item.rocketry_science.liquid_oxygen_bucket": "Liquid Oxygen Bucket",
   "item.rocketry_science.liquid_nitrogen_bucket": "Liquid Nitrogen Bucket",
 
+  "block.rocketry_science.steel_combustion_chamber": "Steel Combustion Chamber",
+  "block.rocketry_science.steel_nozzle_atmosphere": "Atmosphere-Optimized Steel Nozzle",
+  "block.rocketry_science.steel_nozzle_vacuum": "Vacuum-Optimized Steel Nozzle",
+  "block.rocketry_science.steel_nozzle_solid": "Solid Rocket Booster Steel Nozzle",
+
   "death.attack.cryogenic": "%1$s undergone rapid crystallization",
   "death.attack.cryogenic.player": "%1$s undergone rapid crystallization while running away from %2$s"
 }
