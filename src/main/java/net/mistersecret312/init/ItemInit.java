@@ -8,6 +8,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
+import net.mistersecret312.items.BlueprintItem;
 
 public class ItemInit
 {
@@ -20,6 +21,8 @@ public class ItemInit
     public static final RegistryObject<BucketItem> LIQUID_NITROGEN_BUCKET = ITEMS.register("liquid_nitrogen_bucket",
             () -> new BucketItem(FluidInit.SOURCE_LIQUID_NITROGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
 
+    public static final RegistryObject<BlueprintItem> BLUEPRINT = ITEMS.register("blueprint",
+            () -> new BlueprintItem(new Item.Properties()));
 
     public static void register(IEventBus bus)
     {

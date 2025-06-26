@@ -5,7 +5,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -14,9 +20,11 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.mistersecret312.block_entities.RocketEngineBlockEntity;
+import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
 
-public class CombustionChamberBlock extends Block
+public class CombustionChamberBlock extends BaseEntityBlock
 {
     public static VoxelShape SHAPE_NORTH = Shapes.join(Block.box(0, 0, 0, 16, 16, 4), Block.box(2, 2, 4, 14, 14, 16), BooleanOp.OR);
     public static VoxelShape SHAPE_SOUTH = Shapes.join(Block.box(0, 0, 12, 16, 16, 16), Block.box(2, 2, 0, 14, 14, 12), BooleanOp.OR);
@@ -48,6 +56,12 @@ public class CombustionChamberBlock extends Block
     }
 
     @Override
+    public RenderShape getRenderShape(BlockState pState)
+    {
+        return RenderShape.MODEL;
+    }
+
+    @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return this.defaultBlockState().setValue(FACING, context.getClickedFace().getOpposite());
@@ -58,5 +72,15 @@ public class CombustionChamberBlock extends Block
     {
         builder.add(FACING);
         super.createBlockStateDefinition(builder);
+    }
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntity) {
+        return createTickerHelper(blockEntity, BlockEntityInit.ROCKET_ENGINE.get(), RocketEngineBlockEntity::tick);
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return BlockEntityInit.ROCKET_ENGINE.get().create(pos, state);
     }
 }

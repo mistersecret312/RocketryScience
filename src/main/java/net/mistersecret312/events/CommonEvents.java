@@ -6,10 +6,15 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.mistersecret312.RocketryScienceMod;
+import net.mistersecret312.capabilities.BlueprintDataCapability;
+import net.mistersecret312.capabilities.GenericProvider;
+import net.mistersecret312.init.CapabilityInit;
 import net.mistersecret312.init.FluidTypeInit;
 
 @Mod.EventBusSubscriber(modid = RocketryScienceMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -27,5 +32,11 @@ public class CommonEvents
 
             entity.hurt(new DamageSource(Holder.direct(entity.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(RocketryScienceMod.MODID, "cryogenic"))))), 2f);
         }
+    }
+
+    @SubscribeEvent
+    public static void attachCapabilities(AttachCapabilitiesEvent<Level> event)
+    {
+        event.addCapability(new ResourceLocation(RocketryScienceMod.MODID, "blueprint_data"), new GenericProvider<>(CapabilityInit.BLUEPRINTS_DATA, new BlueprintDataCapability()));
     }
 }

@@ -4,6 +4,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -13,6 +15,7 @@ import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
 
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 import static net.mistersecret312.blocks.NozzleBlock.ACTIVE;
 
@@ -30,7 +33,8 @@ public class BlockInit
     public static final RegistryObject<CombustionChamberBlock> STEEL_COMBUSTION_CHAMBER = registerBlock("steel_combustion_chamber",
             () -> new CombustionChamberBlock(BlockBehaviour.Properties.of().noOcclusion().strength(15).explosionResistance(15).sound(SoundType.COPPER)));
     public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_ATMOPSHERE = registerBlock("steel_nozzle_atmosphere",
-            () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER).lightLevel((state) -> state.getValue(ACTIVE) ? 15 : 0),
+            () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER).lightLevel(
+                     nozzleBlockEmission(15)),
                     false, true));
     public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_VACUUM = registerBlock("steel_nozzle_vacuum",
             () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER),
@@ -56,5 +60,11 @@ public class BlockInit
     public static void register(IEventBus bus)
     {
         BLOCKS.register(bus);
+    }
+
+    private static ToIntFunction<BlockState> nozzleBlockEmission(int pLightValue) {
+        return (p_50763_) -> {
+            return p_50763_.getValue(ACTIVE) ? pLightValue : 0;
+        };
     }
 }
