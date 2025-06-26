@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,16 +26,21 @@ public class CombustionChamberBlock extends Block
     }
 
     @Override
-    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor)
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbor,
+                                  LevelAccessor level, BlockPos pos, BlockPos neighborPos)
     {
-        if(level.getBlockState(neighbor).getValue(NozzleBlock.FACING).equals(state.getValue(FACING)) && level.getBlockState(neighbor).getBlock() instanceof NozzleBlock nozzle)
+        if(neighbor.getBlock() instanceof NozzleBlock nozzle)
         {
-            if(nozzle.isVacuum())
-                state.setValue(TYPE, ChamberType.VACUUM);
-            else if(nozzle.isLiquidPropellant())
-                state.setValue(TYPE, ChamberType.ATMOSPHERE);
-            else state.setValue(TYPE, ChamberType.PIPELESS);
+            if(neighbor.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
+            {
+                if(nozzle.isVacuum())
+                    return state.setValue(TYPE, ChamberType.VACUUM);
+                else if (nozzle.isLiquidPropellant())
+                    return state.setValue(TYPE, ChamberType.ATMOSPHERE);
+                else return state.setValue(TYPE, ChamberType.PIPELESS);
+            }
         }
+        return super.updateShape(state, direction, neighbor, level, pos, neighborPos);
     }
 
     @Override

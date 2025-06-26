@@ -1,5 +1,6 @@
 {
 	"texture_size": [64, 64],
+	"render_type": "minecraft:cutout",
 	"textures": {
 		"3": "rocketry_science:block/rocket_engine/nozzle/solid/steel/hot_0",
 		"particle": "rocketry_science:block/rocket_engine/nozzle/solid/steel/hot_0"

@@ -1,5 +1,6 @@
 {
 	"texture_size": [64, 64],
+	"render_type": "minecraft:cutout",
 	"textures": {
 		"1": "rocketry_science:block/rocket_engine/combustion_chamber/steel",
 		"particle": "rocketry_science:block/rocket_engine/combustion_chamber/steel"
