@@ -60,12 +60,30 @@ public class NozzleBlock extends Block
     }
 
     @Override
+    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pPos, BlockPos pNeighborPos) {
+        if (isOnEngine(pLevel, pPos, pState)) {
+            pLevel.setBlock(pPos, pState.setValue(HAS_PIPE, true), 11);
+        } else {
+            pLevel.setBlock(pPos, pState.setValue(HAS_PIPE, false), 11);
+        }
+
+        return super.updateShape(pState, pDirection, pNeighborState, pLevel, pPos, pNeighborPos);
+    }
+
+    public boolean isOnEngine(LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
+        Direction blockDirection = pState.getValue(FACING);
+        Block parentBlock = pLevel.getBlockState(pPos.relative(blockDirection)).getBlock();
+        return parentBlock instanceof CombustionChamberBlock;
+    }
+
+    @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
     {
         LevelAccessor accessor = context.getLevel();
-        BlockState blockState = accessor.getBlockState(context.getClickedPos().relative(context.getNearestLookingDirection()));
-        return this.defaultBlockState().setValue(FACING, context.getNearestLookingDirection()).setValue(HOT, 0).setValue(ACTIVE, false)
-                .setValue(HAS_PIPE, blockState.getBlock() instanceof CombustionChamberBlock && blockState.getValue(FACING) == context.getNearestLookingDirection());
+        Direction facing = context.getClickedFace().getOpposite();
+        BlockState blockState = accessor.getBlockState(context.getClickedPos().relative(facing));
+        return this.defaultBlockState().setValue(FACING, facing).setValue(HOT, 0).setValue(ACTIVE, false)
+                .setValue(HAS_PIPE, blockState.getBlock() instanceof CombustionChamberBlock && blockState.getValue(FACING) == facing);
     }
 
     @Override
