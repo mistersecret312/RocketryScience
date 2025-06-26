@@ -9,6 +9,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
+import net.mistersecret312.blocks.CombustionChamberBlock;
+import net.mistersecret312.blocks.NozzleBlock;
 
 import java.util.function.Supplier;
 
@@ -22,6 +24,19 @@ public class BlockInit
             () -> new LiquidBlock(FluidInit.SOURCE_LIQUID_OXYGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
     public static final RegistryObject<LiquidBlock> LIQUID_NITROGEN = BLOCKS.register("liquid_nitrogen",
             () -> new LiquidBlock(FluidInit.SOURCE_LIQUID_NITROGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
+
+    public static final RegistryObject<CombustionChamberBlock> STEEL_COMBUSTION_CHAMBER = registerBlock("steel_combustion_chamber",
+            () -> new CombustionChamberBlock(BlockBehaviour.Properties.of().strength(15).explosionResistance(15)));
+    public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_ATMOPSHERE = registerBlock("steel_nozzle_atmosphere",
+            () -> new NozzleBlock(BlockBehaviour.Properties.of().explosionResistance(10).explosionResistance(10),
+                    false, true));
+    public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_VACUUM = registerBlock("steel_nozzle_vacuum",
+            () -> new NozzleBlock(BlockBehaviour.Properties.of().explosionResistance(10).explosionResistance(10),
+                    true, true));
+    public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_SOLID = registerBlock("steel_nozzle_solid",
+            () -> new NozzleBlock(BlockBehaviour.Properties.of().explosionResistance(10).explosionResistance(10),
+                    false, false));
+
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

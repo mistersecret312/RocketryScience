@@ -76,6 +76,11 @@ public class RocketryScienceMod
             ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_LIQUID_NITROGEN.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_LIQUID_NITROGEN.get(), RenderType.translucent());
 
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_COMBUSTION_CHAMBER.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_ATMOPSHERE.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_VACUUM.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_SOLID.get(), RenderType.cutout());
+
         }
     }
 }

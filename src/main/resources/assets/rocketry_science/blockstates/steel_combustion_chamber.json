@@ -1,0 +1,87 @@
+{
+  "variants": {
+    "facing=down,type=atmosphere": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/atmosphere",
+      "x": 180
+    },
+    "facing=down,type=vacuum": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/vacuum",
+      "x": 180
+    },
+    "facing=down,type=pipeless": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/pipeless",
+      "x": 180
+    },
+
+    "facing=east,type=atmosphere": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/atmosphere",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,type=vacuum": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/vacuum",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,type=pipeless": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/pipeless",
+      "x": 90,
+      "y": 90
+    },
+
+    "facing=north,type=atmosphere": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/atmosphere",
+      "x": 90
+    },
+    "facing=north,type=vacuum": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/vacuum",
+      "x": 90
+    },
+    "facing=north,type=pipeless": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/pipeless",
+      "x": 90
+    },
+
+    "facing=south,type=atmosphere": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/atmosphere",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,type=vacuum": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/vacuum",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,type=pipeless": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/pipeless",
+      "x": 90,
+      "y": 180
+    },
+
+    "facing=up,type=atmosphere": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/atmosphere"
+    },
+    "facing=up,type=vacuum": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/vacuum"
+    },
+    "facing=up,type=pipeless": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/pipeless"
+    },
+
+    "facing=west,type=atmosphere": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/atmosphere",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,type=vacuum": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/vacuum",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,type=pipeless": {
+      "model": "rocketry_science:block/rocket_engine/combustion_chamber/steel/pipeless",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

@@ -21,6 +21,11 @@ public class ItemTabInit
                     .title(Component.translatable("tabs.rocketry_science.main"))
                     .displayItems((parameters, output) ->
                     {
+                        output.accept(BlockInit.STEEL_COMBUSTION_CHAMBER.get());
+                        output.accept(BlockInit.STEEL_NOZZLE_ATMOPSHERE.get());
+                        output.accept(BlockInit.STEEL_NOZZLE_VACUUM.get());
+                        output.accept(BlockInit.STEEL_NOZZLE_SOLID.get());
+
                         output.accept(ItemInit.LIQUID_HYDROGEN_BUCKET.get());
                         output.accept(ItemInit.LIQUID_OXYGEN_BUCKET.get());
                         output.accept(ItemInit.LIQUID_NITROGEN_BUCKET.get());
