@@ -1,9 +1,11 @@
 {
-	"texture_size": [64, 64],
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
 	"render_type": "minecraft:cutout",
+	"texture_size": [64, 64],
 	"textures": {
-		"0": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1",
-		"particle": "rocketry_science:block/rocket_engine/nozzle/atmosphere/steel/hot_1"
+		"0": "rocketry_science:block/nozzle/steel/atmosphere/hot_0",
+		"particle": "rocketry_science:block/nozzle/steel/atmosphere/hot_0"
 	},
 	"elements": [
 		{
@@ -22,10 +24,6 @@
 		{
 			"from": [2, 0, 2],
 			"to": [14, 10, 14],
-			"forge_data": {
-				"block_light": 15,
-				"sky_light": 15
-			},
 			"rotation": {"angle": 0, "axis": "y", "origin": [2, 0, 2]},
 			"faces": {
 				"north": {"uv": [3, 3, 6, 5.5], "texture": "#0"},
