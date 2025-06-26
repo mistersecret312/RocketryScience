@@ -17,7 +17,7 @@ public class ItemTabInit
 
     public static final RegistryObject<CreativeModeTab> ROCKET_ENGINE_PARTS = TABS.register("main",
             () -> CreativeModeTab.builder()
-                    .icon(Items.FIREWORK_ROCKET::getDefaultInstance)
+                    .icon(() -> BlockInit.STEEL_COMBUSTION_CHAMBER.get().asItem().getDefaultInstance())
                     .title(Component.translatable("tabs.rocketry_science.main"))
                     .displayItems((parameters, output) ->
                     {
