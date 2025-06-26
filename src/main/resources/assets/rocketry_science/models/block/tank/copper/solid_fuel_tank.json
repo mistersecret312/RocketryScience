@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "rocketry_science:block/tank/copper/solid/tank_top",
+    "side": "rocketry_science:block/tank/copper/solid/tank_side"
+  }
+}
