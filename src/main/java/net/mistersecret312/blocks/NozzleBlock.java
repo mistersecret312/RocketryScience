@@ -2,7 +2,7 @@ package net.mistersecret312.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
@@ -17,7 +17,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.mistersecret312.init.BlockInit;
 import org.jetbrains.annotations.Nullable;
 
 public class NozzleBlock extends Block
@@ -73,13 +72,14 @@ public class NozzleBlock extends Block
     public boolean isOnEngine(LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
         Direction blockDirection = pState.getValue(FACING);
         Block parentBlock = pLevel.getBlockState(pPos.relative(blockDirection)).getBlock();
-        return parentBlock instanceof CombustionChamberBlock;
+        return parentBlock instanceof CombustionChamberBlock && pLevel.getBlockState(pPos.relative(blockDirection)).getValue(FACING) == blockDirection;
     }
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
     {
         LevelAccessor accessor = context.getLevel();
+        Player player = context.getPlayer();
         Direction facing = context.getClickedFace().getOpposite();
         BlockState blockState = accessor.getBlockState(context.getClickedPos().relative(facing));
         return this.defaultBlockState().setValue(FACING, facing).setValue(HOT, 0).setValue(ACTIVE, false)

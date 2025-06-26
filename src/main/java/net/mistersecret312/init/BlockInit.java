@@ -30,7 +30,7 @@ public class BlockInit
     public static final RegistryObject<CombustionChamberBlock> STEEL_COMBUSTION_CHAMBER = registerBlock("steel_combustion_chamber",
             () -> new CombustionChamberBlock(BlockBehaviour.Properties.of().noOcclusion().strength(15).explosionResistance(15).sound(SoundType.COPPER)));
     public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_ATMOPSHERE = registerBlock("steel_nozzle_atmosphere",
-            () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER).lightLevel((state) -> state.getValue(ACTIVE) ? 16 : 0),
+            () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER).lightLevel((state) -> state.getValue(ACTIVE) ? 15 : 0),
                     false, true));
     public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_VACUUM = registerBlock("steel_nozzle_vacuum",
             () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER),
