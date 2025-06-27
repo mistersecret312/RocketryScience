@@ -10,6 +10,11 @@
   "block.rocketry_science.steel_nozzle_vacuum": "Vacuum-Optimized Steel Nozzle",
   "block.rocketry_science.steel_nozzle_solid": "Solid Rocket Booster Steel Nozzle",
 
+  "fluid_type.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
+  "fluid_type.rocketry_science.liquid_oxygen": "Liquid Oxygen",
+  "fluid_type.rocketry_science.liquid_nitrogen": "Liquid Nitrogen",
+
+
   "death.attack.cryogenic": "%1$s undergone rapid crystallization",
   "death.attack.cryogenic.player": "%1$s undergone rapid crystallization while running away from %2$s"
 }

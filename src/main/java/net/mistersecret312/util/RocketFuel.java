@@ -9,7 +9,9 @@ import java.util.List;
 public enum RocketFuel implements StringRepresentable
 {
     HYDROLOX("hydrolox", List.of(FluidTypeInit.LIQUID_HYDROGEN_TYPE.get(), FluidTypeInit.LIQUID_OXYGEN_TYPE.get()),
-            380d, 2000);
+            380d, 2000),
+    COLD_NITROGEN("cold_nitrogen", List.of(FluidTypeInit.LIQUID_NITROGEN_TYPE.get()),
+        380d, 2000);
 
     String name;
     List<FluidType> fluids;

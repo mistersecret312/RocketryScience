@@ -2,12 +2,19 @@ package net.mistersecret312.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -16,13 +23,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class CombustionChamberBlock extends BaseEntityBlock
 {
@@ -39,6 +52,54 @@ public class CombustionChamberBlock extends BaseEntityBlock
     {
         super(pProperties);
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+                                 BlockHitResult hit)
+    {
+        if(level.getBlockEntity(pos) instanceof RocketEngineBlockEntity rocketEngine)
+        {
+            if(player.getItemInHand(hand).getItem() instanceof BucketItem bucket)
+            {
+                FluidStack bucketStack = new FluidStack(bucket.getFluid(), 1000);
+                if(rocketEngine.fuelTank.isFluidValid(bucketStack))
+                {
+                    rocketEngine.fuelTank.fill(bucketStack, IFluidHandler.FluidAction.EXECUTE);
+                    return InteractionResult.SUCCESS;
+                }
+
+            }
+        }
+
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor,
+                                BlockPos neighborPos, boolean pMovedByPiston)
+    {
+        if(!level.isClientSide())
+        {
+            BlockPos nozzlePos = pos.relative(state.getValue(FACING).getOpposite());
+            BlockState nozzleState = level.getBlockState(nozzlePos);
+            if(nozzleState.getBlock() instanceof NozzleBlock && nozzleState.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
+            {
+                if(level.getBlockEntity(pos) instanceof RocketEngineBlockEntity rocketEngine)
+                {
+                    if(rocketEngine.hasPropellantMixture())
+                    {
+                        rocketEngine.setRunning(level.hasNeighborSignal(pos));
+                        level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, level.hasNeighborSignal(pos)), 2);
+                    }
+                    else
+                    {
+                        rocketEngine.setRunning(false);
+                        level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
+                    }
+                }
+            }
+        }
     }
 
     @Override

@@ -7,32 +7,35 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.capability.FluidHandlerBlockEntity;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.mistersecret312.blocks.CombustionChamberBlock;
+import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.capabilities.BlueprintDataCapability;
+import net.mistersecret312.fluids.RocketFuelTank;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.CapabilityInit;
 import net.mistersecret312.util.RocketFuel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class RocketEngineBlockEntity extends BlockEntity
 {
-    public int blueprintID = 0;
+    public static final int COMBUSTION_CHAMBER_CAPACITY = 1000;
 
-    protected FluidTank tank = new FluidTank(5*FluidType.BUCKET_VOLUME, this::testFluid);
-    private final LazyOptional<IFluidHandler> holder = LazyOptional.empty();
+    public int blueprintID = 0;
+    public boolean isRunning = false;
+
+    public RocketFuelTank fuelTank = createTank();
+    private LazyOptional<IFluidHandler> holder = LazyOptional.empty();
 
     public RocketEngineBlockEntity(BlockPos pPos, BlockState pBlockState)
     {
@@ -43,46 +46,81 @@ public class RocketEngineBlockEntity extends BlockEntity
     public void onLoad()
     {
         super.onLoad();
-
+        this.holder = LazyOptional.of(() -> fuelTank);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, RocketEngineBlockEntity rocketEngine)
+    @Override
+    public void invalidateCaps()
     {
+        super.invalidateCaps();
 
+        holder.invalidate();
     }
 
-    public boolean testFluid(FluidStack stack)
+    public void updateFuelTank()
     {
-        if(level.getCapability(CapabilityInit.BLUEPRINTS_DATA).isPresent())
+        this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap ->
         {
-            Optional<BlueprintDataCapability> capabilityOptional = level.getCapability(CapabilityInit.BLUEPRINTS_DATA).resolve();
-            if(capabilityOptional.isPresent())
+            RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
+            if(!this.fuelTank.getPropellantTypes().equals(blueprint.rocketFuel.getPropellants()))
+                this.fuelTank = new RocketFuelTank(blueprint.rocketFuel.getPropellants(), COMBUSTION_CHAMBER_CAPACITY);
+        });
+    }
+
+    public boolean hasPropellantMixture()
+    {
+        LazyOptional<BlueprintDataCapability> lazyCapability = this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA);
+        if(lazyCapability.isPresent())
+        {
+            Optional<BlueprintDataCapability> optionalCapability = lazyCapability.resolve();
+            if(optionalCapability.isPresent())
             {
-                RocketEngineBlueprint blueprint = capabilityOptional.get().rocketEngineBlueprints.get(this.blueprintID);
+                BlueprintDataCapability cap = optionalCapability.get();
 
-                RocketFuel rocketFuel = blueprint.rocketFuel;
-                for(FluidType type : rocketFuel.getPropellants())
-                    return stack.getFluid().getFluidType().equals(type);
+                RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
+                List<Boolean> hasFuel = new ArrayList<>();
+                hasFuel.add(this.fuelTank.getPropellants().stream().allMatch(stack -> stack.getAmount() > 0));
+                blueprint.rocketFuel.getPropellants().forEach(type -> {
+                    boolean fuelContained = this.fuelTank.getPropellantTypes().contains(type);
+                    hasFuel.add(fuelContained);
+                });
 
+                boolean hasMixture = hasFuel.stream().allMatch(bool -> bool);
+                return hasMixture;
             }
         }
         return false;
     }
 
-    public int propellantQuantity()
+    public static void tick(Level level, BlockPos pos, BlockState state, RocketEngineBlockEntity rocketEngine)
     {
-        if(level.getCapability(CapabilityInit.BLUEPRINTS_DATA).isPresent())
+        BlockPos nozzlePos = pos.relative(state.getValue(CombustionChamberBlock.FACING).getOpposite());
+        BlockState nozzleState = level.getBlockState(nozzlePos);
+        if(!level.isClientSide() && nozzleState.getBlock() instanceof NozzleBlock)
         {
-            Optional<BlueprintDataCapability> capabilityOptional = level.getCapability(CapabilityInit.BLUEPRINTS_DATA).resolve();
-            if(capabilityOptional.isPresent())
+            if (rocketEngine.isRunning() && !rocketEngine.hasPropellantMixture())
             {
-                RocketEngineBlueprint blueprint = capabilityOptional.get().rocketEngineBlueprints.get(this.blueprintID);
+                rocketEngine.setRunning(false);
+                level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
+            }
 
-                RocketFuel rocketFuel = blueprint.rocketFuel;
-                return rocketFuel.getPropellants().size();
+            if (rocketEngine.isRunning() && rocketEngine.hasPropellantMixture())
+            {
+                rocketEngine.fuelTank.drain(2, IFluidHandler.FluidAction.EXECUTE);
+
+                if (nozzleState.getValue(NozzleBlock.HOT) < 3 && level.getGameTime() % 200 == 0)
+                {
+                    level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.HOT, nozzleState.getValue(NozzleBlock.HOT) + 1), 2);
+                }
+            }
+            if(!rocketEngine.isRunning())
+            {
+                if (nozzleState.getValue(NozzleBlock.HOT) > 0 && level.getGameTime() % 400 == 0)
+                {
+                    level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.HOT, nozzleState.getValue(NozzleBlock.HOT) - 1), 2);
+                }
             }
         }
-        return 1;
     }
 
     @Override
@@ -90,7 +128,8 @@ public class RocketEngineBlockEntity extends BlockEntity
     {
         super.saveAdditional(tag);
         tag.putInt("blueprint_id", this.blueprintID);
-        tank.writeToNBT(tag);
+        tag.putBoolean("is_running", this.isRunning);
+        fuelTank.writeToNBT(tag);
     }
 
     @Override
@@ -98,7 +137,28 @@ public class RocketEngineBlockEntity extends BlockEntity
     {
         super.load(tag);
         this.blueprintID = tag.getInt("blueprint_id");
-        tank.readFromNBT(tag);
+        this.isRunning = tag.getBoolean("is_running");
+        this.fuelTank.readFromNBT(tag);
+    }
+
+    public int getBlueprintID()
+    {
+        return blueprintID;
+    }
+
+    public void setBlueprintID(int blueprintID)
+    {
+        this.blueprintID = blueprintID;
+    }
+
+    public boolean isRunning()
+    {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running)
+    {
+        isRunning = running;
     }
 
     @Override
@@ -107,6 +167,7 @@ public class RocketEngineBlockEntity extends BlockEntity
     {
         if (capability == ForgeCapabilities.FLUID_HANDLER)
             return holder.cast();
+
         return super.getCapability(capability, facing);
     }
 
@@ -123,5 +184,17 @@ public class RocketEngineBlockEntity extends BlockEntity
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         load(pkt.getTag());
+    }
+
+    public RocketFuelTank createTank()
+    {
+        return new RocketFuelTank(RocketFuel.HYDROLOX.getPropellants(), COMBUSTION_CHAMBER_CAPACITY)
+        {
+            @Override
+            protected void onContentsChanged()
+            {
+                setChanged();
+            }
+        };
     }
 }
