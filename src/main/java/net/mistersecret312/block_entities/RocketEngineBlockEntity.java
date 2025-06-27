@@ -23,9 +23,12 @@ import net.mistersecret312.util.RocketFuel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static net.mistersecret312.blocks.CombustionChamberBlock.FACING;
 
 public class RocketEngineBlockEntity extends BlockEntity
 {
@@ -33,6 +36,12 @@ public class RocketEngineBlockEntity extends BlockEntity
 
     public int blueprintID = 0;
     public boolean isRunning = false;
+    public int throttle = 0;
+    public double integrity = 0;
+    public double maxIntegrity = 0;
+    public double reliability = 0;
+
+    public double runtime = 0;
 
     public RocketFuelTank fuelTank = createTank();
     private LazyOptional<IFluidHandler> holder = LazyOptional.empty();
@@ -47,6 +56,9 @@ public class RocketEngineBlockEntity extends BlockEntity
     {
         super.onLoad();
         this.holder = LazyOptional.of(() -> fuelTank);
+        updateBlueprintData();
+        if(this.integrity <= 0)
+            this.integrity = this.maxIntegrity;
     }
 
     @Override
@@ -57,13 +69,17 @@ public class RocketEngineBlockEntity extends BlockEntity
         holder.invalidate();
     }
 
-    public void updateFuelTank()
+    public void updateBlueprintData()
     {
         this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap ->
         {
             RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
             if(!this.fuelTank.getPropellantTypes().equals(blueprint.rocketFuel.getPropellants()))
                 this.fuelTank = new RocketFuelTank(blueprint.rocketFuel.getPropellants(), COMBUSTION_CHAMBER_CAPACITY);
+
+            this.maxIntegrity = blueprint.maxIntegrity;
+            if(this.integrity > this.maxIntegrity)
+                this.integrity = this.maxIntegrity;
         });
     }
 
@@ -92,35 +108,84 @@ public class RocketEngineBlockEntity extends BlockEntity
         return false;
     }
 
+    @Nullable
+    public RocketEngineBlueprint getBlueprint()
+    {
+        LazyOptional<BlueprintDataCapability> lazyCapability = this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA);
+        if(lazyCapability.isPresent())
+        {
+            Optional<BlueprintDataCapability> optionalCapability = lazyCapability.resolve();
+            if(optionalCapability.isPresent())
+                return optionalCapability.get().rocketEngineBlueprints.get(this.getBlueprintID());
+        }
+        return null;
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, RocketEngineBlockEntity rocketEngine)
     {
-        BlockPos nozzlePos = pos.relative(state.getValue(CombustionChamberBlock.FACING).getOpposite());
+        if(level.isClientSide())
+            return;
+        if(rocketEngine.getBlueprint() == null)
+            return;
+
+        NumberFormat fraction = NumberFormat.getNumberInstance();
+        fraction.setParseIntegerOnly(false);
+        fraction.setMaximumFractionDigits(2);
+        fraction.setMinimumFractionDigits(0);
+        fraction.setGroupingUsed(false);
+
+        rocketEngine.reliability = Double.parseDouble(fraction.format(rocketEngine.getBlueprint().reliability*Math.max(0.2d, rocketEngine.integrity/rocketEngine.maxIntegrity)));
+
+        BlockPos nozzlePos = pos.relative(state.getValue(FACING).getOpposite());
         BlockState nozzleState = level.getBlockState(nozzlePos);
-        if(!level.isClientSide() && nozzleState.getBlock() instanceof NozzleBlock)
+        if(nozzleState.getBlock() instanceof NozzleBlock && nozzleState.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
         {
-            if (rocketEngine.isRunning() && !rocketEngine.hasPropellantMixture())
+            if (rocketEngine.isRunning())
             {
-                rocketEngine.setRunning(false);
-                level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
-            }
-
-            if (rocketEngine.isRunning() && rocketEngine.hasPropellantMixture())
-            {
-                rocketEngine.fuelTank.drain(2, IFluidHandler.FluidAction.EXECUTE);
-
-                if (nozzleState.getValue(NozzleBlock.HOT) < 3 && level.getGameTime() % 200 == 0)
+                if (!rocketEngine.hasPropellantMixture())
+                    rocketEngine.deactiveEngine(rocketEngine, nozzlePos, nozzleState);
+                else
                 {
-                    level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.HOT, nozzleState.getValue(NozzleBlock.HOT) + 1), 2);
+                    rocketEngine.fuelTank.drain(Math.max(1, 8 * (rocketEngine.throttle / 15)), IFluidHandler.FluidAction.EXECUTE);
+                    rocketEngine.integrity = Double.parseDouble(fraction.format(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
+                    rocketEngine.throttle = level.getBestNeighborSignal(pos);
+                    rocketEngine.runtime++;
+                    if (nozzleState.getValue(NozzleBlock.HOT) < 3 && level.getGameTime() % 200 == 0)
+                    {
+                        int targetHotness = Math.min(3, nozzleState.getValue(NozzleBlock.HOT) + 1);
+                        BlockState targetNozzleState = nozzleState.setValue(NozzleBlock.HOT, targetHotness);
+                        level.setBlock(nozzlePos, targetNozzleState, 2);
+                    }
+
+                    if (!level.hasNeighborSignal(pos))
+                        rocketEngine.deactiveEngine(rocketEngine, nozzlePos, nozzleState);
                 }
             }
-            if(!rocketEngine.isRunning())
+            if (!rocketEngine.isRunning())
             {
+                if (level.hasNeighborSignal(pos) && rocketEngine.hasPropellantMixture())
+                {
+                    rocketEngine.setRunning(true);
+                    level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, true), 2);
+                }
+                else rocketEngine.deactiveEngine(rocketEngine, nozzlePos, nozzleState);
+
                 if (nozzleState.getValue(NozzleBlock.HOT) > 0 && level.getGameTime() % 400 == 0)
                 {
-                    level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.HOT, nozzleState.getValue(NozzleBlock.HOT) - 1), 2);
+                    int targetHotness = Math.max(0, nozzleState.getValue(NozzleBlock.HOT) - 1);
+                    BlockState targetNozzleState = nozzleState.setValue(NozzleBlock.HOT, targetHotness);
+                    level.setBlock(nozzlePos, targetNozzleState, 2);
                 }
             }
         }
+    }
+
+    public void deactiveEngine(RocketEngineBlockEntity rocketEngine, BlockPos nozzlePos, BlockState nozzleState)
+    {
+        rocketEngine.setRunning(false);
+        rocketEngine.throttle = 0;
+        rocketEngine.runtime = 0;
+        level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
     }
 
     @Override
@@ -129,6 +194,11 @@ public class RocketEngineBlockEntity extends BlockEntity
         super.saveAdditional(tag);
         tag.putInt("blueprint_id", this.blueprintID);
         tag.putBoolean("is_running", this.isRunning);
+        tag.putInt("throttle", this.throttle);
+        tag.putDouble("integrity", this.integrity);
+        tag.putDouble("max_integrity", this.maxIntegrity);
+        tag.putDouble("reliability", this.reliability);
+        tag.putDouble("runtime", this.runtime);
         fuelTank.writeToNBT(tag);
     }
 
@@ -138,6 +208,11 @@ public class RocketEngineBlockEntity extends BlockEntity
         super.load(tag);
         this.blueprintID = tag.getInt("blueprint_id");
         this.isRunning = tag.getBoolean("is_running");
+        this.throttle = tag.getInt("throttle");
+        this.integrity = tag.getDouble("integrity");
+        this.maxIntegrity = tag.getDouble("max_integrity");
+        this.reliability = tag.getDouble("reliability");
+        this.runtime = tag.getDouble("runtime");
         this.fuelTank.readFromNBT(tag);
     }
 

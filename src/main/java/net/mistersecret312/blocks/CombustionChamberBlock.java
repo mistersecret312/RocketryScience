@@ -87,16 +87,7 @@ public class CombustionChamberBlock extends BaseEntityBlock
             {
                 if(level.getBlockEntity(pos) instanceof RocketEngineBlockEntity rocketEngine)
                 {
-                    if(rocketEngine.hasPropellantMixture())
-                    {
-                        rocketEngine.setRunning(level.hasNeighborSignal(pos));
-                        level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, level.hasNeighborSignal(pos)), 2);
-                    }
-                    else
-                    {
-                        rocketEngine.setRunning(false);
-                        level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
-                    }
+
                 }
             }
         }

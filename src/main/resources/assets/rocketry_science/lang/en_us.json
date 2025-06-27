@@ -1,4 +1,6 @@
 {
+  "config.jade.plugin_rocketry_science.rocket_engine_provider": "Rocket Engine",
+
   "tabs.rocketry_science.main": "Rocketry Science",
 
   "item.rocketry_science.liquid_hydrogen_bucket": "Liquid Hydrogen Bucket",
@@ -14,6 +16,9 @@
   "fluid_type.rocketry_science.liquid_oxygen": "Liquid Oxygen",
   "fluid_type.rocketry_science.liquid_nitrogen": "Liquid Nitrogen",
 
+  "data.rocketry_science.thrust": "Thrust: %1$d/%2$d kN",
+  "data.rocketry_science.reliability": "Reliability: %s",
+  "data.rocketry_science.integrity": "Integrity: %1$d/%2$d",
 
   "death.attack.cryogenic": "%1$s undergone rapid crystallization",
   "death.attack.cryogenic.player": "%1$s undergone rapid crystallization while running away from %2$s"

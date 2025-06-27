@@ -57,7 +57,7 @@ public class RocketEngineBlueprint implements Blueprint
 
         this.mass = 2500*((this.combustionChamberMaterial.getMassCoefficient()+this.nozzleMaterial.getMassCoefficient())/2);
 
-        this.reliability = ((this.combustionChamberMaterial.getBaseReliability()+this.nozzleMaterial.getBaseReliability())/2)*Math.max(0.2d, this.integrity/this.maxIntegrity);
+        this.reliability = ((this.combustionChamberMaterial.getBaseReliability()+this.nozzleMaterial.getBaseReliability())/2);
     }
 
     private void calculateRocketEngineStats()
