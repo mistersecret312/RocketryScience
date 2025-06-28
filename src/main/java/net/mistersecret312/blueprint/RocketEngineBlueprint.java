@@ -1,8 +1,14 @@
 package net.mistersecret312.blueprint;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.mistersecret312.block_entities.RocketEngineBlockEntity;
+import net.mistersecret312.mishaps.Mishap;
 import net.mistersecret312.util.RocketFuel;
 import net.mistersecret312.util.RocketMaterial;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RocketEngineBlueprint implements Blueprint
 {
@@ -18,6 +24,8 @@ public class RocketEngineBlueprint implements Blueprint
     public double thrust_kN;
     public double Isp_vacuum;
     public double Isp_atmosphere;
+
+    public List<Mishap<?, RocketEngineBlueprint>> mishaps = new ArrayList<>();
 
     public RocketEngineBlueprint(double mass, double reliability, double integrity, double maxIntegrity,
                                  RocketMaterial combustionChamberMaterial, RocketMaterial nozzleMaterial,
@@ -43,6 +51,8 @@ public class RocketEngineBlueprint implements Blueprint
         this.nozzleMaterial = nozzleMaterial;
         this.rocketFuel = rocketFuel;
 
+        calculateReliability();
+
         calculateRocketPartStats();
         calculateRocketEngineStats();
     }
@@ -56,8 +66,16 @@ public class RocketEngineBlueprint implements Blueprint
         this.integrity = this.maxIntegrity;
 
         this.mass = 2500*((this.combustionChamberMaterial.getMassCoefficient()+this.nozzleMaterial.getMassCoefficient())/2);
+    }
 
-        this.reliability = ((this.combustionChamberMaterial.getBaseReliability()+this.nozzleMaterial.getBaseReliability())/2);
+    public void calculateReliability()
+    {
+        double blueprintEffects = 0;
+        for(Mishap<?, RocketEngineBlueprint> mishap : this.mishaps)
+        {
+            blueprintEffects += mishap.getType().blueprintEffect;
+        }
+        this.reliability = ((this.combustionChamberMaterial.getBaseReliability()+this.nozzleMaterial.getBaseReliability())/2)+blueprintEffects;
     }
 
     private void calculateRocketEngineStats()
@@ -72,6 +90,12 @@ public class RocketEngineBlueprint implements Blueprint
     public CompoundTag serializeNBT()
     {
         CompoundTag tag = new CompoundTag();
+
+        ListTag listTag = new ListTag();
+        this.mishaps.forEach(mishap -> {
+            listTag.add(mishap.writeToNBT());
+        });
+        tag.put("mishaps", listTag);
 
         tag.putString("combustion_chamber_material", this.combustionChamberMaterial.toString());
         tag.putString("nozzle_material", this.nozzleMaterial.toString());
@@ -104,6 +128,19 @@ public class RocketEngineBlueprint implements Blueprint
         this.thrust_kN = tag.getDouble("thrust");
         this.Isp_vacuum = tag.getDouble("isp_vacuum");
         this.Isp_atmosphere = tag.getDouble("isp_atmosphere");
+
+        List<Mishap<?, RocketEngineBlueprint>> mishaps = new ArrayList<>();
+        ListTag mishapsTag = tag.getList("mishaps", CompoundTag.TAG_COMPOUND);
+        mishapsTag.forEach(listTag -> {
+            CompoundTag mishapTag = ((CompoundTag) listTag);
+            Mishap<?, RocketEngineBlueprint> mishap = Mishap.loadBlueprintStatic(mishapTag, this);
+            if(mishap != null)
+            {
+                mishap.loadFromNBT(mishapTag);
+                mishaps.add(mishap);
+            }
+        });
+        this.mishaps = mishaps;
 
     }
 

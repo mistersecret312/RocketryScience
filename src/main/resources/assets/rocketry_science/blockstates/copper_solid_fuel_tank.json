@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank"
+    },
+    "facing=down": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
+      "x": 180
+    }
+  }
+}

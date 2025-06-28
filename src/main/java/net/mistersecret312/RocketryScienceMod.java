@@ -43,6 +43,7 @@ public class RocketryScienceMod
         BlockEntityInit.register(modEventBus);
         FluidInit.register(modEventBus);
         FluidTypeInit.register(modEventBus);
+        MishapInit.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

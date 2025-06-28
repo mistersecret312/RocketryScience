@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "minecraft:copper_ingot"
+    },
+    "H": {
+      "item": "minecraft:honeycomb"
+    },
+    "C": {
+      "item": "minecraft:white_concrete"
+    }
+  },
+  "pattern": [
+    "PCP",
+    "PHP",
+    "PCP"
+  ],
+  "result": {
+    "item": "rocketry_science:copper_solid_fuel_tank",
+    "count": 1
+  }
+}

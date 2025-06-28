@@ -12,13 +12,19 @@
   "block.rocketry_science.steel_nozzle_vacuum": "Vacuum-Optimized Steel Nozzle",
   "block.rocketry_science.steel_nozzle_solid": "Solid Rocket Booster Steel Nozzle",
 
+  "block.rocketry_science.copper_solid_fuel_tank": "Copper Solid Fuel Tank",
+
   "fluid_type.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
   "fluid_type.rocketry_science.liquid_oxygen": "Liquid Oxygen",
   "fluid_type.rocketry_science.liquid_nitrogen": "Liquid Nitrogen",
 
+  "data.rocketry_science.minor_mishap": "Suffered a minor mishap!",
+  "data.rocketry_science.mass": "Mass: %d kg",
   "data.rocketry_science.thrust": "Thrust: %1$d/%2$d kN",
   "data.rocketry_science.reliability": "Reliability: %s",
   "data.rocketry_science.integrity": "Integrity: %1$d/%2$d",
+
+  "rocket.rocketry_science.steel_rocket_engine": "Steel Rocket Engine",
 
   "death.attack.cryogenic": "%1$s undergone rapid crystallization",
   "death.attack.cryogenic.player": "%1$s undergone rapid crystallization while running away from %2$s"

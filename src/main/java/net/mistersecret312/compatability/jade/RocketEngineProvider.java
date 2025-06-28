@@ -1,13 +1,16 @@
 package net.mistersecret312.compatability.jade;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.init.CapabilityInit;
+import net.mistersecret312.mishaps.MishapType;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -25,24 +28,33 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config)
     {
-        NumberFormat fraction = NumberFormat.getNumberInstance();
-        fraction.setParseIntegerOnly(false);
-        fraction.setMaximumFractionDigits(0);
-        fraction.setMinimumFractionDigits(0);
-        fraction.setGroupingUsed(false);
+        if(accessor.getServerData().getBoolean("is_built"))
+        {
+            IElement nameElement = tooltip.getElementHelper().text(Component.translatable("rocket.rocketry_science.steel_rocket_engine").withStyle(ChatFormatting.WHITE));
+            tooltip.get(0, IElement.Align.LEFT).set(0, nameElement);
 
-        double thrust = accessor.getServerData().getDouble("thrust");
-        int throttle = accessor.getServerData().getInt("throttle");
-        double reliability = accessor.getServerData().getDouble("reliability");
-        double integrity = accessor.getServerData().getDouble("integrity");
-        double maxIntegrity = accessor.getServerData().getDouble("max_integrity");
+            NumberFormat fraction = NumberFormat.getNumberInstance();
+            fraction.setParseIntegerOnly(false);
+            fraction.setMaximumFractionDigits(0);
+            fraction.setMinimumFractionDigits(0);
+            fraction.setGroupingUsed(false);
 
-        double throttledThrust = thrust*((double) throttle /15);
+            boolean minorMishap = accessor.getServerData().getBoolean("has_minor_mishap");
+            double thrust = accessor.getServerData().getDouble("thrust");
+            double mass = accessor.getServerData().getDouble("mass");
+            int throttle = accessor.getServerData().getInt("throttle");
+            double reliability = accessor.getServerData().getDouble("reliability");
+            double integrity = accessor.getServerData().getDouble("integrity");
+            double maxIntegrity = accessor.getServerData().getDouble("max_integrity");
 
-        tooltip.add(Component.translatable("data.rocketry_science.thrust", fraction.format(thrust*((double) throttle /15)), thrust));
-        tooltip.add(Component.translatable("data.rocketry_science.reliability", String.format("%.0f%%", reliability*100)));
-        tooltip.add(Component.translatable("data.rocketry_science.integrity", fraction.format(integrity), maxIntegrity));
+            tooltip.add(Component.translatable("data.rocketry_science.mass", fraction.format(mass)));
+            tooltip.add(Component.translatable("data.rocketry_science.thrust", fraction.format(thrust * ((double) throttle / 15)), thrust));
+            tooltip.add(Component.translatable("data.rocketry_science.reliability", String.format("%.0f%%", reliability * 100)));
+            tooltip.add(Component.translatable("data.rocketry_science.integrity", fraction.format(integrity), maxIntegrity));
 
+            if(minorMishap)
+                tooltip.add(Component.translatable("data.rocketry_science.minor_mishap").withStyle(ChatFormatting.RED));
+        }
     }
 
     @Override
@@ -57,7 +69,11 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
         RocketEngineBlockEntity rocketEngine = (RocketEngineBlockEntity) blockAccessor.getBlockEntity();
         rocketEngine.getLevel().getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap -> {
             RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(rocketEngine.getBlueprintID());
+            tag.putBoolean("is_built", rocketEngine.isBuilt);
+            tag.putBoolean("has_minor_mishap", rocketEngine.mishaps.stream().anyMatch(mishap -> mishap.getType().category.equals(MishapType.MishapCategory.MINOR)));
+            tag.putBoolean("has_major_mishap", rocketEngine.mishaps.stream().anyMatch(mishap -> mishap.getType().category.equals(MishapType.MishapCategory.MAJOR)));
             tag.putDouble("thrust", blueprint.thrust_kN);
+            tag.putDouble("mass", blueprint.mass);
             tag.putDouble("integrity", rocketEngine.integrity);
             tag.putDouble("max_integrity", blueprint.maxIntegrity);
             tag.putDouble("reliability", rocketEngine.reliability);

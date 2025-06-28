@@ -13,6 +13,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
+import net.mistersecret312.blocks.SolidFuelStorageBlock;
 
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -42,6 +43,9 @@ public class BlockInit
     public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_SOLID = registerBlock("steel_nozzle_solid",
             () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER),
                     false, false));
+
+    public static final RegistryObject<SolidFuelStorageBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
+            () -> new SolidFuelStorageBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5)));
 
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
