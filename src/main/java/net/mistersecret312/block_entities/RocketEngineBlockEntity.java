@@ -22,8 +22,10 @@ import net.mistersecret312.fluids.RocketFuelTank;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.CapabilityInit;
 import net.mistersecret312.init.MishapInit;
+import net.mistersecret312.init.NetworkInit;
 import net.mistersecret312.mishaps.Mishap;
 import net.mistersecret312.mishaps.MishapType;
+import net.mistersecret312.network.packets.RocketEngineUpdatePacket;
 import net.mistersecret312.util.RocketFuel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +49,9 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     public double integrity = 0;
     public double maxIntegrity = 0;
     public double reliability = 0;
+
+    public int animTick = 0;
+    public int frame = 0;
 
     public List<Mishap<RocketEngineBlockEntity, ?>> mishaps = new ArrayList<>();
 
@@ -130,6 +135,19 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         return null;
     }
 
+    @Nullable
+    public NozzleBlock getNozzle()
+    {
+        BlockPos nozzlePos = this.getBlockPos().relative(this.getBlockState().getValue(FACING).getOpposite());
+        BlockState nozzleState = this.level.getBlockState(nozzlePos);
+        if(nozzleState.getBlock() instanceof NozzleBlock nozzle)
+        {
+            if(nozzleState.getValue(NozzleBlock.FACING).equals(this.getBlockState().getValue(FACING)))
+                return nozzle;
+        }
+        return null;
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, RocketEngineBlockEntity rocketEngine)
     {
         if(level.isClientSide())
@@ -141,13 +159,13 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         double reliabilityEffects = 0;
         for(Mishap<RocketEngineBlockEntity,?> mishap : rocketEngine.mishaps)
             reliabilityEffects += mishap.getType().physicalEffect;
-        rocketEngine.reliability = trimDouble(rocketEngine.getBlueprint().reliability*Math.max(0.2d, rocketEngine.integrity/rocketEngine.maxIntegrity))+reliabilityEffects;
+        rocketEngine.setReliability(trimDouble(rocketEngine.getBlueprint().reliability*Math.max(0.2d, rocketEngine.integrity/rocketEngine.maxIntegrity))+reliabilityEffects);
 
         BlockPos nozzlePos = pos.relative(state.getValue(FACING).getOpposite());
         BlockState nozzleState = level.getBlockState(nozzlePos);
         if(nozzleState.getBlock() instanceof NozzleBlock && nozzleState.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
         {
-            rocketEngine.isBuilt = true;
+            rocketEngine.setBuilt(true);
             rocketEngine.mishaps.forEach(mishap -> mishap.tickToPhysical(rocketEngine));
 
             if (rocketEngine.isRunning())
@@ -166,15 +184,16 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
                         {
                             Mishap<RocketEngineBlockEntity, ?> mishapBlockEntity = mishapType.create(rocketEngine, null);
                             Mishap<?, RocketEngineBlueprint> mishapBlueprint = mishapType.create(null, blueprint);
-                            rocketEngine.mishaps.add(mishapBlockEntity);
-                            blueprint.mishaps.add(mishapBlueprint);
+                            //rocketEngine.mishaps.add(mishapBlockEntity);
+                            //blueprint.mishaps.add(mishapBlueprint);
+                            rocketEngine.setChanged();
                         }
                     }
 
                     //rocketEngine.fuelTank.drain(Math.max(1, 8 * (rocketEngine.throttle / 15)), IFluidHandler.FluidAction.EXECUTE);
-                    //rocketEngine.integrity = trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15)));
-                    rocketEngine.throttle = level.getBestNeighborSignal(pos);
-                    rocketEngine.runtime++;
+                    //rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
+                    rocketEngine.setThrottle(level.getBestNeighborSignal(pos));
+                    rocketEngine.setRuntime(rocketEngine.runtime+1);
                     if (nozzleState.getValue(NozzleBlock.HOT) < 3 && level.getGameTime() % 200 == 0)
                     {
                         int targetHotness = Math.min(3, nozzleState.getValue(NozzleBlock.HOT) + 1);
@@ -201,13 +220,13 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
                     level.setBlock(nozzlePos, targetNozzleState, 2);
                 }
             }
-        } else rocketEngine.isBuilt = false;
+        } else rocketEngine.setBuilt(false);
     }
 
     public void deactiveEngine(RocketEngineBlockEntity rocketEngine, BlockPos nozzlePos, BlockState nozzleState)
     {
         rocketEngine.setRunning(false);
-        rocketEngine.throttle = 0;
+        rocketEngine.setThrottle(0);
         level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
     }
 
@@ -268,6 +287,53 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     public void setRunning(boolean running)
     {
         isRunning = running;
+        NetworkInit.sendToTracking(this, new RocketEngineUpdatePacket(this.getBlockPos(), isBuilt, isRunning, throttle));
+        setChanged();
+    }
+
+    @Override
+    public void setBlueprintID(int blueprintID)
+    {
+        this.blueprintID = blueprintID;
+        setChanged();
+    }
+
+    public void setReliability(double reliability)
+    {
+        this.reliability = reliability;
+        setChanged();
+    }
+
+    public void setBuilt(boolean built)
+    {
+        isBuilt = built;
+        NetworkInit.sendToTracking(this, new RocketEngineUpdatePacket(this.getBlockPos(), isBuilt, isRunning, throttle));
+        setChanged();
+    }
+
+    public void setIntegrity(double integrity)
+    {
+        this.integrity = integrity;
+        setChanged();
+    }
+
+    public void setMaxIntegrity(double maxIntegrity)
+    {
+        this.maxIntegrity = maxIntegrity;
+        setChanged();
+    }
+
+    public void setRuntime(double runtime)
+    {
+        this.runtime = runtime;
+        setChanged();
+    }
+
+    public void setThrottle(int throttle)
+    {
+        this.throttle = throttle;
+        NetworkInit.sendToTracking(this, new RocketEngineUpdatePacket(this.getBlockPos(), isBuilt, isRunning, throttle));
+        setChanged();
     }
 
     @Override

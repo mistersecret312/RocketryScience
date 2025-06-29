@@ -18,7 +18,7 @@ public class BlueprintDataCapability implements INBTSerializable<CompoundTag>
     public BlueprintDataCapability()
     {
         this.rocketEngineBlueprints.add(new RocketEngineBlueprint(RocketMaterial.STAINLESS_STEEL, RocketMaterial.STAINLESS_STEEL, RocketFuel.HYDROLOX));
-        this.rocketEngineBlueprints.add(new RocketEngineBlueprint(RocketMaterial.COSMIC_ALLOY, RocketMaterial.COSMIC_ALLOY, RocketFuel.COLD_NITROGEN));
+        this.rocketEngineBlueprints.add(new RocketEngineBlueprint(RocketMaterial.COSMIC_ALLOY, RocketMaterial.COSMIC_ALLOY, RocketFuel.HYDROLOX));
 
     }
 

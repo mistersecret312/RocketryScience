@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -20,6 +21,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.mistersecret312.client.model.PlumeModel;
+import net.mistersecret312.client.renderer.PlumeRenderer;
 import net.mistersecret312.init.*;
 import org.slf4j.Logger;
 
@@ -50,6 +53,11 @@ public class RocketryScienceMod
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
+        event.enqueueWork(() ->
+        {
+            NetworkInit.registerPackets();
+        });
+
         FluidTypeInit.registerFluidInteractions();
     }
 
@@ -64,6 +72,18 @@ public class RocketryScienceMod
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
+        @SubscribeEvent
+        public static void bakeModels(EntityRenderersEvent.RegisterLayerDefinitions event)
+        {
+            event.registerLayerDefinition(PlumeModel.LAYER_LOCATION, PlumeModel::createBodyLayer);
+        }
+
+        @SubscribeEvent
+        public static void registerRenderer(EntityRenderersEvent.RegisterRenderers event)
+        {
+            event.registerBlockEntityRenderer(BlockEntityInit.ROCKET_ENGINE.get(),
+                    context -> new PlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
+        }
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)

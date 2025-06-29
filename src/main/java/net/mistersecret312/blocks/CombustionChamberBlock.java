@@ -132,6 +132,12 @@ public class CombustionChamberBlock extends BaseEntityBlock
     }
 
     @Override
+    public VoxelShape getVisualShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext)
+    {
+        return super.getVisualShape(pState, pLevel, pPos, pContext);
+    }
+
+    @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return BlockEntityInit.ROCKET_ENGINE.get().create(pos, state);
     }
