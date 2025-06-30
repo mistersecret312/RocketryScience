@@ -2,11 +2,14 @@ package net.mistersecret312.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.MagmaBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -57,6 +60,16 @@ public class NozzleBlock extends Block
             case DOWN -> SHAPE_DOWN;
         };
     }
+
+    @Override
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity)
+    {
+        if(state.getValue(HOT) > 0)
+        {
+            entity.hurt(entity.damageSources().hotFloor(), 1);
+        }
+    }
+
 
     @Override
     public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState, LevelAccessor pLevel, BlockPos pPos, BlockPos pNeighborPos) {
