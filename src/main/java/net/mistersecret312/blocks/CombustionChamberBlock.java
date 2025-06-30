@@ -35,8 +35,6 @@ import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 public class CombustionChamberBlock extends BaseEntityBlock
 {
     public static VoxelShape SHAPE_NORTH = Shapes.join(Block.box(0, 0, 0, 16, 16, 4), Block.box(2, 2, 4, 14, 14, 16), BooleanOp.OR);
@@ -129,12 +127,6 @@ public class CombustionChamberBlock extends BaseEntityBlock
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntity) {
         return createTickerHelper(blockEntity, BlockEntityInit.ROCKET_ENGINE.get(), RocketEngineBlockEntity::tick);
-    }
-
-    @Override
-    public VoxelShape getVisualShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext)
-    {
-        return super.getVisualShape(pState, pLevel, pPos, pContext);
     }
 
     @Override

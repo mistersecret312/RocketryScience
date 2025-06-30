@@ -6,10 +6,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -19,13 +22,12 @@ import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.capabilities.BlueprintDataCapability;
 import net.mistersecret312.fluids.RocketFuelTank;
-import net.mistersecret312.init.BlockEntityInit;
-import net.mistersecret312.init.CapabilityInit;
-import net.mistersecret312.init.MishapInit;
-import net.mistersecret312.init.NetworkInit;
+import net.mistersecret312.init.*;
 import net.mistersecret312.mishaps.Mishap;
 import net.mistersecret312.mishaps.MishapType;
+import net.mistersecret312.network.packets.RocketEngineSoundPacket;
 import net.mistersecret312.network.packets.RocketEngineUpdatePacket;
+import net.mistersecret312.sound.RocketEngineSoundWrapper;
 import net.mistersecret312.util.RocketFuel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +53,11 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     public double reliability = 0;
 
     public int animTick = 0;
+    public int soundTick = 0;
     public int frame = 0;
+
+    @Nullable
+    public RocketEngineSoundWrapper runningSound = null;
 
     public List<Mishap<RocketEngineBlockEntity, ?>> mishaps = new ArrayList<>();
 
@@ -190,6 +196,13 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
                         }
                     }
 
+                    if(rocketEngine.soundTick == 0 && rocketEngine.isRunning)
+                    {
+                        NetworkInit.sendToTracking(rocketEngine, new RocketEngineSoundPacket(rocketEngine.worldPosition, false));
+                        rocketEngine.soundTick = 50;
+                    }
+                    rocketEngine.soundTick--;
+
                     //rocketEngine.fuelTank.drain(Math.max(1, 8 * (rocketEngine.throttle / 15)), IFluidHandler.FluidAction.EXECUTE);
                     //rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
                     rocketEngine.setThrottle(level.getBestNeighborSignal(pos));
@@ -227,6 +240,8 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     {
         rocketEngine.setRunning(false);
         rocketEngine.setThrottle(0);
+        rocketEngine.soundTick = 0;
+        NetworkInit.sendToTracking(rocketEngine, new RocketEngineSoundPacket(rocketEngine.worldPosition, true));
         level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
     }
 
@@ -361,6 +376,18 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         load(pkt.getTag());
     }
 
+    @Override
+    public AABB getRenderBoundingBox()
+    {
+        if(!this.isRunning())
+            return super.getRenderBoundingBox();
+
+        int length = 2+Math.max(1, Math.min(4, this.throttle-2));
+        Direction direction = this.getBlockState().getValue(FACING).getOpposite();
+        AABB box = super.getRenderBoundingBox().expandTowards(direction.getStepX()*length, direction.getStepY()*length, direction.getStepZ()*length);
+        return box;
+    }
+
     public static double trimDouble(double value)
     {
         NumberFormat fraction = NumberFormat.getNumberInstance();
@@ -370,6 +397,20 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         fraction.setGroupingUsed(false);
 
         return Double.parseDouble(fraction.format(value));
+    }
+
+    public void stopRunSound()
+    {
+        this.runningSound.stopSound();
+    }
+
+    public void startRunSound()
+    {
+        if(!this.runningSound.isPlaying())
+        {
+            this.runningSound.stopSound();
+            this.runningSound.playSound();
+        }
     }
 
     public RocketFuelTank createTank()

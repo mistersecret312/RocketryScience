@@ -52,7 +52,7 @@ public class PlumeRenderer implements BlockEntityRenderer<RocketEngineBlockEntit
 
             poseStack.scale(1.375f, 1, 1.375f);
 
-            this.model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutout(textureStart)), LightTexture.FULL_BRIGHT, overlay, 1F, 1F, 1F, 1F);
+            this.model.renderToBuffer(poseStack, buffer.getBuffer(RocketRenderTypes.dragonExplosionAlpha(textureStart)), LightTexture.FULL_BRIGHT, overlay, 1F, 1F, 1F, 1F);
             poseStack.popPose();
 
             for (int segment = 0; segment < length; segment++)
@@ -64,7 +64,8 @@ public class PlumeRenderer implements BlockEntityRenderer<RocketEngineBlockEntit
                 poseStack.translate(0f, 2+segment, 0f);
 
                 poseStack.scale(1.375f, 1, 1.375f);
-                this.model.renderToBuffer(poseStack, buffer.getBuffer(RocketRenderTypes.entityCutout(textureMiddle)), LightTexture.FULL_BRIGHT, overlay, 1F, 1F, 1F, 1F);
+                this.model.renderToBuffer(poseStack, buffer.getBuffer(RocketRenderTypes.dragonExplosionAlpha(textureMiddle)), light, overlay, 1F, 1F, 1F, 1F);
+                //this.model.renderToBuffer(poseStack, buffer.getBuffer(RocketRenderTypes.plume(textureMiddle)), LightTexture.FULL_BRIGHT, overlay, 1F, 1F, 1F, 1F);
                 poseStack.popPose();
             }
 
@@ -74,7 +75,7 @@ public class PlumeRenderer implements BlockEntityRenderer<RocketEngineBlockEntit
             poseStack.translate(0f, 2+offset, 0f);
 
             poseStack.scale(1.375f, 1, 1.375f);
-            this.model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutout(textureEnd)), LightTexture.FULL_BRIGHT, overlay, 1F, 1F, 1F, 1F);
+            this.model.renderToBuffer(poseStack, buffer.getBuffer(RocketRenderTypes.dragonExplosionAlpha(textureEnd)), LightTexture.FULL_BRIGHT, overlay, 1F, 1F, 1F, 1F);
             poseStack.popPose();
         }
     }

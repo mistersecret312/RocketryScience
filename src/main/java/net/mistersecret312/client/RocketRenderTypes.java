@@ -22,11 +22,11 @@ public class RocketRenderTypes extends RenderType
         return create("plume", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256,
                 true, false,
                 RenderType.CompositeState.builder()
-                        .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                        .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_CUTOUT_SHADER)
                         .setTextureState(new TextureStateShard(rl, false, false))
-                        .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
-                        .setCullState(RenderStateShard.CULL)
-                        .setOverlayState(RenderStateShard.OVERLAY)
+                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                        .setCullState(CULL)
+                        .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
                         .createCompositeState(true));
     }
 }

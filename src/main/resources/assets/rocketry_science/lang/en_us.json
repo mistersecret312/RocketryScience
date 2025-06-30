@@ -26,6 +26,8 @@
 
   "rocket.rocketry_science.steel_rocket_engine": "Steel Rocket Engine",
 
+  "sounds.rocketry_science.engine_run": "Rocket engine blasting",
+
   "death.attack.cryogenic": "%1$s undergone rapid crystallization",
   "death.attack.cryogenic.player": "%1$s undergone rapid crystallization while running away from %2$s"
 }
