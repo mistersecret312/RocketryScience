@@ -1,29 +1,112 @@
 {
   "variants": {
-    "facing=north": {
+    "facing=north,connection=none": {
       "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
       "x": 90
     },
-    "facing=south": {
+    "facing=north,connection=up": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_top",
+      "x": 90
+    },
+    "facing=north,connection=middle": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_middle",
+      "x": 90
+    },
+    "facing=north,connection=bottom": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_bottom",
+      "x": 90
+    },
+
+    "facing=south,connection=none": {
       "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
       "x": 90,
       "y": 180
     },
-    "facing=east": {
+    "facing=south,connection=up": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_top",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,connection=middle": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_middle",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,connection=bottom": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_bottom",
+      "x": 90,
+      "y": 180
+    },
+
+    "facing=east,connection=none": {
       "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
       "x": 90,
       "y": 90
     },
-    "facing=west": {
+    "facing=east,connection=up": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_top",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,connection=middle": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_middle",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,connection=bottom": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_bottom",
+      "x": 90,
+      "y": 90
+    },
+
+    "facing=west,connection=none": {
       "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
       "x": 90,
       "y": 270
     },
-    "facing=up": {
+    "facing=west,connection=up": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_top",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,connection=middle": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_middle",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,connection=bottom": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_bottom",
+      "x": 90,
+      "y": 270
+    },
+
+    "facing=up,connection=none": {
       "model": "rocketry_science:block/tank/copper/solid_fuel_tank"
     },
-    "facing=down": {
+    "facing=up,connection=up": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_bottom"
+    },
+    "facing=up,connection=middle": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_middle"
+    },
+    "facing=up,connection=bottom": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_top"
+    },
+
+    "facing=down,connection=none": {
       "model": "rocketry_science:block/tank/copper/solid_fuel_tank",
+      "x": 180
+    },
+    "facing=down,connection=up": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_top",
+      "x": 180
+    },
+    "facing=down,connection=middle": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_middle",
+      "x": 180
+    },
+    "facing=down,connection=bottom": {
+      "model": "rocketry_science:block/tank/copper/solid_fuel_tank_bottom",
       "x": 180
     }
   }

@@ -1,21 +1,22 @@
 package net.mistersecret312.util;
 
 import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.fluids.FluidType;
-import net.mistersecret312.init.FluidTypeInit;
+import net.minecraftforge.fluids.FluidStack;
+import net.mistersecret312.RocketryScienceMod;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public enum RocketFuel implements StringRepresentable
 {
-    HYDROLOX("hydrolox", List.of(FluidTypeInit.LIQUID_HYDROGEN_TYPE.get(), FluidTypeInit.LIQUID_OXYGEN_TYPE.get()),
+    HYDROLOX("hydrolox", List.of(stack -> stack.getFluid().is(RocketryScienceMod.HYDROGEN), stack -> stack.getFluid().is(RocketryScienceMod.OXYGEN)),
             380d, 2000);
 
     String name;
-    List<FluidType> fluids;
+    List<Predicate<FluidStack>> fluids;
     double efficiency;
     double thrust_kN;
-    RocketFuel(String name, List<FluidType> fluids, double efficiency, double thrust_kN)
+    RocketFuel(String name, List<Predicate<FluidStack>> fluids, double efficiency, double thrust_kN)
     {
         this.name = name;
         this.fluids = fluids;
@@ -23,7 +24,7 @@ public enum RocketFuel implements StringRepresentable
         this.thrust_kN = thrust_kN;
     }
 
-    public List<FluidType> getPropellants()
+    public List<Predicate<FluidStack>> getPropellants()
     {
         return fluids;
     }

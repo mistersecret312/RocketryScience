@@ -1,11 +1,15 @@
 {
   "config.jade.plugin_rocketry_science.rocket_engine_provider": "Rocket Engine",
+  "config.jade.plugin_rocketry_science.solid_fuel_tank_provider": "Solid Fuel Tank",
 
   "tabs.rocketry_science.main": "Rocketry Science",
 
   "item.rocketry_science.liquid_hydrogen_bucket": "Liquid Hydrogen Bucket",
   "item.rocketry_science.liquid_oxygen_bucket": "Liquid Oxygen Bucket",
   "item.rocketry_science.liquid_nitrogen_bucket": "Liquid Nitrogen Bucket",
+
+  "block.rocketry_science.liquid_oxygen": "Liquid Oxygen",
+  "block.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
 
   "block.rocketry_science.steel_combustion_chamber": "Steel Combustion Chamber",
   "block.rocketry_science.steel_nozzle_atmosphere": "Atmosphere-Optimized Steel Nozzle",
@@ -23,6 +27,7 @@
   "data.rocketry_science.thrust": "Thrust: %1$d/%2$d kN",
   "data.rocketry_science.reliability": "Reliability: %s",
   "data.rocketry_science.integrity": "Integrity: %1$d/%2$d",
+  "data.rocketry_science.fuel": "Fuel: %1$s/%2$s",
 
   "rocket.rocketry_science.steel_rocket_engine": "Steel Rocket Engine",
 

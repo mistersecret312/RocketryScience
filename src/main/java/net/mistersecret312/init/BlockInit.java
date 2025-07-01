@@ -5,7 +5,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -13,7 +12,8 @@ import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
-import net.mistersecret312.blocks.SolidFuelStorageBlock;
+import net.mistersecret312.blocks.MultiblockBlock;
+import net.mistersecret312.blocks.SolidFuelTankBlock;
 
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -44,8 +44,8 @@ public class BlockInit
             () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER),
                     false, false));
 
-    public static final RegistryObject<SolidFuelStorageBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
-            () -> new SolidFuelStorageBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5)));
+    public static final RegistryObject<SolidFuelTankBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
+            () -> new SolidFuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 100));
 
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)

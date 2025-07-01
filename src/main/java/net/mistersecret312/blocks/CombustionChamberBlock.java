@@ -74,24 +74,6 @@ public class CombustionChamberBlock extends BaseEntityBlock
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor,
-                                BlockPos neighborPos, boolean pMovedByPiston)
-    {
-        if(!level.isClientSide())
-        {
-            BlockPos nozzlePos = pos.relative(state.getValue(FACING).getOpposite());
-            BlockState nozzleState = level.getBlockState(nozzlePos);
-            if(nozzleState.getBlock() instanceof NozzleBlock && nozzleState.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
-            {
-                if(level.getBlockEntity(pos) instanceof RocketEngineBlockEntity rocketEngine)
-                {
-
-                }
-            }
-        }
-    }
-
-    @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
     {
         return switch (state.getValue(FACING))

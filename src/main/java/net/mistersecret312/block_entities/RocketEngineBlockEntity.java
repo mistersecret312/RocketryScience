@@ -10,12 +10,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
@@ -94,7 +96,7 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap ->
         {
             RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
-            if(!this.fuelTank.getPropellantTypes().equals(blueprint.rocketFuel.getPropellants()))
+            if(!this.fuelTank.getFilter().equals(blueprint.rocketFuel.getPropellants()))
                 this.fuelTank = new RocketFuelTank(blueprint.rocketFuel.getPropellants(), COMBUSTION_CHAMBER_CAPACITY);
 
             this.maxIntegrity = blueprint.maxIntegrity;
@@ -116,10 +118,8 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
                 RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
                 List<Boolean> hasFuel = new ArrayList<>();
                 hasFuel.add(this.fuelTank.getPropellants().stream().allMatch(stack -> stack.getAmount() > 0));
-                blueprint.rocketFuel.getPropellants().forEach(type -> {
-                    boolean fuelContained = this.fuelTank.getPropellantTypes().contains(type);
-                    hasFuel.add(fuelContained);
-                });
+                for(int i = 0; i < this.fuelTank.getTanks(); i++)
+                    hasFuel.add(blueprint.rocketFuel.getPropellants().get(i).test(this.fuelTank.getFluidInTank(i)));
 
                 boolean hasMixture = hasFuel.stream().allMatch(bool -> bool);
                 return hasMixture;
@@ -142,14 +142,27 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     }
 
     @Nullable
-    public NozzleBlock getNozzle()
+    public BlockState getNozzle()
     {
         BlockPos nozzlePos = this.getBlockPos().relative(this.getBlockState().getValue(FACING).getOpposite());
         BlockState nozzleState = this.level.getBlockState(nozzlePos);
         if(nozzleState.getBlock() instanceof NozzleBlock nozzle)
         {
             if(nozzleState.getValue(NozzleBlock.FACING).equals(this.getBlockState().getValue(FACING)))
-                return nozzle;
+                return nozzleState;
+        }
+        return null;
+    }
+
+    @Nullable
+    public BlockPos getNozzlePos()
+    {
+        BlockPos nozzlePos = this.getBlockPos().relative(this.getBlockState().getValue(FACING).getOpposite());
+        BlockState nozzleState = this.level.getBlockState(nozzlePos);
+        if(nozzleState.getBlock() instanceof NozzleBlock)
+        {
+            if(nozzleState.getValue(NozzleBlock.FACING).equals(this.getBlockState().getValue(FACING)))
+                return nozzlePos;
         }
         return null;
     }
@@ -171,6 +184,13 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         BlockState nozzleState = level.getBlockState(nozzlePos);
         if(nozzleState.getBlock() instanceof NozzleBlock && nozzleState.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
         {
+            if(rocketEngine.integrity == 0)
+            {
+                level.explode(null, pos.getX(), pos.getY(), pos.getZ(),4, false, Level.ExplosionInteraction.NONE);
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+                level.destroyBlock(nozzlePos, true);
+            }
+
             rocketEngine.setBuilt(true);
             rocketEngine.mishaps.forEach(mishap -> mishap.tickToPhysical(rocketEngine));
 
@@ -203,8 +223,8 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
                     }
                     rocketEngine.soundTick--;
 
-                    //rocketEngine.fuelTank.drain(Math.max(1, 8 * (rocketEngine.throttle / 15)), IFluidHandler.FluidAction.EXECUTE);
-                    //rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
+                    rocketEngine.fuelTank.drain(Math.max(1, 8 * (rocketEngine.throttle / 15)), IFluidHandler.FluidAction.EXECUTE);
+                    rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
                     rocketEngine.setThrottle(level.getBestNeighborSignal(pos));
                     rocketEngine.setRuntime(rocketEngine.runtime+1);
                     if (nozzleState.getValue(NozzleBlock.HOT) < 3 && level.getGameTime() % 200 == 0)
