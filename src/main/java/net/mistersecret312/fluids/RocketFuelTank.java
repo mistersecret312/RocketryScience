@@ -17,32 +17,26 @@ import java.util.function.Predicate;
 
 public class RocketFuelTank implements IFluidHandler
 {
-    private List<FluidType> propellantTypes;
     private List<Predicate<FluidStack>> filter;
     private int tanks;
     private int capacity;
 
     private List<FluidStack> propellants;
 
-    public RocketFuelTank(List<FluidType> propellants, int capacity)
+    public RocketFuelTank(List<Predicate<FluidStack>> propellants, int capacity)
     {
-        this.propellantTypes = propellants;
         this.tanks = propellants.size();
         this.capacity = capacity;
 
-        this.filter = new ArrayList<>();
+        this.filter = propellants;
         this.propellants = new ArrayList<>();
         for (int tank = 0; tank < tanks; tank++)
-        {
-            int finalTank = tank;
-            this.filter.add(stack -> stack.getFluid().getFluidType().equals(propellants.get(finalTank)));
             this.propellants.add(FluidStack.EMPTY);
-        }
     }
 
-    public List<FluidType> getPropellantTypes()
+    public List<Predicate<FluidStack>> getFilter()
     {
-        return propellantTypes;
+        return filter;
     }
 
     public List<FluidStack> getPropellants()
