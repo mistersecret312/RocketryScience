@@ -46,7 +46,7 @@ public class MultiblockBlock extends BaseEntityBlock
             }
             if(!self.isMaster() && !neighbor.isMaster())
             {
-                if(self.getMasterRelativePosition() == null)
+                if(self.getMasterRelativePosition() == BlockPos.ZERO)
                 {
                     level.setBlock(pos, state.setValue(MASTER, true), 1);
                     neighbor.masterVector = pos.subtract(neighborPos);

@@ -1,5 +1,6 @@
 package net.mistersecret312.compatability.jade;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -40,11 +41,11 @@ public class SolidFuelTankProvider implements IBlockComponentProvider, IServerDa
         SolidFuelTankBlockEntity blockEntity = (SolidFuelTankBlockEntity) blockAccessor.getBlockEntity();
         if(blockEntity != null)
         {
-            if (!blockEntity.isMaster() && blockEntity.getMasterRelativePosition() != null)
+            if (!blockEntity.isMaster() && blockEntity.getMasterRelativePosition() != BlockPos.ZERO)
             {
                 blockEntity = blockEntity.getMaster();
             }
-            if (blockEntity.isMaster())
+            if(blockEntity.isMaster())
             {
                 tag.putInt("capacity", blockEntity.getFuelCapacity());
                 tag.putInt("fuel", blockEntity.getFuelStored());

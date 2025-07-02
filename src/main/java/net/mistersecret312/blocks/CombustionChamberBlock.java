@@ -31,6 +31,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.mistersecret312.block_entities.LiquidRocketEngineBlockEntity;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +57,7 @@ public class CombustionChamberBlock extends BaseEntityBlock
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                  BlockHitResult hit)
     {
-        if(level.getBlockEntity(pos) instanceof RocketEngineBlockEntity rocketEngine)
+        if(level.getBlockEntity(pos) instanceof LiquidRocketEngineBlockEntity rocketEngine)
         {
             if(player.getItemInHand(hand).getItem() instanceof BucketItem bucket)
             {
@@ -108,7 +109,7 @@ public class CombustionChamberBlock extends BaseEntityBlock
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntity) {
-        return createTickerHelper(blockEntity, BlockEntityInit.ROCKET_ENGINE.get(), RocketEngineBlockEntity::tick);
+        return createTickerHelper(blockEntity, BlockEntityInit.ROCKET_ENGINE.get(), LiquidRocketEngineBlockEntity::tick);
     }
 
     @Override

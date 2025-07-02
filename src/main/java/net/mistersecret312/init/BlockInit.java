@@ -10,10 +10,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
-import net.mistersecret312.blocks.CombustionChamberBlock;
-import net.mistersecret312.blocks.NozzleBlock;
-import net.mistersecret312.blocks.MultiblockBlock;
-import net.mistersecret312.blocks.SolidFuelTankBlock;
+import net.mistersecret312.blocks.*;
 
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -40,9 +37,9 @@ public class BlockInit
     public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_VACUUM = registerBlock("steel_nozzle_vacuum",
             () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER),
                     true, true));
-    public static final RegistryObject<NozzleBlock> STEEL_NOZZLE_SOLID = registerBlock("steel_nozzle_solid",
-            () -> new NozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER),
-                    false, false));
+    public static final RegistryObject<SolidRocketBoosterNozzleBlock> STEEL_NOZZLE_SOLID = registerBlock("steel_nozzle_solid",
+            () -> new SolidRocketBoosterNozzleBlock(BlockBehaviour.Properties.of().noOcclusion().explosionResistance(10).explosionResistance(10).sound(SoundType.COPPER).lightLevel(
+                    nozzleBlockEmission(15))));
 
     public static final RegistryObject<SolidFuelTankBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
             () -> new SolidFuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 100));
@@ -67,8 +64,6 @@ public class BlockInit
     }
 
     private static ToIntFunction<BlockState> nozzleBlockEmission(int pLightValue) {
-        return (p_50763_) -> {
-            return p_50763_.getValue(ACTIVE) ? pLightValue : 0;
-        };
+        return (state) -> state.getValue(ACTIVE) ? pLightValue : 0;
     }
 }

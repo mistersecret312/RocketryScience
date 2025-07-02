@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
+import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.init.CapabilityInit;
 import net.mistersecret312.mishaps.MishapType;
@@ -30,8 +31,12 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
     {
         if(accessor.getServerData().getBoolean("is_built"))
         {
-            IElement nameElement = tooltip.getElementHelper().text(Component.translatable("rocket.rocketry_science.steel_rocket_engine").withStyle(ChatFormatting.WHITE));
-            tooltip.get(0, IElement.Align.LEFT).set(0, nameElement);
+            boolean isLiquid = accessor.getServerData().getBoolean("is_liquid_rocket_engine");
+            if(isLiquid)
+            {
+                IElement nameElement = tooltip.getElementHelper().text(Component.translatable("rocket.rocketry_science.steel_rocket_engine").withStyle(ChatFormatting.WHITE));
+                tooltip.get(0, IElement.Align.LEFT).set(0, nameElement);
+            }
 
             NumberFormat fraction = NumberFormat.getNumberInstance();
             fraction.setParseIntegerOnly(false);
@@ -69,6 +74,9 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
         RocketEngineBlockEntity rocketEngine = (RocketEngineBlockEntity) blockAccessor.getBlockEntity();
         rocketEngine.getLevel().getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap -> {
             RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(rocketEngine.getBlueprintID());
+            if(rocketEngine.getNozzle().getBlock() instanceof NozzleBlock nozzle)
+                tag.putBoolean("is_liquid_rocket_engine", nozzle.isLiquidPropellant());
+
             tag.putBoolean("is_built", rocketEngine.isBuilt);
             tag.putBoolean("has_minor_mishap", rocketEngine.mishaps.stream().anyMatch(mishap -> mishap.getType().category.equals(MishapType.MishapCategory.MINOR)));
             tag.putBoolean("has_major_mishap", rocketEngine.mishaps.stream().anyMatch(mishap -> mishap.getType().category.equals(MishapType.MishapCategory.MAJOR)));

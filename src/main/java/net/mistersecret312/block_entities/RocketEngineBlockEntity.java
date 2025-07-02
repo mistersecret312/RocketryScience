@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
@@ -65,67 +66,34 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
 
     public double runtime = 0;
 
-    public RocketFuelTank fuelTank = createTank();
-    private LazyOptional<IFluidHandler> holder = LazyOptional.empty();
-
-    public RocketEngineBlockEntity(BlockPos pPos, BlockState pBlockState)
+    public RocketEngineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
-        super(BlockEntityInit.ROCKET_ENGINE.get(), pPos, pBlockState);
+        super(type, pos, state);
     }
 
     @Override
     public void onLoad()
     {
         super.onLoad();
-        this.holder = LazyOptional.of(() -> fuelTank);
         updateBlueprintData();
         if(this.integrity <= 0)
             this.integrity = this.maxIntegrity;
     }
 
-    @Override
-    public void invalidateCaps()
-    {
-        super.invalidateCaps();
-
-        holder.invalidate();
-    }
-
     public void updateBlueprintData()
     {
-        this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap ->
+        RocketEngineBlueprint blueprint = this.getBlueprint();
+        if(blueprint != null)
         {
-            RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
-            if(!this.fuelTank.getFilter().equals(blueprint.rocketFuel.getPropellants()))
-                this.fuelTank = new RocketFuelTank(blueprint.rocketFuel.getPropellants(), COMBUSTION_CHAMBER_CAPACITY);
-
             this.maxIntegrity = blueprint.maxIntegrity;
             if(this.integrity > this.maxIntegrity)
                 this.integrity = this.maxIntegrity;
-        });
+        }
     }
 
     public boolean hasPropellantMixture()
     {
-        LazyOptional<BlueprintDataCapability> lazyCapability = this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA);
-        if(lazyCapability.isPresent())
-        {
-            Optional<BlueprintDataCapability> optionalCapability = lazyCapability.resolve();
-            if(optionalCapability.isPresent())
-            {
-                BlueprintDataCapability cap = optionalCapability.get();
-
-                RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
-                List<Boolean> hasFuel = new ArrayList<>();
-                hasFuel.add(this.fuelTank.getPropellants().stream().allMatch(stack -> stack.getAmount() > 0));
-                for(int i = 0; i < this.fuelTank.getTanks(); i++)
-                    hasFuel.add(blueprint.rocketFuel.getPropellants().get(i).test(this.fuelTank.getFluidInTank(i)));
-
-                boolean hasMixture = hasFuel.stream().allMatch(bool -> bool);
-                return hasMixture;
-            }
-        }
-        return false;
+        return true;
     }
 
     @Nullable
@@ -144,116 +112,13 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     @Nullable
     public BlockState getNozzle()
     {
-        BlockPos nozzlePos = this.getBlockPos().relative(this.getBlockState().getValue(FACING).getOpposite());
-        BlockState nozzleState = this.level.getBlockState(nozzlePos);
-        if(nozzleState.getBlock() instanceof NozzleBlock nozzle)
-        {
-            if(nozzleState.getValue(NozzleBlock.FACING).equals(this.getBlockState().getValue(FACING)))
-                return nozzleState;
-        }
         return null;
     }
 
     @Nullable
     public BlockPos getNozzlePos()
     {
-        BlockPos nozzlePos = this.getBlockPos().relative(this.getBlockState().getValue(FACING).getOpposite());
-        BlockState nozzleState = this.level.getBlockState(nozzlePos);
-        if(nozzleState.getBlock() instanceof NozzleBlock)
-        {
-            if(nozzleState.getValue(NozzleBlock.FACING).equals(this.getBlockState().getValue(FACING)))
-                return nozzlePos;
-        }
         return null;
-    }
-
-    public static void tick(Level level, BlockPos pos, BlockState state, RocketEngineBlockEntity rocketEngine)
-    {
-        if(level.isClientSide())
-            return;
-        if(rocketEngine.getBlueprint() == null)
-            return;
-
-        rocketEngine.getBlueprint().calculateReliability();
-        double reliabilityEffects = 0;
-        for(Mishap<RocketEngineBlockEntity,?> mishap : rocketEngine.mishaps)
-            reliabilityEffects += mishap.getType().physicalEffect;
-        rocketEngine.setReliability(trimDouble(rocketEngine.getBlueprint().reliability*Math.max(0.2d, rocketEngine.integrity/rocketEngine.maxIntegrity))+reliabilityEffects);
-
-        BlockPos nozzlePos = pos.relative(state.getValue(FACING).getOpposite());
-        BlockState nozzleState = level.getBlockState(nozzlePos);
-        if(nozzleState.getBlock() instanceof NozzleBlock && nozzleState.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
-        {
-            if(rocketEngine.integrity == 0)
-            {
-                level.explode(null, pos.getX(), pos.getY(), pos.getZ(),4, false, Level.ExplosionInteraction.NONE);
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
-                level.destroyBlock(nozzlePos, true);
-            }
-
-            rocketEngine.setBuilt(true);
-            rocketEngine.mishaps.forEach(mishap -> mishap.tickToPhysical(rocketEngine));
-
-            if (rocketEngine.isRunning())
-            {
-                if (!rocketEngine.hasPropellantMixture())
-                    rocketEngine.deactiveEngine(rocketEngine, nozzlePos, nozzleState);
-                else
-                {
-                    RandomSource random = level.getRandom();
-                    if(level.getGameTime() % 20 == 0 && random.nextDouble() > rocketEngine.reliability)
-                    {
-                        RocketEngineBlueprint blueprint = rocketEngine.getBlueprint();
-                        MishapType<?, RocketEngineBlockEntity, RocketEngineBlueprint> mishapType = ((MishapType<?, RocketEngineBlockEntity, RocketEngineBlueprint>) MishapInit.getRandomType(MishapType.MishapTarget.ROCKET_ENGINE));
-
-                        if(mishapType != null && blueprint != null)
-                        {
-                            Mishap<RocketEngineBlockEntity, ?> mishapBlockEntity = mishapType.create(rocketEngine, null);
-                            Mishap<?, RocketEngineBlueprint> mishapBlueprint = mishapType.create(null, blueprint);
-                            //rocketEngine.mishaps.add(mishapBlockEntity);
-                            //blueprint.mishaps.add(mishapBlueprint);
-                            rocketEngine.setChanged();
-                        }
-                    }
-
-                    if(rocketEngine.soundTick == 0 && rocketEngine.isRunning)
-                    {
-                        NetworkInit.sendToTracking(rocketEngine, new RocketEngineSoundPacket(rocketEngine.worldPosition, false));
-                        rocketEngine.soundTick = 50;
-                    }
-                    rocketEngine.soundTick--;
-
-                    rocketEngine.fuelTank.drain(Math.max(1, 8 * (rocketEngine.throttle / 15)), IFluidHandler.FluidAction.EXECUTE);
-                    rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
-                    rocketEngine.setThrottle(level.getBestNeighborSignal(pos));
-                    rocketEngine.setRuntime(rocketEngine.runtime+1);
-                    if (nozzleState.getValue(NozzleBlock.HOT) < 3 && level.getGameTime() % 200 == 0)
-                    {
-                        int targetHotness = Math.min(3, nozzleState.getValue(NozzleBlock.HOT) + 1);
-                        BlockState targetNozzleState = nozzleState.setValue(NozzleBlock.HOT, targetHotness);
-                        level.setBlock(nozzlePos, targetNozzleState, 2);
-                    }
-                    if (!level.hasNeighborSignal(pos))
-                        rocketEngine.deactiveEngine(rocketEngine, nozzlePos, nozzleState);
-                }
-            }
-            if (!rocketEngine.isRunning())
-            {
-                if (level.hasNeighborSignal(pos) && rocketEngine.hasPropellantMixture())
-                {
-                    rocketEngine.setRunning(true);
-                    level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, true), 2);
-                }
-                else rocketEngine.deactiveEngine(rocketEngine, nozzlePos, nozzleState);
-
-                if (nozzleState.getValue(NozzleBlock.HOT) > 0 && level.getGameTime() % 400 == 0)
-                {
-                    int targetHotness = Math.max(0, nozzleState.getValue(NozzleBlock.HOT) - 1);
-                    BlockState targetNozzleState = nozzleState.setValue(NozzleBlock.HOT, targetHotness);
-                    level.setBlock(nozzlePos, targetNozzleState, 2);
-                }
-            }
-        } else rocketEngine.setBuilt(false);
     }
 
     public void deactiveEngine(RocketEngineBlockEntity rocketEngine, BlockPos nozzlePos, BlockState nozzleState)
@@ -283,7 +148,6 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         tag.putDouble("max_integrity", this.maxIntegrity);
         tag.putDouble("reliability", this.reliability);
         tag.putDouble("runtime", this.runtime);
-        fuelTank.writeToNBT(tag);
     }
 
     @Override
@@ -297,7 +161,6 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         this.maxIntegrity = tag.getDouble("max_integrity");
         this.reliability = tag.getDouble("reliability");
         this.runtime = tag.getDouble("runtime");
-        this.fuelTank.readFromNBT(tag);
 
         List<Mishap<RocketEngineBlockEntity, ?>> mishaps = new ArrayList<>();
         ListTag mishapsTag = tag.getList("mishaps", CompoundTag.TAG_COMPOUND);
@@ -372,16 +235,6 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     }
 
     @Override
-    @NotNull
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing)
-    {
-        if (capability == ForgeCapabilities.FLUID_HANDLER && this.isBuilt)
-            return holder.cast();
-
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
@@ -433,15 +286,5 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         }
     }
 
-    public RocketFuelTank createTank()
-    {
-        return new RocketFuelTank(RocketFuel.HYDROLOX.getPropellants(), COMBUSTION_CHAMBER_CAPACITY)
-        {
-            @Override
-            protected void onContentsChanged()
-            {
-                setChanged();
-            }
-        };
-    }
+
 }

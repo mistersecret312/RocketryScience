@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.Tags;
 import net.mistersecret312.block_entities.SolidFuelTankBlockEntity;
+import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.util.VerticalConnection;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,13 +69,13 @@ public class SolidFuelTankBlock extends MultiblockBlock
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
                                   LevelAccessor level, BlockPos pos, BlockPos neighborPos)
     {
-        if(level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock)
+        if(level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock &&
+                level.getBlockState(pos.above()).getBlock() instanceof SolidFuelTankBlock)
+            level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.MIDDLE), 2);
+        else if(level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock)
             level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.BOTTOM), 2);
         else if(level.getBlockState(pos.above()).getBlock() instanceof SolidFuelTankBlock)
             level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.UP), 2);
-        else if(level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock &&
-                level.getBlockState(pos.above()).getBlock() instanceof SolidFuelTankBlock)
-            level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.MIDDLE), 2);
         else level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.NONE), 2);
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
@@ -101,6 +102,6 @@ public class SolidFuelTankBlock extends MultiblockBlock
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new SolidFuelTankBlockEntity(pos, state);
+        return BlockEntityInit.SOLID_FUEL_TANK.get().create(pos, state);
     }
 }

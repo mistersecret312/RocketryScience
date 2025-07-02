@@ -13,7 +13,7 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
     public int fuel = 0;
     public SolidFuelTankBlockEntity(BlockPos pPos, BlockState pBlockState)
     {
-        super(BlockEntityInit.MULTIBLOCK_TEST.get(), pPos, pBlockState);
+        super(BlockEntityInit.SOLID_FUEL_TANK.get(), pPos, pBlockState);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
     @Nullable
     public SolidFuelTankBlockEntity getMaster()
     {
-        if(this.getMasterRelativePosition() != null)
+        if(this.getMasterRelativePosition() != BlockPos.ZERO)
             return (SolidFuelTankBlockEntity) this.getLevel().getBlockEntity(this.getBlockPos().offset(masterVector));
         else return null;
     }
@@ -43,7 +43,14 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
     public void increaseStored(int fuel)
     {
         int capacity = getFuelCapacity();
-        this.fuel = Math.min(this.fuel+fuel, capacity);
+        if(this.isMaster())
+            this.fuel = Math.max(0, Math.min(this.fuel+fuel, capacity));
+        else
+        {
+            SolidFuelTankBlockEntity master = this.getMaster();
+            if(master != null)
+                master.fuel = Math.max(0, Math.min(this.fuel+fuel, capacity));
+        }
     }
 
     public int getFuelStored()
@@ -68,6 +75,9 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
 
         for(BlockPos slavePos : getSlaveRelativePositions())
         {
+            if(slavePos == BlockPos.ZERO)
+                continue;
+
             if(level.getBlockState(this.getBlockPos().offset(slavePos)).getBlock() instanceof SolidFuelTankBlock tank)
                 capacity += tank.getFuelCapacity();
         }

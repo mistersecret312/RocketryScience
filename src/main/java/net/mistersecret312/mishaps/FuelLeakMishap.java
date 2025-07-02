@@ -2,7 +2,9 @@ package net.mistersecret312.mishaps;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.mistersecret312.block_entities.LiquidRocketEngineBlockEntity;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
+import net.mistersecret312.block_entities.SolidRocketBoosterBlockEntity;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.init.MishapInit;
 
@@ -18,7 +20,8 @@ public class FuelLeakMishap extends Mishap<RocketEngineBlockEntity, RocketEngine
     @Override
     public void tickToPhysical(RocketEngineBlockEntity rocketEngine)
     {
-        rocketEngine.fuelTank.drain(this.drainAmount, IFluidHandler.FluidAction.EXECUTE);
+        if(rocketEngine instanceof LiquidRocketEngineBlockEntity liquidEngine)
+            liquidEngine.fuelTank.drain(this.drainAmount, IFluidHandler.FluidAction.EXECUTE);
         rocketEngine.integrity = RocketEngineBlockEntity.trimDouble(rocketEngine.integrity-0.02);
     }
 

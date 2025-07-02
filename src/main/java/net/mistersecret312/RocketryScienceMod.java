@@ -29,6 +29,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.mistersecret312.client.model.PlumeModel;
 import net.mistersecret312.client.renderer.PlumeRenderer;
+import net.mistersecret312.client.renderer.SolidPlumeRenderer;
 import net.mistersecret312.init.*;
 import org.slf4j.Logger;
 
@@ -92,6 +93,8 @@ public class RocketryScienceMod
         {
             event.registerBlockEntityRenderer(BlockEntityInit.ROCKET_ENGINE.get(),
                     context -> new PlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
+            event.registerBlockEntityRenderer(BlockEntityInit.SRB.get(),
+                    context -> new SolidPlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
         }
 
         @SubscribeEvent
@@ -110,7 +113,6 @@ public class RocketryScienceMod
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_ATMOPSHERE.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_VACUUM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_SOLID.get(), RenderType.cutout());
-
         }
     }
 }
