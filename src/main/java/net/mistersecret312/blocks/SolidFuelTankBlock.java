@@ -69,14 +69,28 @@ public class SolidFuelTankBlock extends MultiblockBlock
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
                                   LevelAccessor level, BlockPos pos, BlockPos neighborPos)
     {
-        if(level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock &&
-                level.getBlockState(pos.above()).getBlock() instanceof SolidFuelTankBlock)
-            level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.MIDDLE), 2);
-        else if(level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock)
-            level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.BOTTOM), 2);
-        else if(level.getBlockState(pos.above()).getBlock() instanceof SolidFuelTankBlock)
-            level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.UP), 2);
-        else level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.NONE), 2);
+        Direction stateDir = state.getValue(FACING);
+        if(stateDir.getAxis().isHorizontal())
+        {
+            if (level.getBlockState(pos.offset(stateDir.getNormal())).getBlock() instanceof SolidFuelTankBlock && level.getBlockState(pos.offset(stateDir.getOpposite().getNormal())).getBlock() instanceof SolidFuelTankBlock)
+                level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.MIDDLE), 2);
+            else if (level.getBlockState(pos.offset(stateDir.getNormal())).getBlock() instanceof SolidFuelTankBlock)
+                level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.BOTTOM), 2);
+            else if (level.getBlockState(pos.offset(stateDir.getOpposite().getNormal())).getBlock() instanceof SolidFuelTankBlock)
+                level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.UP), 2);
+            else level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.NONE), 2);
+        }
+
+        if(stateDir.getAxis().isVertical())
+        {
+            if (level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock && level.getBlockState(pos.above()).getBlock() instanceof SolidFuelTankBlock)
+                level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.MIDDLE), 2);
+            else if (level.getBlockState(pos.below()).getBlock() instanceof SolidFuelTankBlock)
+                level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.BOTTOM), 2);
+            else if (level.getBlockState(pos.above()).getBlock() instanceof SolidFuelTankBlock)
+                level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.UP), 2);
+            else level.setBlock(pos, state.setValue(CONNECTION, VerticalConnection.NONE), 2);
+        }
 
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }

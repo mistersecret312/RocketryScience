@@ -74,7 +74,7 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
         RocketEngineBlockEntity rocketEngine = (RocketEngineBlockEntity) blockAccessor.getBlockEntity();
         rocketEngine.getLevel().getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap -> {
             RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(rocketEngine.getBlueprintID());
-            if(rocketEngine.getNozzle().getBlock() instanceof NozzleBlock nozzle)
+            if(rocketEngine.getNozzle() != null && rocketEngine.getNozzle().getBlock() instanceof NozzleBlock nozzle)
                 tag.putBoolean("is_liquid_rocket_engine", nozzle.isLiquidPropellant());
 
             tag.putBoolean("is_built", rocketEngine.isBuilt);

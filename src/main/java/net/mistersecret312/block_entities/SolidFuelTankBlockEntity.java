@@ -2,6 +2,8 @@ package net.mistersecret312.block_entities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.BlockState;
 import net.mistersecret312.blocks.SolidFuelTankBlock;
 import net.mistersecret312.init.BlockEntityInit;
@@ -20,16 +22,14 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
     protected void saveAdditional(CompoundTag tag)
     {
         super.saveAdditional(tag);
-        if(this.isMaster())
-            tag.putInt("fuel_stored", this.fuel);
+        tag.putInt("fuel_stored", this.fuel);
     }
 
     @Override
     public void load(CompoundTag tag)
     {
         super.load(tag);
-        if(this.isMaster() && tag.contains("fuel_stored"))
-            this.fuel = tag.getInt("fuel_stored");
+        this.fuel = tag.getInt("fuel_stored");
     }
 
     @Nullable
@@ -85,5 +85,21 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
             this.fuel = capacity;
 
         return capacity;
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
+    {
+        load(pkt.getTag());
     }
 }

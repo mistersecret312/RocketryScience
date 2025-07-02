@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SolidRocketBoosterBlockEntity extends RocketEngineBlockEntity
 {
+    public int fuelTicker = 0;
 
     public SolidRocketBoosterBlockEntity(BlockPos pos, BlockState state)
     {
@@ -82,7 +83,12 @@ public class SolidRocketBoosterBlockEntity extends RocketEngineBlockEntity
                         rocketEngine.soundTick = 50;
                     }
                     rocketEngine.soundTick--;
-                    rocketEngine.getFuelTank().increaseStored(-1);
+                    if(rocketEngine.fuelTicker > 2)
+                    {
+                        rocketEngine.getFuelTank().increaseStored(-1);
+                        rocketEngine.fuelTicker = 0;
+                    }
+                    rocketEngine.fuelTicker++;
                     rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
                     rocketEngine.setThrottle(15);
                     rocketEngine.setRuntime(rocketEngine.runtime+1);
@@ -137,7 +143,12 @@ public class SolidRocketBoosterBlockEntity extends RocketEngineBlockEntity
         BlockEntity blockEntity = this.level.getBlockEntity(this.getBlockPos().offset(this.getBlockState().getValue(SolidRocketBoosterNozzleBlock.FACING).getNormal()));
         if(blockEntity != null && blockEntity instanceof SolidFuelTankBlockEntity fuelTank)
         {
-            return fuelTank;
+            if(fuelTank.isMaster())
+                return fuelTank;
+            else if(fuelTank.getMasterRelativePosition() != BlockPos.ZERO)
+            {
+                return fuelTank.getMaster();
+            }
         }
 
         return null;

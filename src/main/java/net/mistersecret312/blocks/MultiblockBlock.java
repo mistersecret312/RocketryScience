@@ -3,6 +3,7 @@ package net.mistersecret312.blocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -20,7 +21,7 @@ import net.mistersecret312.block_entities.MultiBlockEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
 
-public class MultiblockBlock extends BaseEntityBlock
+public abstract class MultiblockBlock extends BaseEntityBlock
 {
     public static final BooleanProperty MASTER = BooleanProperty.create("master");
 
@@ -31,9 +32,47 @@ public class MultiblockBlock extends BaseEntityBlock
     }
 
     @Override
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player)
+    {
+        MultiBlockEntity blockEntity = (MultiBlockEntity) level.getBlockEntity(pos);
+        if(blockEntity != null && !level.isClientSide())
+        {
+            if(blockEntity.isMaster())
+            {
+                for(BlockPos slavePos : blockEntity.slaveVectors)
+                {
+                    if(slavePos == BlockPos.ZERO)
+                        continue;
+
+                    MultiBlockEntity slave = (MultiBlockEntity) level.getBlockEntity(pos.offset(slavePos));
+                    if(slave != null)
+                    {
+                        slave.masterVector = BlockPos.ZERO;
+                    }
+                }
+            }
+
+            if(!blockEntity.isMaster() && blockEntity.getMasterRelativePosition() != null)
+            {
+                MultiBlockEntity master = (MultiBlockEntity) level.getBlockEntity(pos.offset(blockEntity.masterVector));
+                if(master != null)
+                {
+                    BlockPos masterPos = pos.subtract(master.getBlockPos());
+                    master.slaveVectors.remove(masterPos);
+                }
+            }
+        }
+
+        super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock,
                                 BlockPos neighborPos, boolean movedByPiston)
     {
+        if(level.isClientSide())
+            return;
+
         if(level.getBlockEntity(pos) instanceof MultiBlockEntity && level.getBlockEntity(neighborPos) instanceof MultiBlockEntity)
         {
             MultiBlockEntity self = (MultiBlockEntity) level.getBlockEntity(pos);
@@ -61,7 +100,8 @@ public class MultiblockBlock extends BaseEntityBlock
                     if(master != null)
                     {
                         BlockPos stuffPos = neighborPos.subtract(master.getBlockPos());
-                        master.slaveVectors.add(stuffPos);
+                        if(!master.slaveVectors.contains(stuffPos))
+                            master.slaveVectors.add(stuffPos);
                     }
                 }
             }
@@ -85,11 +125,5 @@ public class MultiblockBlock extends BaseEntityBlock
     {
         builder.add(MASTER);
         super.createBlockStateDefinition(builder);
-    }
-
-    @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos pPos, BlockState pState)
-    {
-        return null;
     }
 }
