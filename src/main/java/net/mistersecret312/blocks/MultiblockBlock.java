@@ -54,10 +54,15 @@ public class MultiblockBlock extends BaseEntityBlock
                 }
                 else
                 {
-                    neighbor.masterVector = self.masterVector.offset(pos.subtract(neighborPos));
-                    MultiBlockEntity master = (MultiBlockEntity) level.getBlockEntity(pos.offset(self.masterVector));
+                    BlockPos neighborstuff = self.masterVector.offset(pos.subtract(neighborPos));
+                    neighbor.masterVector = neighborstuff;
+                    BlockPos masterPos = neighborPos.offset(neighbor.masterVector);
+                    MultiBlockEntity master = (MultiBlockEntity) level.getBlockEntity(masterPos);
                     if(master != null)
-                        master.slaveVectors.add(pos.subtract(master.getBlockPos()));
+                    {
+                        BlockPos stuffPos = neighborPos.subtract(master.getBlockPos());
+                        master.slaveVectors.add(stuffPos);
+                    }
                 }
             }
         }

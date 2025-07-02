@@ -40,12 +40,18 @@ public class MultiBlockEntity extends BlockEntity
                 }
             }
         }
-        else if(this.getMasterRelativePosition() != null)
+
+        if(!this.isMaster() && this.getMasterRelativePosition() != null)
         {
             MultiBlockEntity master = (MultiBlockEntity) level.getBlockEntity(this.getBlockPos().offset(masterVector));
             if(master != null)
-                master.slaveVectors.remove(this.getBlockPos().subtract(master.getBlockPos()));
+            {
+                BlockPos pos = this.getBlockPos().subtract(master.getBlockPos());
+                master.slaveVectors.remove(pos);
+            }
         }
+
+
         super.setRemoved();
     }
 
@@ -66,7 +72,7 @@ public class MultiBlockEntity extends BlockEntity
         if(!this.isMaster() && tag.contains("master_pos"))
             this.masterVector = BlockPos.of(tag.getLong("master_pos"));
         if(this.isMaster())
-            this.slaveVectors = Arrays.stream(tag.getLongArray("slaves")).mapToObj(BlockPos::of).toList();
+            this.slaveVectors = Arrays.stream(tag.getLongArray("slaves")).mapToObj(BlockPos::of).collect(Collectors.toList());
     }
 
     public boolean isMaster()
