@@ -85,7 +85,7 @@ public class SolidRocketBoosterBlockEntity extends RocketEngineBlockEntity
                     rocketEngine.soundTick--;
                     if(rocketEngine.fuelTicker > 2)
                     {
-                        rocketEngine.getFuelTank().increaseStored(-1);
+                        //rocketEngine.getFuelTank().increaseStored(-1);
                         rocketEngine.fuelTicker = 0;
                     }
                     rocketEngine.fuelTicker++;

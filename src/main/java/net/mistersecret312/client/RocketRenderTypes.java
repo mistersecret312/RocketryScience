@@ -20,13 +20,11 @@ public class RocketRenderTypes extends RenderType
     public static RenderType plume(ResourceLocation rl)
     {
         return create("plume", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256,
-                true, false,
+                false, false,
                 RenderType.CompositeState.builder()
-                        .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_CUTOUT_SHADER)
+                        .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_ALPHA_SHADER)
                         .setTextureState(new TextureStateShard(rl, false, false))
-                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                         .setCullState(CULL)
-                        .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
                         .createCompositeState(true));
     }
 }
