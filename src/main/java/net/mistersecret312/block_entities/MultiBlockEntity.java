@@ -79,6 +79,11 @@ public class MultiBlockEntity extends BlockEntity
         }
     }
 
+    public void updateMaster()
+    {
+
+    }
+
     public boolean isMaster()
     {
         return this.getBlockState().getValue(MultiblockBlock.MASTER);

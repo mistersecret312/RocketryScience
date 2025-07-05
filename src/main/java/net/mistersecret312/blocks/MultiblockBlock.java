@@ -50,6 +50,7 @@ public abstract class MultiblockBlock extends BaseEntityBlock
                         slave.masterVector = BlockPos.ZERO;
                     }
                 }
+                blockEntity.updateMaster();
             }
 
             if(!blockEntity.isMaster() && blockEntity.getMasterRelativePosition() != null)
@@ -59,6 +60,7 @@ public abstract class MultiblockBlock extends BaseEntityBlock
                 {
                     BlockPos masterPos = pos.subtract(master.getBlockPos());
                     master.slaveVectors.remove(masterPos);
+                    master.updateMaster();
                 }
             }
         }
@@ -82,6 +84,7 @@ public abstract class MultiblockBlock extends BaseEntityBlock
             {
                 neighbor.masterVector = pos.subtract(neighborPos);
                 self.slaveVectors.add(neighborPos.subtract(pos));
+                self.updateMaster();
             }
             if(!self.isMaster() && !neighbor.isMaster())
             {
@@ -90,6 +93,7 @@ public abstract class MultiblockBlock extends BaseEntityBlock
                     level.setBlock(pos, state.setValue(MASTER, true), 1);
                     neighbor.masterVector = pos.subtract(neighborPos);
                     self.slaveVectors.add(neighborPos.subtract(pos));
+                    self.updateMaster();
                 }
                 else
                 {
@@ -102,6 +106,7 @@ public abstract class MultiblockBlock extends BaseEntityBlock
                         BlockPos stuffPos = neighborPos.subtract(master.getBlockPos());
                         if(!master.slaveVectors.contains(stuffPos))
                             master.slaveVectors.add(stuffPos);
+                        master.updateMaster();
                     }
                 }
             }

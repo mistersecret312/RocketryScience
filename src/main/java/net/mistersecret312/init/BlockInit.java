@@ -43,7 +43,8 @@ public class BlockInit
 
     public static final RegistryObject<SolidFuelTankBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
             () -> new SolidFuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 100));
-
+    public static final RegistryObject<FuelTankBlock> LOW_PRESSURE_FUEL_TANK = registerBlock("low_pressure_fuel_tank",
+            () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

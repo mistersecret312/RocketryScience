@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static net.mistersecret312.blocks.CombustionChamberBlock.FACING;
 
@@ -125,6 +127,29 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
             return;
         if(rocketEngine.getBlueprint() == null)
             return;
+        if(level.getBlockEntity(pos.offset(state.getValue(FACING).getNormal())) instanceof FuelTankBlockEntity fuelTank)
+        {
+            RocketFuelTank tank = fuelTank.getFuelTank();
+            int drainRate = Math.max(1, ((fuelTank.getFuelTankCapacity()-rocketEngine.getFuelStored())/fuelTank.getFuelTankCapacity())*8);
+            if(tank != null && tank.getFilter().equals(rocketEngine.fuelTank.getFilter()))
+            {
+                for (FluidStack stack : tank.getPropellants())
+                {
+                    if(rocketEngine.fuelTank.getFilter().stream().anyMatch(filter -> filter.test(stack)))
+                    {
+                        if(rocketEngine.isRunning)
+                            drainRate = Math.max(1, 8*(rocketEngine.throttle/15));
+                        FluidStack tankStack = new FluidStack(stack, drainRate);
+                        if(rocketEngine.fuelTank.isFluidValid(tankStack))
+                        {
+                            rocketEngine.fuelTank.fill(tankStack, IFluidHandler.FluidAction.EXECUTE);
+                            tank.drain(tankStack, IFluidHandler.FluidAction.EXECUTE);
+                        }
+
+                    }
+                }
+            }
+        }
 
         rocketEngine.getBlueprint().calculateReliability();
         double reliabilityEffects = 0;
@@ -174,7 +199,7 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
                         rocketEngine.soundTick = 50;
                     }
                     rocketEngine.soundTick--;
-
+                    rocketEngine.fuelTank.drain(Math.max(1, 8*(rocketEngine.throttle/15)), IFluidHandler.FluidAction.EXECUTE);
                     rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
                     rocketEngine.setThrottle(15);
                     rocketEngine.setRuntime(rocketEngine.runtime+1);
@@ -206,6 +231,16 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
                 }
             }
         } else rocketEngine.setBuilt(false);
+    }
+
+    public int getFuelStored()
+    {
+        int stored = 0;
+        for (int tank = 0; tank < this.fuelTank.getTanks(); tank++)
+            stored += this.fuelTank.getFluidInTank(tank).getAmount();
+
+
+        return stored;
     }
 
     @Override

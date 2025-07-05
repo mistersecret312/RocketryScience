@@ -1,11 +1,8 @@
 package net.mistersecret312.init;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -27,6 +24,7 @@ public class ItemTabInit
                         output.accept(BlockInit.STEEL_NOZZLE_SOLID.get());
 
                         output.accept(BlockInit.COPPER_SOLID_FUEL_TANK.get());
+                        output.accept(BlockInit.LOW_PRESSURE_FUEL_TANK.get());
 
                         output.accept(ItemInit.LIQUID_HYDROGEN_BUCKET.get());
                         output.accept(ItemInit.LIQUID_OXYGEN_BUCKET.get());

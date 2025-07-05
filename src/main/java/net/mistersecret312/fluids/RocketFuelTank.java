@@ -34,6 +34,20 @@ public class RocketFuelTank implements IFluidHandler
             this.propellants.add(FluidStack.EMPTY);
     }
 
+    public RocketFuelTank(RocketFuelTank otherTank, int capacity)
+    {
+        this.tanks = otherTank.tanks;
+        this.capacity = capacity;
+
+        this.filter = otherTank.filter;
+        this.propellants = otherTank.propellants;
+        this.propellants.forEach(stack ->
+        {
+            if(stack.getAmount() > capacity)
+                stack.setAmount(capacity);
+        });
+    }
+
     public List<Predicate<FluidStack>> getFilter()
     {
         return filter;
@@ -65,7 +79,7 @@ public class RocketFuelTank implements IFluidHandler
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack)
     {
-        return this.filter.get(tank).test(stack);
+        return this.filter.get(tank).test(stack) && this.propellants.get(tank).getAmount() < capacity;
     }
 
     public boolean isFluidValid(@NotNull FluidStack stack)
