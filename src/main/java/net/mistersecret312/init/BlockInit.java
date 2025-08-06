@@ -46,6 +46,11 @@ public class BlockInit
     public static final RegistryObject<FuelTankBlock> LOW_PRESSURE_FUEL_TANK = registerBlock("low_pressure_fuel_tank",
             () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 2000));
 
+    public static final RegistryObject<LaunchPadBlock> LAUNCH_PAD = registerBlock("launch_pad",
+            () -> new LaunchPadBlock(BlockBehaviour.Properties.of()));
+    public static final RegistryObject<LaunchTowerBlock> LAUNCH_TOWER = registerBlock("launch_tower",
+            () -> new LaunchTowerBlock(BlockBehaviour.Properties.of()));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

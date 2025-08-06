@@ -29,6 +29,9 @@ public class ItemTabInit
                         output.accept(ItemInit.LIQUID_HYDROGEN_BUCKET.get());
                         output.accept(ItemInit.LIQUID_OXYGEN_BUCKET.get());
                         output.accept(ItemInit.LIQUID_NITROGEN_BUCKET.get());
+
+                        output.accept(BlockInit.LAUNCH_PAD.get());
+                        output.accept(BlockInit.LAUNCH_TOWER.get());
                     })
                     .build());
 

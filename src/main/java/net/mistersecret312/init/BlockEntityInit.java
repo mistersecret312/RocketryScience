@@ -1,7 +1,6 @@
 package net.mistersecret312.init;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -22,6 +21,12 @@ public class BlockEntityInit
             () -> BlockEntityType.Builder.of(SolidFuelTankBlockEntity::new, BlockInit.COPPER_SOLID_FUEL_TANK.get()).build(null));
     public static final RegistryObject<BlockEntityType<FuelTankBlockEntity>> LIQUID_FUEL_TANK = BLOCK_ENTITIES.register("fuel_tank",
             () -> BlockEntityType.Builder.of(FuelTankBlockEntity::new, BlockInit.LOW_PRESSURE_FUEL_TANK.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<LaunchPadBlockEntity>> LAUNCH_PAD = BLOCK_ENTITIES.register("launch_pad",
+            () -> BlockEntityType.Builder.of(LaunchPadBlockEntity::new, BlockInit.LAUNCH_PAD.get()).build(null));
+    public static final RegistryObject<BlockEntityType<LaunchTowerBlockEntity>> LAUNCH_TOWER = BLOCK_ENTITIES.register("launch_tower",
+            () -> BlockEntityType.Builder.of(LaunchTowerBlockEntity::new, BlockInit.LAUNCH_TOWER.get()).build(null));
+
 
     public static void register(IEventBus bus)
     {
