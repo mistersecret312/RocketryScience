@@ -86,7 +86,7 @@ public class MultiBlockEntity extends BlockEntity
 
     public boolean isMaster()
     {
-        return this.getBlockState().getValue(MultiblockBlock.MASTER);
+        return !this.slaveVectors.isEmpty();
     }
 
     public BlockPos getMasterRelativePosition()

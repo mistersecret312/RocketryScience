@@ -21,114 +21,108 @@ import net.mistersecret312.block_entities.MultiBlockEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+
 public abstract class MultiblockBlock extends BaseEntityBlock
 {
-    public static final BooleanProperty MASTER = BooleanProperty.create("master");
-
     public MultiblockBlock(Properties pProperties)
     {
         super(pProperties);
-        this.registerDefaultState(this.defaultBlockState().setValue(MASTER, false));
     }
 
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player)
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isPistonMove)
     {
-        MultiBlockEntity blockEntity = (MultiBlockEntity) level.getBlockEntity(pos);
-        if(blockEntity != null && !level.isClientSide())
-        {
-            if(blockEntity.isMaster())
-            {
-                for(BlockPos slavePos : blockEntity.slaveVectors)
-                {
-                    if(slavePos == BlockPos.ZERO)
-                        continue;
+        super.onPlace(state, level, pos, oldState, isPistonMove);
+        calculateParts(level, pos);
+    }
 
-                    MultiBlockEntity slave = (MultiBlockEntity) level.getBlockEntity(pos.offset(slavePos));
-                    if(slave != null)
-                    {
-                        slave.masterVector = BlockPos.ZERO;
-                    }
-                }
-                blockEntity.updateMaster();
-            }
-
-            if(!blockEntity.isMaster() && blockEntity.getMasterRelativePosition() != null)
-            {
-                MultiBlockEntity master = (MultiBlockEntity) level.getBlockEntity(pos.offset(blockEntity.masterVector));
-                if(master != null)
-                {
-                    BlockPos masterPos = pos.subtract(master.getBlockPos());
-                    master.slaveVectors.remove(masterPos);
-                    master.updateMaster();
-                }
-            }
-        }
-
-        super.playerWillDestroy(level, pos, state, player);
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isPistonMove)
+    {
+        super.onRemove(state, level, pos, newState, isPistonMove);
+        calculateParts(level, pos);
     }
 
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock,
                                 BlockPos neighborPos, boolean movedByPiston)
     {
-        if(level.isClientSide())
+        super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
+        calculateParts(level, pos);
+    }
+
+    public void calculateParts(Level level, BlockPos pos)
+    {
+        List<MultiBlockEntity> parts = findAllParts(level, pos);
+        MultiBlockEntity masterPart = null;
+        if(parts.isEmpty())
             return;
 
-        if(level.getBlockEntity(pos) instanceof MultiBlockEntity && level.getBlockEntity(neighborPos) instanceof MultiBlockEntity)
+        if(parts.stream().anyMatch(MultiBlockEntity::isMaster))
         {
-            MultiBlockEntity self = (MultiBlockEntity) level.getBlockEntity(pos);
-            MultiBlockEntity neighbor = (MultiBlockEntity) level.getBlockEntity(neighborPos);
+            List<MultiBlockEntity> masters = new ArrayList<>(parts.stream().filter(MultiBlockEntity::isMaster).toList());
+            masters.sort(Comparator.comparing(master -> pos.distManhattan(master.getBlockPos())));
+            masterPart = masters.get(0);
+        }
+        if(masterPart == null)
+        {
+            masterPart = parts.get(0);
+        }
 
-            if(self.isMaster() && !neighbor.isMaster())
+        List<BlockPos> slaveVectors = new ArrayList<>();
+        for(MultiBlockEntity part : parts)
+        {
+            slaveVectors.add(part.getBlockPos().subtract(masterPart.getBlockPos()));
+            part.masterVector = masterPart.getBlockPos().subtract(part.getBlockPos());
+        }
+
+        masterPart.slaveVectors = slaveVectors;
+        masterPart.updateMaster();
+    }
+
+    public static List<MultiBlockEntity> findAllParts(Level level, BlockPos startPos)
+    {
+        Block masterBlock = level.getBlockState(startPos).getBlock();
+        MultiBlockEntity master = (MultiBlockEntity) level.getBlockEntity(startPos);
+
+        if(master == null)
+            return new ArrayList<>();
+
+        List<MultiBlockEntity> parts = new ArrayList<>();
+        Set<BlockPos> visited = new HashSet<>();
+        Queue<BlockPos> queue = new LinkedList<>();
+        queue.add(startPos);
+
+        while(!queue.isEmpty())
+        {
+            BlockPos pos = queue.remove();
+            if (level.getBlockEntity(pos) instanceof MultiBlockEntity blockEntity)
             {
-                neighbor.masterVector = pos.subtract(neighborPos);
-                self.slaveVectors.add(neighborPos.subtract(pos));
-                self.updateMaster();
-            }
-            if(!self.isMaster() && !neighbor.isMaster())
-            {
-                if(self.getMasterRelativePosition() == BlockPos.ZERO)
+                visited.add(pos);
+
+                if (level.getBlockState(pos).getBlock() != masterBlock) continue;
+
+                if (blockEntity == null) continue;
+
+                if (!blockEntity.getType().equals(master.getType())) continue;
+
+                parts.add(blockEntity);
+
+                for (Direction direction : Direction.values())
                 {
-                    level.setBlock(pos, state.setValue(MASTER, true), 1);
-                    neighbor.masterVector = pos.subtract(neighborPos);
-                    self.slaveVectors.add(neighborPos.subtract(pos));
-                    self.updateMaster();
-                }
-                else
-                {
-                    BlockPos neighborstuff = self.masterVector.offset(pos.subtract(neighborPos));
-                    neighbor.masterVector = neighborstuff;
-                    BlockPos masterPos = neighborPos.offset(neighbor.masterVector);
-                    MultiBlockEntity master = (MultiBlockEntity) level.getBlockEntity(masterPos);
-                    if(master != null)
-                    {
-                        BlockPos stuffPos = neighborPos.subtract(master.getBlockPos());
-                        if(!master.slaveVectors.contains(stuffPos))
-                            master.slaveVectors.add(stuffPos);
-                        master.updateMaster();
-                    }
+                    BlockPos visitPos = pos.relative(direction);
+                    if (!visited.contains(visitPos)) queue.add(visitPos);
                 }
             }
         }
-    }
 
-    @Override
-    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
-    {
-        return this.defaultBlockState().setValue(MASTER, false);
+        return parts;
     }
 
     @Override
     public RenderShape getRenderShape(BlockState pState)
     {
         return RenderShape.MODEL;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-    {
-        builder.add(MASTER);
-        super.createBlockStateDefinition(builder);
     }
 }

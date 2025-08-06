@@ -19,9 +19,11 @@ import org.jetbrains.annotations.Nullable;
 public class FuelTankBlock extends MultiblockBlock
 {
 
-    public FuelTankBlock(Properties pProperties)
+    public int capacityPerFluid;
+    public FuelTankBlock(Properties pProperties, int capacityPerFluid)
     {
         super(pProperties);
+        this.capacityPerFluid = capacityPerFluid;
     }
 
     @Override

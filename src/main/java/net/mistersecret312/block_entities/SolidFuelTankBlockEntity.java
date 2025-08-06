@@ -75,7 +75,7 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
 
         for(BlockPos slavePos : getSlaveRelativePositions())
         {
-            if(slavePos == BlockPos.ZERO)
+            if(slavePos.equals(BlockPos.ZERO))
                 continue;
 
             if(level.getBlockState(this.getBlockPos().offset(slavePos)).getBlock() instanceof SolidFuelTankBlock tank)

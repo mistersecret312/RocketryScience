@@ -11,6 +11,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.mistersecret312.blocks.FuelTankBlock;
 import net.mistersecret312.blocks.SolidFuelTankBlock;
 import net.mistersecret312.fluids.RocketFuelTank;
 import net.mistersecret312.init.BlockEntityInit;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public class FuelTankBlockEntity extends MultiBlockEntity
 {
     public RocketFuel fuel = RocketFuel.HYDROLOX;
-    public int capacity = 50000;
+    public int capacity = 2000;
 
     public RocketFuelTank fuelTank = createTank();
     public LazyOptional<IFluidHandler> holder = LazyOptional.empty();
@@ -112,15 +113,17 @@ public class FuelTankBlockEntity extends MultiBlockEntity
 
     public int getFuelTankCapacity()
     {
-        int capacity = this.capacity;
+        int capacity = 0;
+        if(this.getBlockState().getBlock() instanceof FuelTankBlock tank)
+            capacity += tank.capacityPerFluid;
 
         for(BlockPos slavePos : getSlaveRelativePositions())
         {
-            if(slavePos == BlockPos.ZERO)
+            if(slavePos.equals(BlockPos.ZERO))
                 continue;
 
-            if(level.getBlockEntity(this.getBlockPos().offset(slavePos)) instanceof FuelTankBlockEntity tank)
-                capacity += tank.capacity;
+            if(level.getBlockState(this.getBlockPos().offset(slavePos)).getBlock() instanceof FuelTankBlock tank)
+                capacity += tank.capacityPerFluid;
         }
 
         return capacity;
