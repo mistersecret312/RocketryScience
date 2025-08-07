@@ -1,0 +1,39 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
+	"textures": {
+		"0": "rocketry_science:block/tank/steel/liquid/singular/liquid_fuel_tank_outer_top",
+		"1": "rocketry_science:block/tank/steel/liquid/singular/liquid_fuel_tank_inner_single",
+		"2": "rocketry_science:block/tank/steel/liquid/singular/liquid_fuel_tank_inner_top",
+		"3": "rocketry_science:block/tank/steel/liquid/singular/liquid_fuel_tank_outer_bottom",
+		"4": "rocketry_science:block/tank/steel/liquid/singular/liquid_fuel_tank_outer_single",
+		"particle": "rocketry_science:block/tank/steel/liquid/singular/liquid_fuel_tank_outer_top"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#3"}
+			}
+		},
+		{
+			"from": [1, 1, 1],
+			"to": [15, 15, 15],
+			"faces": {
+				"north": {"uv": [1, 1, 15, 15], "texture": "#1"},
+				"east": {"uv": [1, 1, 15, 15], "texture": "#1"},
+				"south": {"uv": [1, 1, 15, 15], "texture": "#1"},
+				"west": {"uv": [1, 1, 15, 15], "texture": "#1"},
+				"up": {"uv": [1, 1, 15, 15], "texture": "#2"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#2"}
+			}
+		}
+	]
+}
