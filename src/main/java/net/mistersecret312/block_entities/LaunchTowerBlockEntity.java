@@ -7,6 +7,8 @@ import net.mistersecret312.blocks.LaunchPadBlock;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class LaunchTowerBlockEntity extends MultiBlockEntity
 {
     public LaunchTowerBlockEntity(BlockPos pPos, BlockState pBlockState)
@@ -37,6 +39,12 @@ public class LaunchTowerBlockEntity extends MultiBlockEntity
         if(this.getMasterRelativePosition() != BlockPos.ZERO)
             return (LaunchTowerBlockEntity) this.getLevel().getBlockEntity(this.getBlockPos().offset(masterVector));
         else return null;
+    }
+
+    @Override
+    public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
+    {
+        return pos.getX() != this.getBlockPos().getX() && pos.getZ() != this.getBlockPos().getZ();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package net.mistersecret312.block_entities;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -10,6 +12,7 @@ import net.mistersecret312.init.BlockEntityInit;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class LaunchPadBlockEntity extends MultiBlockEntity
 {
@@ -42,6 +45,15 @@ public class LaunchPadBlockEntity extends MultiBlockEntity
         size += parts.get(parts.size()-1).getBlockPos().getZ()-parts.get(0).getBlockPos().getZ();
 
         return Math.min(5, size);
+    }
+
+    @Override
+    public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
+    {
+        int distanceX = pos.getX()-this.getBlockPos().getX();
+        int distanceZ = pos.getZ()-this.getBlockPos().getZ();
+        System.out.println(distanceX);
+        return pos.getY() == this.getBlockPos().getY();
     }
 
     public boolean isComplete()

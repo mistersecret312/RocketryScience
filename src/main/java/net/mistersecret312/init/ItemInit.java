@@ -9,6 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.items.BlueprintItem;
+import net.mistersecret312.items.FuelTankBlockItem;
 
 public class ItemInit
 {
@@ -23,6 +24,9 @@ public class ItemInit
 
     public static final RegistryObject<BlueprintItem> BLUEPRINT = ITEMS.register("blueprint",
             () -> new BlueprintItem(new Item.Properties()));
+
+    public static final RegistryObject<FuelTankBlockItem> LOW_PRESSURE_FUEL_TANK = ITEMS.register("low_pressure_fuel_tank",
+            () -> new FuelTankBlockItem(BlockInit.LOW_PRESSURE_FUEL_TANK.get(), new Item.Properties().stacksTo(64)));
 
     public static void register(IEventBus bus)
     {

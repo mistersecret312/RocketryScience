@@ -129,8 +129,8 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
             return;
         if(level.getBlockEntity(pos.offset(state.getValue(FACING).getNormal())) instanceof FuelTankBlockEntity fuelTank)
         {
-            RocketFuelTank tank = fuelTank.getFuelTank();
-            int drainRate = Math.max(1, ((fuelTank.getFuelTankCapacity()-rocketEngine.getFuelStored())/fuelTank.getFuelTankCapacity())*8);
+            RocketFuelTank tank = fuelTank.getPropellantTank();
+            int drainRate = Math.max(1, ((fuelTank.getCapacityMultiplier()-rocketEngine.getFuelStored())/fuelTank.getCapacityMultiplier())*8);
             if(tank != null && tank.getFilter().equals(rocketEngine.fuelTank.getFilter()))
             {
                 for (FluidStack stack : tank.getPropellants())

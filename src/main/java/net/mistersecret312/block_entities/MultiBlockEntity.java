@@ -1,6 +1,7 @@
 package net.mistersecret312.block_entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -77,6 +78,11 @@ public class MultiBlockEntity extends BlockEntity
 
             this.slaveVectors = slaves;
         }
+    }
+
+    public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
+    {
+        return true;
     }
 
     public void updateMaster()

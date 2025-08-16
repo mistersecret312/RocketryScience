@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class RocketFuelTank implements IFluidHandler
+public class RocketFuelTank implements IFluidHandler, IFluidTank
 {
     private List<Predicate<FluidStack>> filter;
     private int tanks;
@@ -76,10 +76,33 @@ public class RocketFuelTank implements IFluidHandler
         return this.capacity;
     }
 
+    public void setCapacity(int capacity)
+    {
+        this.capacity = capacity;
+    }
+
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack)
     {
         return this.filter.get(tank).test(stack) && this.propellants.get(tank).getAmount() < capacity;
+    }
+
+    @Override
+    public @NotNull FluidStack getFluid()
+    {
+        return propellants.get(0);
+    }
+
+    @Override
+    public int getFluidAmount()
+    {
+        return propellants.get(0).getAmount();
+    }
+
+    @Override
+    public int getCapacity()
+    {
+        return capacity;
     }
 
     public boolean isFluidValid(@NotNull FluidStack stack)
@@ -211,4 +234,6 @@ public class RocketFuelTank implements IFluidHandler
     {
 
     }
+
+
 }

@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "top=true,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_single"
+    },
+    "top=true,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_upper"
+    },
+    "top=false,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_lower"
+    },
+    "top=false,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_middle"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 package net.mistersecret312.init;
 
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -11,6 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.blocks.*;
+import net.mistersecret312.items.FuelTankBlockItem;
 
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -43,8 +45,8 @@ public class BlockInit
 
     public static final RegistryObject<SolidFuelTankBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
             () -> new SolidFuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 100));
-    public static final RegistryObject<FuelTankBlock> LOW_PRESSURE_FUEL_TANK = registerBlock("low_pressure_fuel_tank",
-            () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 2000));
+    public static final RegistryObject<FuelTankBlock> LOW_PRESSURE_FUEL_TANK = BLOCKS.register("low_pressure_fuel_tank",
+            () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5).noOcclusion(), 2000));
 
     public static final RegistryObject<LaunchPadBlock> LAUNCH_PAD = registerBlock("launch_pad",
             () -> new LaunchPadBlock(BlockBehaviour.Properties.of()));

@@ -9,9 +9,10 @@ import net.mistersecret312.blocks.SolidFuelTankBlock;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class SolidFuelTankBlockEntity extends MultiBlockEntity
 {
-
     public int fuel = 0;
     public SolidFuelTankBlockEntity(BlockPos pPos, BlockState pBlockState)
     {
@@ -30,6 +31,12 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
     {
         super.load(tag);
         this.fuel = tag.getInt("fuel_stored");
+    }
+
+    @Override
+    public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
+    {
+        return pos.getX() != this.getBlockPos().getX() && pos.getZ() != this.getBlockPos().getZ();
     }
 
     @Nullable
