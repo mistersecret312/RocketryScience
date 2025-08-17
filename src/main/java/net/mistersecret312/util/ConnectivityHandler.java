@@ -44,6 +44,9 @@ public class ConnectivityHandler {
         Direction.Axis mainAxis = frontier.get(0)
                 .getMainConnectionAxis();
 
+        // essentially, if it's a vertical multi then the search won't be restricted by
+        // Y
+        // alternately, a horizontal multi search shouldn't be restricted by X or Z
         int minX = (mainAxis == Direction.Axis.Y ? Integer.MAX_VALUE : Integer.MIN_VALUE);
         int minY = (mainAxis != Direction.Axis.Y ? Integer.MAX_VALUE : Integer.MIN_VALUE);
         int minZ = (mainAxis == Direction.Axis.Y ? Integer.MAX_VALUE : Integer.MIN_VALUE);
@@ -78,7 +81,6 @@ public class ConnectivityHandler {
             }
 
             List<Direction.Axis> axes = Lists.newArrayList(Direction.Axis.X, Direction.Axis.Y, Direction.Axis.Z);
-
             for (Direction.Axis axis : axes) {
                 Direction dir = Direction.get(Direction.AxisDirection.NEGATIVE, axis);
                 BlockPos next = partPos.relative(dir);
@@ -131,9 +133,8 @@ public class ConnectivityHandler {
 
             splitMultiAndInvalidate(be, cache, false);
             if (be instanceof IConnectiveBlockEntity.Fluid ifluid && ifluid.hasTank())
-            {
                 ifluid.setTankSize(0, bestAmount);
-            }
+
             tryToFormNewMultiOfWidth(be, bestWidth, cache, false);
 
             be.preventConnectivityUpdate();
@@ -155,11 +156,14 @@ public class ConnectivityHandler {
         BlockPos origin = be.getBlockPos();
 
         // optional fluid handling
-        IFluidTank beTank = null;
-        FluidStack fluid = FluidStack.EMPTY;
+        List<IFluidTank> beTank = new ArrayList<>();
+        List<FluidStack> fluid = new ArrayList<>();
         if (be instanceof IConnectiveBlockEntity.Fluid ifluid && ifluid.hasTank()) {
-            beTank = ifluid.getTank(0);
-            fluid = beTank.getFluid();
+            for (int tank = 0; tank < ifluid.getTanks(); tank++)
+            {
+                beTank.add(ifluid.getTank(tank));
+                fluid.add(beTank.get(tank).getFluid());
+            }
         }
         Direction.Axis axis = be.getMainConnectionAxis();
 
@@ -214,8 +218,21 @@ public class ConnectivityHandler {
                         }
                     }
                     if (controller instanceof IConnectiveBlockEntity.Fluid ifluidCon && ifluidCon.hasTank()) {
-                        FluidStack otherFluid = ifluidCon.getFluid(0);
-                        if (!fluid.isEmpty() && !otherFluid.isEmpty() && !fluid.isFluidEqual(otherFluid))
+                        List<FluidStack> otherFluid = new ArrayList<>();
+                        for (int tank = 0; tank < ifluidCon.getTanks(); tank++)
+                        {
+                            otherFluid.add(ifluidCon.getFluid(tank));
+                        }
+                        boolean listMatch = true;
+                        List<Boolean> matches = new ArrayList<>();
+                        for(FluidStack fluidStack : fluid)
+                        {
+                            if(fluidStack.isEmpty())
+                                continue;
+                            matches.add(otherFluid.stream().anyMatch(otherFluidStack -> otherFluidStack.isEmpty() || otherFluidStack.isFluidEqual(fluidStack)));
+                        }
+                        listMatch = matches.stream().allMatch(Boolean::booleanValue);
+                        if (!fluid.isEmpty() && !otherFluid.isEmpty() && !listMatch)
                             break Search;
                     }
                 }
@@ -226,6 +243,8 @@ public class ConnectivityHandler {
 
         if (simulate)
             return amount;
+
+        Object extraData = be.getExtraData();
 
         for (int yOffset = 0; yOffset < height; yOffset++) {
             for (int xOffset = 0; xOffset < width; xOffset++) {
@@ -242,16 +261,20 @@ public class ConnectivityHandler {
                         continue;
 
                     if (part instanceof IConnectiveBlockEntity.Fluid ifluidPart && ifluidPart.hasTank()) {
-                        IFluidTank tankAt = ifluidPart.getTank(0);
-                        FluidStack fluidAt = tankAt.getFluid();
-                        if (!fluidAt.isEmpty())
+
+                        for (int tank = 0; tank < ifluidPart.getTanks(); tank++)
                         {
-                            if (be instanceof IConnectiveBlockEntity.Fluid ifluidBE && ifluidBE.hasTank()
-                                    && beTank != null) {
-                                beTank.fill(fluidAt, IFluidHandler.FluidAction.EXECUTE);
+                            IFluidTank tankAt = ifluidPart.getTank(tank);
+                            FluidStack fluidAt = tankAt.getFluid();
+                            if (!fluidAt.isEmpty())
+                            {
+                                if (be instanceof IConnectiveBlockEntity.Fluid ifluidBE && ifluidBE.hasTank()
+                                        && beTank != null) {
+                                    beTank.get(tank).fill(fluidAt, IFluidHandler.FluidAction.EXECUTE);
+                                }
                             }
+                            tankAt.drain(tankAt.getCapacity(), IFluidHandler.FluidAction.EXECUTE);
                         }
-                        tankAt.drain(tankAt.getCapacity(), IFluidHandler.FluidAction.EXECUTE);
                     }
 
                     splitMultiAndInvalidate(part, cache, false);
@@ -264,6 +287,7 @@ public class ConnectivityHandler {
                 }
             }
         }
+        be.setExtraData(extraData);
         be.notifyMultiUpdated();
         return amount;
     }
@@ -292,13 +316,19 @@ public class ConnectivityHandler {
         List<T> frontier = new ArrayList<>();
         Direction.Axis axis = be.getMainConnectionAxis();
 
-        FluidStack toDistribute = FluidStack.EMPTY;
+        // fluid handling, if present
+        List<FluidStack> toDistribute = new ArrayList<>();
         int maxCapacity = 0;
         if (be instanceof IConnectiveBlockEntity.Fluid ifluidBE && ifluidBE.hasTank()) {
-            toDistribute = ifluidBE.getFluid(0);
-            maxCapacity = ifluidBE.getTankSize(0);
-            if (!toDistribute.isEmpty() && !be.isRemoved())
-                toDistribute.shrink(maxCapacity);
+            for (int tank = 0; tank < ifluidBE.getTanks(); tank++)
+            {
+                toDistribute.add(ifluidBE.getFluid(tank));
+                maxCapacity = ifluidBE.getTankSize(tank);
+                if(!toDistribute.isEmpty() && !be.isRemoved() && !toDistribute.get(tank).isEmpty())
+                {
+                    toDistribute.get(tank).shrink(maxCapacity);
+                }
+            }
             ifluidBE.setTankSize(0, 1);
         }
 
@@ -319,17 +349,25 @@ public class ConnectivityHandler {
                             .equals(origin))
                         continue;
 
+                    T controllerBE = partAt.getControllerBE();
+                    partAt.setExtraData((controllerBE == null ? null : controllerBE.getExtraData()));
                     partAt.removeController(true);
 
                     if (!toDistribute.isEmpty() && partAt != be)
                     {
-                        FluidStack copy = toDistribute.copy();
-                        IFluidTank tank = (partAt instanceof IConnectiveBlockEntity.Fluid ifluidPart ? ifluidPart.getTank(0) : null);
+                        for (int tankI = 0; tankI < toDistribute.size(); tankI++)
+                        {
+                            IFluidTank tank = (partAt instanceof IConnectiveBlockEntity.Fluid ifluidPart ? ifluidPart.getTank(tankI) : null);
+                            FluidStack copy = toDistribute.get(tankI).copy();
+                            if(!copy.isEmpty())
+                            {
 
-                        int split = Math.min(maxCapacity, toDistribute.getAmount());
-                        copy.setAmount(split);
-                        toDistribute.shrink(split);
-                        if (tank != null) tank.fill(copy, IFluidHandler.FluidAction.EXECUTE);
+                                int split = Math.min(maxCapacity, toDistribute.get(tankI).getAmount());
+                                copy.setAmount(split);
+                                toDistribute.get(tankI).shrink(split);
+                                if (tank != null) tank.fill(copy, IFluidHandler.FluidAction.EXECUTE);
+                            }
+                        }
                     }
                     if (tryReconnect) {
                         frontier.add(partAt);
@@ -341,6 +379,9 @@ public class ConnectivityHandler {
             }
         }
 
+        if (be instanceof IConnectiveBlockEntity.Inventory inv && inv.hasInventory())
+            be.getCapability(ForgeCapabilities.ITEM_HANDLER)
+                    .invalidate();
         if (be instanceof IConnectiveBlockEntity.Fluid fluid && fluid.hasTank())
             be.getCapability(ForgeCapabilities.FLUID_HANDLER)
                     .invalidate();

@@ -8,6 +8,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 
+import javax.annotation.Nullable;
+
 public interface IConnectiveBlockEntity
 {
     BlockPos getController();
@@ -15,10 +17,18 @@ public interface IConnectiveBlockEntity
     boolean isController();
     void setController(BlockPos pos);
     void removeController(boolean keepContents);
+    BlockPos getLastKnownPos();
 
     void preventConnectivityUpdate();
     void notifyMultiUpdated();
 
+    // only used for FluidTank windows at present. Might be useful for similar properties on other things?
+    default void setExtraData(@Nullable Object data) {}
+    @Nullable
+    default Object getExtraData() { return null; }
+    default Object modifyExtraData(Object data) { return data; }
+
+    // multiblock structural information
     Direction.Axis getMainConnectionAxis();
 
     default Direction.Axis getMainAxisOf(BlockEntity be) { // this feels redundant, but it gives us a default to use when defining ::getMainConnectionAxis
@@ -47,9 +57,15 @@ public interface IConnectiveBlockEntity
     int getWidth();
     void setWidth(int width);
 
+    public interface Inventory extends IConnectiveBlockEntity {
+        default boolean hasInventory() { return false; }
+    }
+
     public interface Fluid extends IConnectiveBlockEntity {
         // done here rather than through the Capability to allow greater flexibility
         default boolean hasTank() { return false; }
+
+        default int getTanks() { return 0; }
 
         default int getTankSize(int tank) {	return 0; }
 

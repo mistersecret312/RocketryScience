@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class RocketFuelTank implements IFluidHandler, IFluidTank
+public class RocketFuelTank implements IFluidHandler
 {
     private List<Predicate<FluidStack>> filter;
     private int tanks;
     private int capacity;
 
-    private List<FluidStack> propellants;
+    private List<FluidTank> propellants;
 
     public RocketFuelTank(List<Predicate<FluidStack>> propellants, int capacity)
     {
@@ -31,7 +31,7 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
         this.filter = propellants;
         this.propellants = new ArrayList<>();
         for (int tank = 0; tank < tanks; tank++)
-            this.propellants.add(FluidStack.EMPTY);
+            this.propellants.add(new FluidTank(capacity, propellants.get(tank)));
     }
 
     public RocketFuelTank(RocketFuelTank otherTank, int capacity)
@@ -41,11 +41,6 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
 
         this.filter = otherTank.filter;
         this.propellants = otherTank.propellants;
-        this.propellants.forEach(stack ->
-        {
-            if(stack.getAmount() > capacity)
-                stack.setAmount(capacity);
-        });
     }
 
     public List<Predicate<FluidStack>> getFilter()
@@ -53,7 +48,7 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
         return filter;
     }
 
-    public List<FluidStack> getPropellants()
+    public List<FluidTank> getPropellants()
     {
         return propellants;
     }
@@ -67,7 +62,7 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
     @Override
     public @NotNull FluidStack getFluidInTank(int tank)
     {
-        return this.propellants.get(tank);
+        return this.propellants.get(tank).getFluid();
     }
 
     @Override
@@ -79,30 +74,16 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
     public void setCapacity(int capacity)
     {
         this.capacity = capacity;
+        for(FluidTank propellant : propellants)
+        {
+            propellant.setCapacity(capacity);
+        }
     }
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack)
     {
-        return this.filter.get(tank).test(stack) && this.propellants.get(tank).getAmount() < capacity;
-    }
-
-    @Override
-    public @NotNull FluidStack getFluid()
-    {
-        return propellants.get(0);
-    }
-
-    @Override
-    public int getFluidAmount()
-    {
-        return propellants.get(0).getAmount();
-    }
-
-    @Override
-    public int getCapacity()
-    {
-        return capacity;
+        return this.filter.get(tank).test(stack) && this.propellants.get(tank).getFluidAmount() < capacity;
     }
 
     public boolean isFluidValid(@NotNull FluidStack stack)
@@ -136,7 +117,7 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
             if(tankFluid.isEmpty())
             {
                 tankFluid = new FluidStack(resource, Math.min(capacity, resource.getAmount()));
-                this.propellants.set(tank, tankFluid);
+                this.propellants.get(tank).setFluid(tankFluid);
                 onContentsChanged();
                 return tankFluid.getAmount();
             }
@@ -197,7 +178,7 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
                 continue;
 
             tankFluid.shrink(maxDrain);
-            this.propellants.set(tank, tankFluid);
+            this.propellants.get(tank).setFluid(tankFluid);
         }
 
         return FluidStack.EMPTY;
@@ -210,7 +191,7 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
         {
             CompoundTag fluidStackTag = listTag.getCompound(tank);
             FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(fluidStackTag);
-            this.propellants.set(tank, fluidStack);
+            this.propellants.get(tank).setFluid(fluidStack);
         }
 
         return this;
@@ -230,10 +211,13 @@ public class RocketFuelTank implements IFluidHandler, IFluidTank
          return tag;
     }
 
+    public int getSpace(int tank)
+    {
+        return capacity-propellants.get(tank).getFluidAmount();
+    }
+
     protected void onContentsChanged()
     {
 
     }
-
-
 }

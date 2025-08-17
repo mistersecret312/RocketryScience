@@ -13,6 +13,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.capabilities.BlueprintDataCapability;
@@ -84,7 +85,7 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
 
                 RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(this.blueprintID);
                 List<Boolean> hasFuel = new ArrayList<>();
-                hasFuel.add(this.fuelTank.getPropellants().stream().allMatch(stack -> stack.getAmount() > 0));
+                hasFuel.add(this.fuelTank.getPropellants().stream().allMatch(stack -> stack.getFluidAmount() > 0));
                 for(int i = 0; i < this.fuelTank.getTanks(); i++)
                     hasFuel.add(blueprint.rocketFuel.getPropellants().get(i).test(this.fuelTank.getFluidInTank(i)));
 
@@ -129,17 +130,17 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
             return;
         if(level.getBlockEntity(pos.offset(state.getValue(FACING).getNormal())) instanceof FuelTankBlockEntity fuelTank)
         {
-            RocketFuelTank tank = fuelTank.getPropellantTank();
+            RocketFuelTank tank = fuelTank.getTankInventory();
             int drainRate = Math.max(1, ((fuelTank.getCapacityMultiplier()-rocketEngine.getFuelStored())/fuelTank.getCapacityMultiplier())*8);
             if(tank != null && tank.getFilter().equals(rocketEngine.fuelTank.getFilter()))
             {
-                for (FluidStack stack : tank.getPropellants())
+                for (FluidTank stack : tank.getPropellants())
                 {
-                    if(rocketEngine.fuelTank.getFilter().stream().anyMatch(filter -> filter.test(stack)))
+                    if(rocketEngine.fuelTank.getFilter().stream().anyMatch(filter -> filter.test(stack.getFluid())))
                     {
                         if(rocketEngine.isRunning)
                             drainRate = Math.max(1, 8*(rocketEngine.throttle/15));
-                        FluidStack tankStack = new FluidStack(stack, drainRate);
+                        FluidStack tankStack = new FluidStack(stack.getFluid(), drainRate);
                         if(rocketEngine.fuelTank.isFluidValid(tankStack))
                         {
                             rocketEngine.fuelTank.fill(tankStack, IFluidHandler.FluidAction.EXECUTE);

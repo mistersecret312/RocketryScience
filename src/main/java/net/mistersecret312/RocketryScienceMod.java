@@ -28,6 +28,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.mistersecret312.client.model.PlumeModel;
+import net.mistersecret312.client.renderer.FuelTankRenderer;
 import net.mistersecret312.client.renderer.PlumeRenderer;
 import net.mistersecret312.client.renderer.SolidPlumeRenderer;
 import net.mistersecret312.init.*;
@@ -95,6 +96,8 @@ public class RocketryScienceMod
                     context -> new PlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
             event.registerBlockEntityRenderer(BlockEntityInit.SRB.get(),
                     context -> new SolidPlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
+            event.registerBlockEntityRenderer(BlockEntityInit.LIQUID_FUEL_TANK.get(),
+                    context -> new FuelTankRenderer());
         }
 
         @SubscribeEvent

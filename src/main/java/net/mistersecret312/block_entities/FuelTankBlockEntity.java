@@ -9,10 +9,12 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -31,150 +33,74 @@ import java.util.Objects;
 
 public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlockEntity.Fluid
 {
-    public RocketFuel fuel = RocketFuel.HYDROLOX;
-    public RocketFuelTank propellantTank = createTank();
-    public LazyOptional<IFluidHandler> cap = LazyOptional.empty();
+    private static final int MAX_SIZE = 3;
 
+    protected LazyOptional<IFluidHandler> fluidCapability;
+    protected boolean forceFluidLevelUpdate;
+    protected RocketFuelTank tankInventory;
+    protected RocketFuel propellants;
     protected BlockPos controller;
     protected BlockPos lastKnownPos;
     protected boolean updateConnectivity;
     protected boolean updateCapability;
+    protected int luminosity;
     protected int width;
     protected int height;
 
     public FuelTankBlockEntity(BlockPos pPos, BlockState pBlockState)
     {
         super(BlockEntityInit.LIQUID_FUEL_TANK.get(), pPos, pBlockState);
+        propellants = RocketFuel.HYDROLOX;
+        tankInventory = createInventory();
+        fluidCapability = LazyOptional.of(() -> tankInventory);
+        forceFluidLevelUpdate = true;
+        updateConnectivity = false;
+        updateCapability = false;
+        height = 1;
+        width = 1;
+        refreshCapability();
+    }
+
+    private RocketFuelTank createInventory()
+    {
+        return new RocketFuelTank(propellants.getPropellants(), getCapacityMultiplier());
+    }
+
+    public void updateConnectivity() {
+        updateConnectivity = false;
+        if (level.isClientSide)
+            return;
+        if (!isController())
+            return;
+        ConnectivityHandler.formMulti(this);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, FuelTankBlockEntity fuelTank)
     {
-        if(fuelTank.lastKnownPos == null)
+        if (fuelTank.lastKnownPos == null)
             fuelTank.lastKnownPos = fuelTank.getBlockPos();
-        else if(!fuelTank.lastKnownPos.equals(fuelTank.worldPosition) && fuelTank.worldPosition != null)
-        {
+        else if (!fuelTank.lastKnownPos.equals(fuelTank.worldPosition) && fuelTank.worldPosition != null) {
             fuelTank.onPositionChanged();
             return;
         }
-        if(fuelTank.updateCapability)
-        {
+
+        if (fuelTank.updateCapability) {
             fuelTank.updateCapability = false;
             fuelTank.refreshCapability();
         }
-        if(fuelTank.updateConnectivity)
+        if (fuelTank.updateConnectivity)
             fuelTank.updateConnectivity();
     }
 
     @Override
-    public void onLoad()
-    {
-        this.cap = LazyOptional.of(() -> propellantTank);
-        super.onLoad();
+    public BlockPos getLastKnownPos() {
+        return lastKnownPos;
     }
 
     @Override
-    public void invalidateCaps()
-    {
-        super.invalidateCaps();
-        cap.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag)
-    {
-        if (updateConnectivity)
-            tag.putBoolean("Uninitialized", true);
-        if (lastKnownPos != null)
-            tag.put("LastKnownPos", NbtUtils.writeBlockPos(lastKnownPos));
-        if (!isController())
-            tag.put("Controller", NbtUtils.writeBlockPos(controller));
-        if (isController()) {
-            tag.put("TankContent", propellantTank.writeToNBT(new CompoundTag()));
-            tag.putInt("Size", width);
-            tag.putInt("Height", height);
-        }
-
-        tag.putString("fuel_type", this.fuel.getName());
-        tag.putInt("capacity", this.propellantTank.getCapacity());
-
-        super.saveAdditional(tag);
-    }
-
-    @Override
-    public void load(CompoundTag tag)
-    {
-        super.load(tag);
-        BlockPos controllerBefore = controller;
-        int prevSize = width;
-        int prevHeight = height;
-
-        controller = null;
-        lastKnownPos = null;
-
-        updateConnectivity = tag.contains("Uninitialized");
-
-        if (tag.contains("LastKnownPos"))
-            lastKnownPos = NbtUtils.readBlockPos(tag.getCompound("LastKnownPos"));
-        if (tag.contains("Controller"))
-            controller = NbtUtils.readBlockPos(tag.getCompound("Controller"));
-
-        if (isController()) {
-            width = tag.getInt("Size");
-            height = tag.getInt("Height");
-            propellantTank.setCapacity(getTotalTankSize() * getCapacityMultiplier());
-            propellantTank.readFromNBT(tag.getCompound("TankContent"));
-        }
-
-        updateCapability = true;
-        boolean changeOfController = !Objects.equals(controllerBefore, controller);
-        if (changeOfController || prevSize != width || prevHeight != height) {
-            if (hasLevel())
-                level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 16);
-            if (isController())
-                propellantTank.setCapacity(getCapacityMultiplier() * getTotalTankSize());
-        }
-
-
-        this.fuel = RocketFuel.valueOf(tag.getString("fuel_type").toUpperCase());
-    }
-
-    public int getTotalTankSize()
-    {
-        return width*height*width;
-    }
-
-    public int getCapacityMultiplier()
-    {
-        if(this.getBlockState().getBlock() instanceof FuelTankBlock tank)
-            return tank.capacityPerFluid;
-        else return 0;
-    }
-
-    public RocketFuelTank createTank()
-    {
-        int capacity = getControllerBE().getTotalTankSize()*getCapacityMultiplier();
-        if(capacity == 0)
-            capacity = getCapacityMultiplier();
-        return new RocketFuelTank(this.fuel.getPropellants(), capacity)
-        {
-            @Override
-            protected void onContentsChanged()
-            {
-                setChanged();
-            }
-        };
-    }
-
-    public RocketFuelTank createTank(RocketFuelTank fuelTank, int capacity)
-    {
-        return new RocketFuelTank(fuelTank, capacity)
-        {
-            @Override
-            protected void onContentsChanged()
-            {
-                setChanged();
-            }
-        };
+    public boolean isController() {
+        return controller == null || worldPosition.getX() == controller.getX()
+                && worldPosition.getY() == controller.getY() && worldPosition.getZ() == controller.getZ();
     }
 
     @Override
@@ -198,23 +124,46 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         lastKnownPos = worldPosition;
     }
 
-    public void updateConnectivity() {
-        updateConnectivity = false;
+    protected void onFluidStackChanged(FluidStack newFluidStack) {
+        if (!hasLevel())
+            return;
+
+        FluidType attributes = newFluidStack.getFluid()
+                .getFluidType();
+        int luminosity = (int) (attributes.getLightLevel(newFluidStack) / 1.2f);
+        boolean reversed = attributes.isLighterThanAir();
+        int maxY = 1;
+
+        for (int yOffset = 0; yOffset < height; yOffset++) {
+            boolean isBright = reversed ? (height - yOffset <= maxY) : (yOffset < maxY);
+            int actualLuminosity = isBright ? luminosity : luminosity > 0 ? 1 : 0;
+
+            for (int xOffset = 0; xOffset < width; xOffset++) {
+                for (int zOffset = 0; zOffset < width; zOffset++) {
+                    BlockPos pos = this.worldPosition.offset(xOffset, yOffset, zOffset);
+                    FuelTankBlockEntity tankAt = ConnectivityHandler.partAt(getType(), level, pos);
+                    if (tankAt == null)
+                        continue;
+                    level.updateNeighbourForOutputSignal(pos, tankAt.getBlockState()
+                            .getBlock());
+                    if (tankAt.luminosity == actualLuminosity)
+                        continue;
+                    tankAt.setLuminosity(actualLuminosity);
+                }
+            }
+        }
+
+        if (!level.isClientSide) {
+            setChanged();
+        }
+    }
+
+    protected void setLuminosity(int luminosity) {
         if (level.isClientSide)
             return;
-        if (!isController())
+        if (this.luminosity == luminosity)
             return;
-        ConnectivityHandler.formMulti(this);
-    }
-
-    public BlockPos getLastKnownPos() {
-        return lastKnownPos;
-    }
-
-    @Override
-    public boolean isController() {
-        return controller == null || worldPosition.getX() == controller.getX()
-                && worldPosition.getY() == controller.getY() && worldPosition.getZ() == controller.getZ();
+        this.luminosity = luminosity;
     }
 
     @SuppressWarnings("unchecked")
@@ -228,18 +177,31 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         return null;
     }
 
+    public void applyFluidTankSize(int blocks) {
+        tankInventory.setCapacity(blocks * getCapacityMultiplier());
+        for (int tank = 0; tank < tankInventory.getTanks(); tank++)
+        {
+            int overflow = tankInventory.getFluidInTank(tank).getAmount()-tankInventory.getTankCapacity(tank);
+            if(overflow > 0)
+                tankInventory.drain(overflow, IFluidHandler.FluidAction.EXECUTE);
+        }
+        forceFluidLevelUpdate = true;
+    }
+
     public void removeController(boolean keepFluids) {
         if (level.isClientSide)
             return;
         updateConnectivity = true;
-        if (!keepFluids)
-            applyFluidTankSize(1);
+        //if (!keepFluids)
+        //   applyFluidTankSize(1);
         controller = null;
         width = 1;
         height = 1;
+        for (int tank = 0; tank < tankInventory.getTanks(); tank++)
+            onFluidStackChanged(tankInventory.getFluidInTank(tank));
 
         BlockState state = getBlockState();
-        if (state.getBlock() instanceof FuelTankBlock) {
+        if (FuelTankBlock.isTank(state)) {
             state = state.setValue(FuelTankBlock.BOTTOM, true);
             state = state.setValue(FuelTankBlock.TOP, true);
             getLevel().setBlock(worldPosition, state, 22);
@@ -260,19 +222,15 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         setChanged();
     }
 
-    public void applyFluidTankSize(int blocks)
-    {
-        propellantTank = createTank(propellantTank, blocks*getCapacityMultiplier());
-    }
-
     private void refreshCapability() {
-        LazyOptional<IFluidHandler> oldCap = cap;
-        cap = LazyOptional.of(this::handlerForCapability);
+        LazyOptional<IFluidHandler> oldCap = fluidCapability;
+        fluidCapability = LazyOptional.of(this::handlerForCapability);
         oldCap.invalidate();
     }
 
     private IFluidHandler handlerForCapability() {
-        return isController() ?  propellantTank : getControllerBE().handlerForCapability();
+        return isController() ?  tankInventory : getControllerBE() != null ?
+                getControllerBE().handlerForCapability() : new FluidTank(0);
     }
 
     @Override
@@ -280,26 +238,131 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         return isController() ? worldPosition : controller;
     }
 
+    @Nullable
+    public FuelTankBlockEntity getOtherFluidTankBlockEntity(Direction direction) {
+        BlockEntity otherBE = level.getBlockEntity(worldPosition.relative(direction));
+        if (otherBE instanceof FuelTankBlockEntity)
+            return (FuelTankBlockEntity) otherBE;
+        return null;
+    }
+
     @Override
-    public void preventConnectivityUpdate()
-    {
+    public void load(CompoundTag compound) {
+        super.load(compound);
+
+        BlockPos controllerBefore = controller;
+        int prevSize = width;
+        int prevHeight = height;
+        int prevLum = luminosity;
+
+        updateConnectivity = compound.contains("Uninitialized");
+        luminosity = compound.getInt("Luminosity");
+        controller = null;
+        lastKnownPos = null;
+
+        if (compound.contains("LastKnownPos"))
+            lastKnownPos = NbtUtils.readBlockPos(compound.getCompound("LastKnownPos"));
+        if (compound.contains("Controller"))
+            controller = NbtUtils.readBlockPos(compound.getCompound("Controller"));
+
+        if (isController()) {
+            width = compound.getInt("Size");
+            height = compound.getInt("Height");
+            tankInventory.setCapacity(getTotalTankSize() * getCapacityMultiplier());
+            tankInventory.readFromNBT(compound.getCompound("TankContent"));
+            for (int tank = 0; tank < tankInventory.getTanks(); tank++)
+            {
+                if(tankInventory.getSpace(tank) < 0)
+                    tankInventory.drain(-tankInventory.getSpace(tank), IFluidHandler.FluidAction.EXECUTE);
+            }
+        }
+
+        updateCapability = true;
+
+        boolean changeOfController = !Objects.equals(controllerBefore, controller);
+        if (changeOfController || prevSize != width || prevHeight != height) {
+            if (hasLevel())
+                level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 16);
+            if (isController())
+                tankInventory.setCapacity(getCapacityMultiplier() * getTotalTankSize());
+        }
+
+        if (luminosity != prevLum && hasLevel())
+            level.getChunkSource()
+                    .getLightEngine()
+                    .checkBlock(worldPosition);
+        this.propellants = RocketFuel.valueOf(compound.getString("fuel_type").toUpperCase());
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag compound) {
+        if (updateConnectivity)
+            compound.putBoolean("Uninitialized", true);
+        if (lastKnownPos != null)
+            compound.put("LastKnownPos", NbtUtils.writeBlockPos(lastKnownPos));
+        if (!isController())
+            compound.put("Controller", NbtUtils.writeBlockPos(controller));
+        if (isController()) {
+            compound.put("TankContent", tankInventory.writeToNBT(new CompoundTag()));
+            compound.putInt("Size", width);
+            compound.putInt("Height", height);
+        }
+        compound.putInt("Luminosity", luminosity);
+        compound.putString("fuel_type", propellants.getName());
+        super.saveAdditional(compound);
+        forceFluidLevelUpdate = false;
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (!fluidCapability.isPresent())
+            refreshCapability();
+        if (cap == ForgeCapabilities.FLUID_HANDLER)
+            return fluidCapability.cast();
+        return super.getCapability(cap, side);
+    }
+
+    public RocketFuelTank getTankInventory() {
+        return tankInventory;
+    }
+
+    public int getTotalTankSize() {
+        return width * width * height;
+    }
+
+    public static int getMaxSize() {
+        return MAX_SIZE;
+    }
+
+    public static int getCapacityMultiplier() {
+        return 2000;
+    }
+
+    public static int getMaxHeight() {
+        return 16;
+    }
+
+    @Override
+    public void preventConnectivityUpdate() {
         updateConnectivity = false;
     }
 
     @Override
     public void notifyMultiUpdated() {
         BlockState state = this.getBlockState();
-        if (state.getBlock() instanceof FuelTankBlock) { // safety
+        if (FuelTankBlock.isTank(state)) { // safety
             state = state.setValue(FuelTankBlock.BOTTOM, getController().getY() == getBlockPos().getY());
             state = state.setValue(FuelTankBlock.TOP, getController().getY() + height - 1 == getBlockPos().getY());
             level.setBlock(getBlockPos(), state, 6);
         }
+        for (int tank = 0; tank < tankInventory.getTanks(); tank++)
+            onFluidStackChanged(tankInventory.getFluidInTank(tank));
         setChanged();
     }
 
     @Override
-    public Direction.Axis getMainConnectionAxis()
-    {
+    public Direction.Axis getMainConnectionAxis() {
         return Direction.Axis.Y;
     }
 
@@ -310,39 +373,39 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         return getMaxWidth();
     }
 
-    public int getMaxHeight()
-    {
-        return 16;
+    @Override
+    public int getMaxWidth() {
+        return MAX_SIZE;
     }
 
     @Override
-    public int getMaxWidth()
-    {
-        return 3;
-    }
-
-    @Override
-    public int getHeight()
-    {
+    public int getHeight() {
         return height;
     }
 
     @Override
-    public void setHeight(int height)
-    {
+    public void setHeight(int height) {
         this.height = height;
     }
 
     @Override
-    public int getWidth()
-    {
+    public int getWidth() {
         return width;
     }
 
     @Override
-    public void setWidth(int width)
-    {
+    public void setWidth(int width) {
         this.width = width;
+    }
+
+    @Override
+    public boolean hasTank() {
+        return true;
+    }
+
+    @Override
+    public int getTankSize(int tank) {
+        return getCapacityMultiplier();
     }
 
     @Override
@@ -350,40 +413,28 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         applyFluidTankSize(blocks);
     }
 
-    public RocketFuelTank getPropellantTank()
-    {
-        return propellantTank;
+    @Override
+    public IFluidTank getTank(int tank) {
+        return tankInventory.getPropellants().get(tank);
     }
 
     @Override
-    public IFluidTank getTank(int tank)
-    {
-        return propellantTank;
+    public FluidStack getFluid(int tank) {
+        return tankInventory.getFluidInTank(tank)
+                .copy();
     }
 
     @Override
-    public boolean hasTank()
+    public int getTanks()
     {
-        return true;
+        return tankInventory.getTanks();
     }
 
     @Override
-    public int getTankSize(int tank)
+    public AABB getRenderBoundingBox()
     {
-        return getCapacityMultiplier();
-    }
-
-    @Override
-    public FluidStack getFluid(int tank)
-    {
-        return propellantTank.getFluidInTank(tank);
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.FLUID_HANDLER)
-            return this.cap.cast();
-        return super.getCapability(cap, side);
+        if(isController())
+            return super.getRenderBoundingBox().expandTowards(width, height, width);
+        else return super.getRenderBoundingBox();
     }
 }
