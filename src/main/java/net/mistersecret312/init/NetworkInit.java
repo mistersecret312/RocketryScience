@@ -11,6 +11,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.network.packets.FuelTankFrostPacket;
+import net.mistersecret312.network.packets.FuelTankSizePacket;
 import net.mistersecret312.network.packets.RocketEngineSoundPacket;
 import net.mistersecret312.network.packets.RocketEngineUpdatePacket;
 
@@ -25,6 +26,7 @@ public class NetworkInit
         INSTANCE.registerMessage(id(), RocketEngineUpdatePacket.class, RocketEngineUpdatePacket::write, RocketEngineUpdatePacket::read, RocketEngineUpdatePacket::handle);
         INSTANCE.registerMessage(id(), RocketEngineSoundPacket.class, RocketEngineSoundPacket::write, RocketEngineSoundPacket::read, RocketEngineSoundPacket::handle);
         INSTANCE.registerMessage(id(), FuelTankFrostPacket.class, FuelTankFrostPacket::write, FuelTankFrostPacket::read, FuelTankFrostPacket::handle);
+        INSTANCE.registerMessage(id(), FuelTankSizePacket.class, FuelTankSizePacket::write, FuelTankSizePacket::read, FuelTankSizePacket::handle);
     }
 
     public static void sendPacketToAll(Object message){

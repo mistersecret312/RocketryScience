@@ -24,6 +24,7 @@ import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.NetworkInit;
 import net.mistersecret312.items.FuelTankBlockItem;
 import net.mistersecret312.network.packets.FuelTankFrostPacket;
+import net.mistersecret312.network.packets.FuelTankSizePacket;
 import net.mistersecret312.util.ConnectivityHandler;
 import net.mistersecret312.util.RocketFuel;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
     protected boolean forceFluidLevelUpdate;
     protected RocketFuelTank tankInventory;
     protected RocketFuel propellants;
-    protected BlockPos controller;
+    public BlockPos controller;
     protected BlockPos lastKnownPos;
     protected boolean updateConnectivity;
     protected boolean updateCapability;
@@ -254,6 +255,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         if (controller.equals(this.controller))
             return;
         this.controller = controller;
+        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), 1, this.controller));
         refreshCapability();
         setChanged();
     }
@@ -434,6 +436,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
     @Override
     public void setWidth(int width) {
         this.width = width;
+        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), width, this.getController()));
     }
 
     @Override

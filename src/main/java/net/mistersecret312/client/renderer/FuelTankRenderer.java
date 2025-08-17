@@ -5,6 +5,9 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import com.simibubi.create.content.fluids.tank.FluidTankBlock;
+import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
+import com.simibubi.create.content.fluids.tank.FluidTankRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -51,14 +54,17 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
     public void render(FuelTankBlockEntity fuelTank, float partialTick, PoseStack pose,
                        MultiBufferSource buffer, int light, int overlay)
     {
-        if (!fuelTank.isController()) return;
-        if (fuelTank.getWidth() == 1)
+        if (fuelTank.isController())
         {
-            renderSingularWidth(fuelTank, pose, buffer, overlay);
-        }
-        if (fuelTank.getWidth() == 2)
-        {
-            renderDoubleWidth(fuelTank, pose, buffer, overlay, light);
+            if (fuelTank.getControllerBE().getWidth() == 2)
+            {
+                renderDoubleWidth(fuelTank, pose, buffer, overlay, light);
+
+            }
+            if (fuelTank.getControllerBE().getWidth() == 1)
+            {
+                renderSingularWidth(fuelTank, pose, buffer, overlay);
+            }
         }
     }
 
@@ -168,7 +174,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
 
                 }
                 pose.translate(0f, level, 0f);
-                int r=255,g=255,b=255,a=50;
+                int r=255,g=255,b=255,a=120;
                 VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
                 pose.mulPose(Axis.XP.rotationDegrees(90));
                 consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
