@@ -10,6 +10,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.mistersecret312.RocketryScienceMod;
+import net.mistersecret312.network.packets.FuelTankFrostPacket;
 import net.mistersecret312.network.packets.RocketEngineSoundPacket;
 import net.mistersecret312.network.packets.RocketEngineUpdatePacket;
 
@@ -23,6 +24,7 @@ public class NetworkInit
     public static void registerPackets(){
         INSTANCE.registerMessage(id(), RocketEngineUpdatePacket.class, RocketEngineUpdatePacket::write, RocketEngineUpdatePacket::read, RocketEngineUpdatePacket::handle);
         INSTANCE.registerMessage(id(), RocketEngineSoundPacket.class, RocketEngineSoundPacket::write, RocketEngineSoundPacket::read, RocketEngineSoundPacket::handle);
+        INSTANCE.registerMessage(id(), FuelTankFrostPacket.class, FuelTankFrostPacket::write, FuelTankFrostPacket::read, FuelTankFrostPacket::handle);
     }
 
     public static void sendPacketToAll(Object message){
