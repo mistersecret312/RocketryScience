@@ -116,7 +116,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                 modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
         }
         pose.popPose();
-        if(ConfigInit.enable_frost_layer.get())
+        if(!ConfigInit.enable_frost_layer.get())
         {
             for (int i = 0; i <= 3; i++)
             {
@@ -206,7 +206,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         }
         pose.popPose();
 
-        if(ConfigInit.enable_frost_layer.get())
+        if(!ConfigInit.enable_frost_layer.get())
         {
             for (int i = 0; i <= 3; i++)
             {
@@ -486,7 +486,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
             pose.popPose();
         }
 
-        if(ConfigInit.enable_frost_layer.get())
+        if(!ConfigInit.enable_frost_layer.get())
         {
             for (int i = 0; i <= 3; i++)
             {

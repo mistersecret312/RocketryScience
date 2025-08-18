@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -128,28 +129,25 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
             return;
         if(rocketEngine.getBlueprint() == null)
             return;
-        if(level.getBlockEntity(pos.offset(state.getValue(FACING).getNormal())) instanceof FuelTankBlockEntity fuelTank)
+        BlockEntity blockEntity = level.getBlockEntity(pos.offset(state.getValue(FACING).getNormal()));
+        if(blockEntity != null && blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, state.getValue(FACING).getOpposite()).isPresent())
         {
-            RocketFuelTank tank = fuelTank.getControllerBE().getTankInventory();
-            int drainRate = Math.max(1, ((fuelTank.getCapacityMultiplier()-rocketEngine.getFuelStored())/fuelTank.getCapacityMultiplier())*8);
-            if(tank != null && tank.getFilter().equals(rocketEngine.fuelTank.getFilter()))
-            {
-                for (FluidTank stack : tank.getPropellants())
+            blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, state.getValue(FACING).getOpposite()).ifPresent(handler -> {
+                for (int tank = 0; tank < handler.getTanks(); tank++)
                 {
-                    if(rocketEngine.fuelTank.getFilter().stream().anyMatch(filter -> filter.test(stack.getFluid())))
+                    FluidStack handlerStack = handler.getFluidInTank(tank);
+                    if(rocketEngine.fuelTank.isFluidValid(handlerStack) && rocketEngine.fuelTank.getSpace(tank) > 0)
                     {
-                        if(rocketEngine.isRunning)
-                            drainRate = Math.max(1, 8*(rocketEngine.throttle/15));
-                        FluidStack tankStack = new FluidStack(stack.getFluid(), drainRate);
-                        if(rocketEngine.fuelTank.isFluidValid(tankStack))
-                        {
-                            rocketEngine.fuelTank.fill(tankStack, IFluidHandler.FluidAction.EXECUTE);
-                            tank.drain(tankStack, IFluidHandler.FluidAction.EXECUTE);
-                        }
-
+                        FluidStack drain = new FluidStack(handlerStack, 8);
+                        handler.drain(drain, IFluidHandler.FluidAction.EXECUTE);
+                        rocketEngine.fuelTank.fill(drain, IFluidHandler.FluidAction.EXECUTE);
                     }
                 }
-            }
+            });
+        }
+        if(level.getBlockEntity(pos.offset(state.getValue(FACING).getNormal())) instanceof FuelTankBlockEntity fuelTank)
+        {
+
         }
 
         rocketEngine.getBlueprint().calculateReliability();
@@ -247,7 +245,7 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing)
     {
-        if (capability == ForgeCapabilities.FLUID_HANDLER && this.isBuilt)
+        if (capability == ForgeCapabilities.FLUID_HANDLER)
             return holder.cast();
 
         return super.getCapability(capability, facing);

@@ -357,10 +357,13 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (!fluidCapability.isPresent())
             refreshCapability();
+        if(!this.isController())
+            return this.getControllerBE().getCapability(cap);
         if (cap == ForgeCapabilities.FLUID_HANDLER)
             return fluidCapability.cast();
         return super.getCapability(cap, side);
     }
+
 
     public RocketFuelTank getTankInventory() {
         return tankInventory;
