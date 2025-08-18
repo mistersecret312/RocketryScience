@@ -3,12 +3,12 @@
 	"credit": "Made with Blockbench",
 	"parent": "minecraft:block/block",
 	"textures": {
-		"1": "rocketry_science:block/tank/steel/liquid/double/liquid_fuel_tank_inner_single_left",
-		"2": "rocketry_science:block/tank/steel/liquid/double/liquid_fuel_tank_inner_single_right",
-		"3": "rocketry_science:block/tank/steel/liquid/double/liquid_fuel_tank_inner_upper_top",
-		"4": "rocketry_science:block/tank/steel/liquid/double/liquid_fuel_tank_outer_single",
-		"5": "rocketry_science:block/tank/steel/liquid/double/liquid_fuel_tank_outer_upper_top",
-		"6": "rocketry_science:block/tank/steel/liquid/double/liquid_fuel_tank_outer_bottom"
+		"1": "rocketry_science:block/tank/steel/liquid/triple/liquid_fuel_tank_inner_singular_left",
+		"2": "rocketry_science:block/tank/steel/liquid/triple/liquid_fuel_tank_inner_singular_right",
+		"3": "rocketry_science:block/tank/steel/liquid/triple/liquid_fuel_tank_inner_upper_top_corner",
+		"4": "rocketry_science:block/tank/steel/liquid/triple/liquid_fuel_tank_outer_single_corner",
+		"5": "rocketry_science:block/tank/steel/liquid/triple/liquid_fuel_tank_outer_upper_top_corner",
+		"6": "rocketry_science:block/tank/steel/liquid/triple/liquid_fuel_tank_outer_bottom_corner"
 	},
 	"elements": [
 		{
