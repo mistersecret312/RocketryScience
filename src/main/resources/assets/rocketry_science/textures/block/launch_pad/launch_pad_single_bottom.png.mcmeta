@@ -1,9 +1,9 @@
 {
   "ctm":{
     "ctm_version": 1,
-    "type":"CTM",
+    "type":"ctm",
     "textures":[
-      "rocketry_science:block/launch_pad/launch_pad_top"
+      "rocketry_science:block/launch_pad/launch_pad_bottom"
     ],
     "extra":{
       "ignore_states":true,
