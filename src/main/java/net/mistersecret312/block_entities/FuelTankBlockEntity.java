@@ -244,6 +244,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
             getLevel().setBlock(worldPosition, state, 22);
         }
 
+        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), 1, this.serializeNBT()));
         refreshCapability();
         setChanged();
     }
@@ -255,7 +256,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         if (controller.equals(this.controller))
             return;
         this.controller = controller;
-        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), 1, this.controller));
+        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), 1, this.serializeNBT()));
         refreshCapability();
         setChanged();
     }
@@ -330,7 +331,6 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
                     .getLightEngine()
                     .checkBlock(worldPosition);
         this.propellants = RocketFuel.valueOf(compound.getString("fuel_type").toUpperCase());
-        this.ratio = compound.getFloat("ratio");
     }
 
     @Override
@@ -348,7 +348,6 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         }
         compound.putInt("Luminosity", luminosity);
         compound.putString("fuel_type", propellants.getName());
-        compound.putFloat("ratio", this.ratio);
         super.saveAdditional(compound);
         forceFluidLevelUpdate = false;
     }
@@ -436,7 +435,8 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
     @Override
     public void setWidth(int width) {
         this.width = width;
-        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), width, this.getController()));
+        notifyMultiUpdated();
+        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), width, this.serializeNBT()));
     }
 
     @Override

@@ -45,7 +45,7 @@ public class BlockInit
 
     public static final RegistryObject<SolidFuelTankBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
             () -> new SolidFuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 100));
-    public static final RegistryObject<FuelTankBlock> LOW_PRESSURE_FUEL_TANK = BLOCKS.register("low_pressure_fuel_tank",
+    public static final RegistryObject<FuelTankBlock> FUEL_TANK = BLOCKS.register("fuel_tank",
             () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5).noOcclusion(), 2000));
 
     public static final RegistryObject<LaunchPadBlock> LAUNCH_PAD = registerBlock("launch_pad",

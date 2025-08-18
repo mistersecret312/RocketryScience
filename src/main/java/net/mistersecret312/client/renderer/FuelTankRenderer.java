@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import com.simibubi.create.content.fluids.tank.FluidTankBlock;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
@@ -17,6 +18,7 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -26,6 +28,7 @@ import net.mistersecret312.block_entities.FuelTankBlockEntity;
 import net.mistersecret312.blocks.FuelTankBlock;
 import net.mistersecret312.client.RocketRenderTypes;
 import net.mistersecret312.init.BlockInit;
+import net.mistersecret312.init.ConfigInit;
 import org.joml.Quaternionf;
 
 import java.util.ArrayList;
@@ -33,21 +36,33 @@ import java.util.List;
 
 public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity>
 {
-    public static final BlockState SINGLE = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState SINGLE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, true);
 
-    public static final BlockState SINGLE_TOP = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
-    public static final BlockState SINGLE_MIDDLE = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
-    public static final BlockState SINGLE_BOTTOM = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState SINGLE_TOP = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState SINGLE_MIDDLE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState SINGLE_BOTTOM = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
 
-    public static final BlockState DOUBLE = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState DOUBLE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, true);
 
-    public static final BlockState DOUBLE_TOP = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
-    public static final BlockState DOUBLE_MIDDLE = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
-    public static final BlockState DOUBLE_BOTTOM = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState DOUBLE_TOP = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState DOUBLE_MIDDLE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState DOUBLE_BOTTOM = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.DOUBLE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
 
-    public static final BlockState TRIPLE_TOP = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
-    public static final BlockState TRIPLE_MIDDLE = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
-    public static final BlockState TRIPLE_BOTTOM = BlockInit.LOW_PRESSURE_FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState TRIPLE_SINGLE_CENTER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CENTER).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState TRIPLE_SINGLE_CORNER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CORNER).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState TRIPLE_SINGLE_EDGE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_EDGE).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, true);
+
+    public static final BlockState TRIPLE_LOWER_CENTER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CENTER).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState TRIPLE_LOWER_CORNER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CORNER).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
+    public static final BlockState TRIPLE_LOWER_EDGE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_EDGE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, true);
+
+    public static final BlockState TRIPLE_MIDDLE_CENTER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CENTER).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState TRIPLE_MIDDLE_CORNER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CORNER).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState TRIPLE_MIDDLE_EDGE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_EDGE).setValue(FuelTankBlock.TOP, false).setValue(FuelTankBlock.BOTTOM, false);
+
+    public static final BlockState TRIPLE_UPPER_CENTER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CENTER).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState TRIPLE_UPPER_CORNER = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_CORNER).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
+    public static final BlockState TRIPLE_UPPER_EDGE = BlockInit.FUEL_TANK.get().defaultBlockState().setValue(FuelTankBlock.SHAPE, FuelTankBlock.Shape.TRIPLE_EDGE).setValue(FuelTankBlock.TOP, true).setValue(FuelTankBlock.BOTTOM, false);
 
 
     @Override
@@ -56,6 +71,10 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
     {
         if (fuelTank.isController())
         {
+            if(fuelTank.getControllerBE().getWidth() == 3)
+            {
+                renderTripleWidth(fuelTank, pose, buffer, overlay, light);
+            }
             if (fuelTank.getControllerBE().getWidth() == 2)
             {
                 renderDoubleWidth(fuelTank, pose, buffer, overlay, light);
@@ -63,12 +82,12 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
             }
             if (fuelTank.getControllerBE().getWidth() == 1)
             {
-                renderSingularWidth(fuelTank, pose, buffer, overlay);
+                renderSingularWidth(fuelTank, pose, buffer, overlay, light);
             }
         }
     }
 
-    public void renderSingularWidth(FuelTankBlockEntity fuelTank, PoseStack pose, MultiBufferSource buffer, int overlay)
+    public void renderSingularWidth(FuelTankBlockEntity fuelTank, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
     {
         List<BlockState> states = new ArrayList<>();
         if(fuelTank.getHeight() != 1)
@@ -92,11 +111,52 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
             BlockState state = states.get(i);
             pose.translate(0f, i == 0 ? 0f : 1f, 0f);
             BakedModel model = blockRenderer.getBlockModel(state);
-            int light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(0, i, 0));
+            light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(0, i, 0));
             for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY))
                 modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
         }
         pose.popPose();
+        if(ConfigInit.enable_frost_layer.get())
+        {
+            for (int i = 0; i <= 3; i++)
+            {
+                float level = (fuelTank.getHeight()-0.1F) * fuelTank.ratio;
+                if (level != 0.0F)
+                {
+                    pose.pushPose();
+                    if (i == 0)
+                    {
+                        pose.translate(0.9f, 0f, 1f);
+                        pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
+                    }
+                    if (i == 1)
+                    {
+                        pose.translate(0f, 0f, 1f);
+                        pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
+
+                    }
+                    if (i == 2)
+                    {
+                        pose.translate(0f, 0f, 0f);
+
+                    }
+                    if (i == 3)
+                    {
+                        pose.translate(0f, 0f, 0.9f);
+
+                    }
+                    pose.translate(0f, level, 0f);
+                    int r = 255, g = 255, b = 255, a = 120;
+                    VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
+                    pose.mulPose(Axis.XP.rotationDegrees(90));
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0.9f, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0.9f, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
+                    pose.popPose();
+                }
+            }
+        }
     }
 
     public void renderDoubleWidth(FuelTankBlockEntity fuelTank, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
@@ -140,48 +200,331 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                 BakedModel model = blockRenderer.getBlockModel(state);
                 light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(0, i, 0));
                 for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY))
-                    modelRenderer.renderModel(pose.last(), buffer.getBuffer(RocketRenderTypes.fuelTank()), null, model, 1f, 1f, 1f, light, overlay);
+                    modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
             }
             pose.popPose();
         }
         pose.popPose();
 
-        for (int i = 0; i <= 3; i++)
+        if(ConfigInit.enable_frost_layer.get())
         {
-            float level = fuelTank.getHeight()*fuelTank.ratio;
-            if(level != 0.0F)
+            for (int i = 0; i <= 3; i++)
             {
-                pose.pushPose();
-                if(i == 0)
+                float level = (fuelTank.getHeight()-0.1F) * fuelTank.ratio;
+                if (level != 0.0F)
                 {
-                    pose.translate(1.9f, 0f, 2f);
-                    pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
-                }
-                if(i == 1)
-                {
-                    pose.translate(0f, 0f, 2f);
-                    pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
+                    pose.pushPose();
+                    if (i == 0)
+                    {
+                        pose.translate(1.9f, 0f, 2f);
+                        pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
+                    }
+                    if (i == 1)
+                    {
+                        pose.translate(0f, 0f, 2f);
+                        pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
 
-                }
-                if(i == 2)
-                {
-                    pose.translate(0f, 0f, 0f);
+                    }
+                    if (i == 2)
+                    {
+                        pose.translate(0f, 0f, 0f);
 
-                }
-                if(i == 3)
-                {
-                    pose.translate(0f, 0f, 1.9f);
+                    }
+                    if (i == 3)
+                    {
+                        pose.translate(0f, 0f, 1.9f);
 
+                    }
+                    pose.translate(0f, level, 0f);
+                    int r = 255, g = 255, b = 255, a = 120;
+                    VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
+                    pose.mulPose(Axis.XP.rotationDegrees(90));
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 1.9f, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 1.9f, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
+                    pose.popPose();
                 }
-                pose.translate(0f, level, 0f);
-                int r=255,g=255,b=255,a=120;
-                VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
-                pose.mulPose(Axis.XP.rotationDegrees(90));
-                consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
-                consumer.vertex(pose.last().pose(), 0, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
-                consumer.vertex(pose.last().pose(), 1.9f, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
-                consumer.vertex(pose.last().pose(), 1.9f, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
-                pose.popPose();
+            }
+        }
+    }
+
+    public void renderTripleWidth(FuelTankBlockEntity fuelTank, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
+    {
+        List<Pair<BlockPos, Pair<Integer, BlockState>>> states = new ArrayList<>();
+        BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
+        ModelBlockRenderer modelRenderer = blockRenderer.getModelRenderer();
+        if (fuelTank.getHeight() != 1)
+        {
+            for (int y = 0; y < fuelTank.getHeight(); y++)
+            {
+                for (int x = 0; x < 3; x++)
+                {
+                    for (int z = 0; z < 3; z++)
+                    {
+                        int rotation = 0;
+                        if (z == 0)
+                        {
+                            if (x == 2)
+                            {
+                                rotation = 90;
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_CORNER)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_EDGE)));
+                            }
+                            if (x == 1)
+                            {
+                                rotation = 180;
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_EDGE)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_CENTER)));
+                            }
+                            if (x == 0)
+                            {
+                                rotation = 180;
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_CORNER)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_EDGE)));
+                            }
+                        }
+                        if (z == 1)
+                        {
+                            if (x == 2)
+                            {
+                                rotation = 90;
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                        states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_EDGE)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_CENTER)));
+                            }
+                            if (x == 1)
+                            {
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CENTER)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_CENTER)));
+                                    continue;
+                                }
+                            }
+                            if (x == 0)
+                            {
+                                rotation = 270;
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_EDGE)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_CENTER)));
+                            }
+                        }
+                        if (z == 2)
+                        {
+                            if (x == 2)
+                            {
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_CORNER)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_EDGE)));
+                            }
+                            if (x == 1)
+                            {
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_EDGE)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_CENTER)));
+                            }
+                            if (x == 0)
+                            {
+                                rotation = 270;
+                                if(y == fuelTank.getHeight()-1)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
+                                    continue;
+                                }
+                                if(y == 0)
+                                {
+                                    states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_LOWER_CORNER)));
+                                    continue;
+                                }
+                                states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_MIDDLE_EDGE)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                for (int z = 0; z < 3; z++)
+                {
+                    int rotation = 0;
+                    if (z == 0)
+                    {
+                        if (x == 2)
+                        {
+                            rotation = 90;
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_CORNER)));
+                        }
+                        if (x == 1)
+                        {
+                            rotation = 180;
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_EDGE)));
+                        }
+                        if (x == 0)
+                        {
+                            rotation = 180;
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_CORNER)));
+                        }
+                    }
+                    if (z == 1)
+                    {
+                        if (x == 2)
+                        {
+                            rotation = 90;
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_EDGE)));
+                        }
+                        if (x == 1)
+                        {
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_CENTER)));
+                        }
+                        if (x == 0)
+                        {
+                            rotation = 270;
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_EDGE)));
+                        }
+                    }
+                    if (z == 2)
+                    {
+                        if (x == 2)
+                        {
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_CORNER)));
+                        }
+                        if (x == 1)
+                        {
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_EDGE)));
+                        }
+                        if (x == 0)
+                        {
+                            rotation = 270;
+                            states.add(Pair.of(new BlockPos(x, 0, z), Pair.of(rotation, TRIPLE_SINGLE_CORNER)));
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < states.size(); i++)
+        {
+            BlockState state = states.get(i).getSecond().getSecond();
+            BlockPos pos = states.get(i).getFirst();
+            int x = pos.getX();
+            int y = pos.getY();
+            int z = pos.getZ();
+            pose.pushPose();
+            pose.rotateAround(Axis.YP.rotationDegrees(states.get(i).getSecond().getFirst()), x+0.5f, 0, z+0.5f);
+            pose.translate(x, y, z);
+            BakedModel model = blockRenderer.getBlockModel(state);
+            light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(0, i, 0));
+            for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY))
+                modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
+            pose.popPose();
+        }
+
+        if(ConfigInit.enable_frost_layer.get())
+        {
+            for (int i = 0; i <= 3; i++)
+            {
+                float level = (fuelTank.getHeight()-0.1F) * fuelTank.ratio;
+                if (level != 0.0F)
+                {
+                    pose.pushPose();
+                    if (i == 0)
+                    {
+                        pose.translate(2.9f, 0f, 3f);
+                        pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
+                    }
+                    if (i == 1)
+                    {
+                        pose.translate(0f, 0f, 3f);
+                        pose.rotateAround(Axis.YP.rotationDegrees(90), 0f, 0f, 0f);
+
+                    }
+                    if (i == 2)
+                    {
+                        pose.translate(0f, 0f, 0f);
+
+                    }
+                    if (i == 3)
+                    {
+                        pose.translate(0f, 0f, 2.9f);
+
+                    }
+                    pose.translate(0f, level, 0f);
+                    int r = 255, g = 255, b = 255, a = 120;
+                    VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
+                    pose.mulPose(Axis.XP.rotationDegrees(90));
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 2.9f, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 2.9f, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
+                    pose.popPose();
+                }
             }
         }
     }

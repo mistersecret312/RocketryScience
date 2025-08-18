@@ -131,7 +131,7 @@ public class FuelTankBlock extends BaseEntityBlock
 
     public enum Shape implements StringRepresentable
     {
-        SINGLE, DOUBLE, TRIPLE;
+        SINGLE, DOUBLE, TRIPLE_EDGE, TRIPLE_CENTER, TRIPLE_CORNER;
 
         Shape() {}
 

@@ -17,7 +17,7 @@
   "block.rocketry_science.steel_nozzle_solid": "Solid Rocket Booster Steel Nozzle",
 
   "block.rocketry_science.copper_solid_fuel_tank": "Copper Solid Fuel Tank",
-  "block.rocketry_science.low_pressure_fuel_tank": "Low Pressure Fuel Tank",
+  "block.rocketry_science.fuel_tank": "Fuel Tank",
 
   "fluid_type.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
   "fluid_type.rocketry_science.liquid_oxygen": "Liquid Oxygen",

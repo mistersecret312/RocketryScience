@@ -1,0 +1,69 @@
+{
+  "variants": {
+    "shape=single,top=true,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_single"
+    },
+    "shape=single,top=true,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_upper"
+    },
+    "shape=single,top=false,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_lower"
+    },
+    "shape=single,top=false,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_middle"
+    },
+
+    "shape=double,top=true,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_double_single"
+    },
+    "shape=double,top=true,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_double_upper"
+    },
+    "shape=double,top=false,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_double_lower"
+    },
+    "shape=double,top=false,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_double_middle"
+    },
+
+    "shape=triple_edge,top=true,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_single_edge"
+    },
+    "shape=triple_corner,top=true,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_single_corner"
+    },
+    "shape=triple_center,top=true,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_single_center"
+    },
+
+    "shape=triple_edge,top=false,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_lower_edge"
+    },
+    "shape=triple_corner,top=false,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_lower_corner"
+    },
+    "shape=triple_center,top=false,bottom=true": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_lower_center"
+    },
+
+    "shape=triple_edge,top=true,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_upper_edge"
+    },
+    "shape=triple_corner,top=true,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_upper_corner"
+    },
+    "shape=triple_center,top=true,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_upper_center"
+    },
+
+    "shape=triple_edge,top=false,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_middle_edge"
+    },
+    "shape=triple_corner,top=false,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_middle_corner"
+    },
+    "shape=triple_center,top=false,bottom=false": {
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_middle_center"
+    }
+  }
+}
