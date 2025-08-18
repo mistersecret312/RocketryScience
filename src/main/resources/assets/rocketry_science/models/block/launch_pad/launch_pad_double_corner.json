@@ -3,10 +3,11 @@
 	"credit": "Made with Blockbench",
 	"parent": "minecraft:block/block",
 	"textures": {
-		"1": "rocketry_science:block/launch_pad/launch_pad_middle_top",
-		"3": "rocketry_science:block/launch_pad/launch_pad_edge_side",
-		"4": "rocketry_science:block/launch_pad/launch_pad_top_single",
-		"particle": "rocketry_science:block/launch_pad/launch_pad_middle_top"
+		"0": "rocketry_science:block/launch_pad/launch_pad_double_corner_top",
+		"1": "rocketry_science:block/launch_pad/launch_pad_double_corner_bottom",
+		"2": "rocketry_science:block/launch_pad/launch_pad_corner_side_1",
+		"3": "rocketry_science:block/launch_pad/launch_pad_corner_side_2",
+		"particle": "rocketry_science:block/launch_pad/launch_pad_double_corner_top"
 	},
 	"elements": [
 		{
@@ -14,11 +15,10 @@
 			"to": [16, 16, 16],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
 			"faces": {
-				"north": {"uv": [0, 0, 16, 16], "texture": "#3"},
-				"east": {"uv": [0, 0, 16, 16], "texture": "#3"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#2"},
 				"south": {"uv": [0, 0, 16, 16], "texture": "#3"},
-				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#4"},
-				"down": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#1"}
+				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 180, "texture": "#1"}
 			}
 		}
 	]
