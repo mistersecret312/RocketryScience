@@ -8,10 +8,10 @@
 	"elements": [
 		{
 			"from": [0, 0, 0],
-			"to": [15, 16, 15],
+			"to": [16, 16, 15],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
 			"faces": {
-				"south": {"uv": [0, 0, 15, 16], "texture": "#2"}
+				"south": {"uv": [0, 0, 16, 16], "texture": "#2"}
 			}
 		}
 	]
