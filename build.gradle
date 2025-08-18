@@ -29,6 +29,8 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
+jarJar.enable();
+
 minecraft {
     // The mappings can be changed at any time and must be in the following format.
     // Channel:   Version:
@@ -140,9 +142,11 @@ repositories {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
     }
+    maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
     maven { url = "https://api.modrinth.com/maven" }
     maven { url = "https://maven.ithundxr.dev/mirror" } // Registrate
     maven { url "https://cursemaven.com" }
+    maven { url "https://modmaven.dev/" }
 }
 
 dependencies {
@@ -159,8 +163,11 @@ dependencies {
 
     implementation fg.deobf("maven.modrinth:jade:${jade_version}")
 
+    implementation fg.deobf("team.chisel.ctm:CTM:1.20.1-1.1.8+6")
+
     compileOnly fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
     implementation fg.deobf("curse.maven:create-328085:6641603")
+    compileOnly(fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-1.20.1:1.0.4"))
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

@@ -1,0 +1,13 @@
+{
+  "ctm":{
+    "ctm_version": 1,
+    "type":"CTM",
+    "textures":[
+      "rocketry_science:block/glass_con"
+    ],
+    "extra":{
+      "ignore_states":true,
+      "connect_inside":true
+    }
+  }
+}
