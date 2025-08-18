@@ -23,21 +23,60 @@
 		},
 		{
 			"from": [6.75, 16, 8],
-			"to": [9.25, 28, 8],
+			"to": [9.25, 26, 8],
 			"rotation": {"angle": -45, "axis": "y", "origin": [8, 22, 8]},
 			"faces": {
-				"north": {"uv": [7, 4, 9, 16], "texture": "#3"},
-				"south": {"uv": [7, 4, 9, 16], "texture": "#3"}
+				"north": {"uv": [7, 6, 9, 16], "texture": "#3"},
+				"south": {"uv": [7, 6, 9, 16], "texture": "#3"}
 			}
 		},
 		{
 			"from": [8, 16, 6.75],
-			"to": [8, 28, 9.25],
+			"to": [8, 26, 9.25],
 			"rotation": {"angle": -45, "axis": "y", "origin": [8, 22, 8]},
 			"faces": {
-				"east": {"uv": [7, 4, 9, 16], "texture": "#3"},
-				"west": {"uv": [7, 4, 9, 16], "texture": "#3"}
+				"east": {"uv": [7, 6, 9, 16], "texture": "#3"},
+				"west": {"uv": [7, 6, 9, 16], "texture": "#3"}
 			}
+		},
+		{
+			"name": "Emissive",
+			"from": [6.75, 26, 8],
+			"to": [9.25, 28, 8],
+			"forge_data": {
+				"block_light": 8,
+				"sky_light": 8
+			},
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 24, 8]},
+			"faces": {
+				"north": {"uv": [7, 4, 9, 6], "texture": "#3"},
+				"south": {"uv": [7, 4, 9, 6], "texture": "#3"}
+			}
+		},
+		{
+			"name": "Emissive",
+			"from": [8, 26, 6.75],
+			"to": [8, 28, 9.25],
+			"forge_data": {
+				"block_light": 8,
+				"sky_light": 8
+			},
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 24, 8]},
+			"faces": {
+				"east": {"uv": [7, 4, 9, 6], "texture": "#3"},
+				"west": {"uv": [7, 4, 9, 6], "texture": "#3"}
+			}
+		}
+	],
+	"groups": [
+		0,
+		1,
+		2,
+		{
+			"name": "Emissive",
+			"origin": [8, 24, 8],
+			"color": 0,
+			"children": [3, 4]
 		}
 	]
 }
