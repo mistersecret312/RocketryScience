@@ -59,6 +59,8 @@ public class RocketryScienceMod
         MishapInit.register(modEventBus);
         SoundInit.register(modEventBus);
 
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigInit.CLIENT_CONFIG, "rocketry_science-client.toml");
+
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -116,7 +118,7 @@ public class RocketryScienceMod
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_ATMOPSHERE.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_VACUUM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_SOLID.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(BlockInit.LOW_PRESSURE_FUEL_TANK.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.FUEL_TANK.get(), RenderType.cutout());
         }
     }
 }

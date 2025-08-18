@@ -36,7 +36,7 @@ public class SolidFuelTankBlockEntity extends MultiBlockEntity
     @Override
     public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
     {
-        return pos.getX() != this.getBlockPos().getX() && pos.getZ() != this.getBlockPos().getZ();
+        return true;
     }
 
     @Nullable

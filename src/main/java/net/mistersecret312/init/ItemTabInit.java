@@ -24,7 +24,7 @@ public class ItemTabInit
                         output.accept(BlockInit.STEEL_NOZZLE_SOLID.get());
 
                         output.accept(BlockInit.COPPER_SOLID_FUEL_TANK.get());
-                        output.accept(ItemInit.LOW_PRESSURE_FUEL_TANK.get());
+                        output.accept(ItemInit.FUEL_TANK.get());
 
                         output.accept(ItemInit.LIQUID_HYDROGEN_BUCKET.get());
                         output.accept(ItemInit.LIQUID_OXYGEN_BUCKET.get());

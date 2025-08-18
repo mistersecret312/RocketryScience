@@ -41,8 +41,7 @@ public class ClientPacketHandler
         BlockEntity blockEntity = getBlockEntity(packet.pos);
         if(blockEntity instanceof FuelTankBlockEntity fuelTank)
         {
-            fuelTank.getControllerBE().setWidth(packet.size);
-            fuelTank.controller = BlockPos.ZERO;
+            fuelTank.load(packet.tag);
         }
     }
 

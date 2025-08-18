@@ -20,7 +20,7 @@ public class BlockEntityInit
     public static final RegistryObject<BlockEntityType<SolidFuelTankBlockEntity>> SOLID_FUEL_TANK = BLOCK_ENTITIES.register("solid_fuel_tank",
             () -> BlockEntityType.Builder.of(SolidFuelTankBlockEntity::new, BlockInit.COPPER_SOLID_FUEL_TANK.get()).build(null));
     public static final RegistryObject<BlockEntityType<FuelTankBlockEntity>> LIQUID_FUEL_TANK = BLOCK_ENTITIES.register("fuel_tank",
-            () -> BlockEntityType.Builder.of(FuelTankBlockEntity::new, BlockInit.LOW_PRESSURE_FUEL_TANK.get()).build(null));
+            () -> BlockEntityType.Builder.of(FuelTankBlockEntity::new, BlockInit.FUEL_TANK.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<LaunchPadBlockEntity>> LAUNCH_PAD = BLOCK_ENTITIES.register("launch_pad",
             () -> BlockEntityType.Builder.of(LaunchPadBlockEntity::new, BlockInit.LAUNCH_PAD.get()).build(null));
