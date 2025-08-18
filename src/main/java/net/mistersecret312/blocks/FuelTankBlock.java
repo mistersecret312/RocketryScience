@@ -87,6 +87,7 @@ public class FuelTankBlock extends BaseEntityBlock
                 if (tank != null && tank.isFluidValid(bucketStack))
                 {
                     tank.fill(bucketStack, IFluidHandler.FluidAction.EXECUTE);
+                    fuelTank.onFluidStackChanged(bucketStack);
                     fuelTank.setChanged();
                     return InteractionResult.SUCCESS;
                 }

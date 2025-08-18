@@ -6,8 +6,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.mistersecret312.block_entities.FuelTankBlockEntity;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.init.SoundInit;
+import net.mistersecret312.network.packets.FuelTankFrostPacket;
+import net.mistersecret312.network.packets.FuelTankSizePacket;
 import net.mistersecret312.network.packets.RocketEngineSoundPacket;
 import net.mistersecret312.network.packets.RocketEngineUpdatePacket;
 import net.mistersecret312.sound.RocketEngineSound;
@@ -23,6 +26,23 @@ public class ClientPacketHandler
             rocketEngine.isBuilt = packet.isBuilt;
             rocketEngine.isRunning = packet.isRunning;
             rocketEngine.throttle = packet.throttle;
+        }
+    }
+
+    public static void handleFrostPacket(FuelTankFrostPacket packet)
+    {
+        BlockEntity blockEntity = getBlockEntity(packet.pos);
+        if(blockEntity instanceof FuelTankBlockEntity fuelTank)
+            fuelTank.ratio = packet.ratio;
+    }
+
+    public static void handleSizePacket(FuelTankSizePacket packet)
+    {
+        BlockEntity blockEntity = getBlockEntity(packet.pos);
+        if(blockEntity instanceof FuelTankBlockEntity fuelTank)
+        {
+            fuelTank.getControllerBE().setWidth(packet.size);
+            fuelTank.controller = BlockPos.ZERO;
         }
     }
 

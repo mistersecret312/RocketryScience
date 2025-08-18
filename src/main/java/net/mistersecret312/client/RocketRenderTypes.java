@@ -27,4 +27,29 @@ public class RocketRenderTypes extends RenderType
                         .setCullState(CULL)
                         .createCompositeState(true));
     }
+
+    public static RenderType frost()
+    {
+        return create("frost", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+                false, false,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RenderStateShard.RENDERTYPE_TEXT_BACKGROUND_SHADER)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setCullState(NO_CULL)
+                        .setLightmapState(LIGHTMAP)
+                        .createCompositeState(true));
+    }
+
+    public static RenderType fuelTank()
+    {
+        return create("cutout", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS,
+                131072, true, false,
+                RenderType.CompositeState.builder()
+                        .setLightmapState(LIGHTMAP)
+                        .setShaderState(RENDERTYPE_CUTOUT_SHADER)
+                        .setCullState(RenderStateShard.CULL)
+                        .setTextureState(BLOCK_SHEET)
+                        .createCompositeState(true));
+
+    }
 }

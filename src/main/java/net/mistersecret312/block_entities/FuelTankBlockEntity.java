@@ -21,13 +21,17 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.mistersecret312.blocks.FuelTankBlock;
 import net.mistersecret312.fluids.RocketFuelTank;
 import net.mistersecret312.init.BlockEntityInit;
+import net.mistersecret312.init.NetworkInit;
 import net.mistersecret312.items.FuelTankBlockItem;
+import net.mistersecret312.network.packets.FuelTankFrostPacket;
+import net.mistersecret312.network.packets.FuelTankSizePacket;
 import net.mistersecret312.util.ConnectivityHandler;
 import net.mistersecret312.util.RocketFuel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +43,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
     protected boolean forceFluidLevelUpdate;
     protected RocketFuelTank tankInventory;
     protected RocketFuel propellants;
-    protected BlockPos controller;
+    public BlockPos controller;
     protected BlockPos lastKnownPos;
     protected boolean updateConnectivity;
     protected boolean updateCapability;
@@ -47,6 +51,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
     protected int width;
     protected int height;
 
+    public float ratio;
     public FuelTankBlockEntity(BlockPos pPos, BlockState pBlockState)
     {
         super(BlockEntityInit.LIQUID_FUEL_TANK.get(), pPos, pBlockState);
@@ -63,7 +68,26 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
 
     private RocketFuelTank createInventory()
     {
-        return new RocketFuelTank(propellants.getPropellants(), getCapacityMultiplier());
+        FuelTankBlockEntity fuelTank = this;
+        return new RocketFuelTank(propellants.getPropellants(), getCapacityMultiplier())
+        {
+            @Override
+            protected void onContentsChanged()
+            {
+                List<Float> ratios = new ArrayList<>();
+                for (int tank = 0; tank < this.getTanks(); tank++)
+                {
+                    float ratio = 1-(float) getTankInventory().getSpace(tank)/getTankInventory().getTankCapacity(tank);
+                    ratios.add(ratio/this.getTanks());
+                }
+                float totalRatio = 0f;
+                for(Float ratio : ratios)
+                    totalRatio += ratio;
+
+                ratio = totalRatio;
+                NetworkInit.sendToTracking(fuelTank, new FuelTankFrostPacket(getBlockPos(), ratio));
+            }
+        };
     }
 
     public void updateConnectivity() {
@@ -124,9 +148,22 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         lastKnownPos = worldPosition;
     }
 
-    protected void onFluidStackChanged(FluidStack newFluidStack) {
+    public void onFluidStackChanged(FluidStack newFluidStack) {
         if (!hasLevel())
             return;
+
+        List<Float> ratios = new ArrayList<>();
+        for (int tank = 0; tank < this.getTanks(); tank++)
+        {
+            float ratio = 1-(float) this.getTankInventory().getSpace(tank)/this.getTankInventory().getTankCapacity(tank);
+            ratios.add(ratio/this.getTanks());
+        }
+        float totalRatio = 0f;
+        for(Float ratio : ratios)
+            totalRatio += ratio;
+
+        this.ratio = totalRatio;
+        NetworkInit.sendToTracking(this, new FuelTankFrostPacket(this.getBlockPos(), ratio));
 
         FluidType attributes = newFluidStack.getFluid()
                 .getFluidType();
@@ -218,6 +255,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         if (controller.equals(this.controller))
             return;
         this.controller = controller;
+        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), 1, this.controller));
         refreshCapability();
         setChanged();
     }
@@ -292,6 +330,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
                     .getLightEngine()
                     .checkBlock(worldPosition);
         this.propellants = RocketFuel.valueOf(compound.getString("fuel_type").toUpperCase());
+        this.ratio = compound.getFloat("ratio");
     }
 
     @Override
@@ -309,6 +348,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
         }
         compound.putInt("Luminosity", luminosity);
         compound.putString("fuel_type", propellants.getName());
+        compound.putFloat("ratio", this.ratio);
         super.saveAdditional(compound);
         forceFluidLevelUpdate = false;
     }
@@ -396,6 +436,7 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
     @Override
     public void setWidth(int width) {
         this.width = width;
+        NetworkInit.sendToTracking(this, new FuelTankSizePacket(this.getBlockPos(), width, this.getController()));
     }
 
     @Override
