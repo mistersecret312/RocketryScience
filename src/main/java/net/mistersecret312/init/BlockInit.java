@@ -44,14 +44,19 @@ public class BlockInit
                     nozzleBlockEmission(15))));
 
     public static final RegistryObject<SolidFuelTankBlock> COPPER_SOLID_FUEL_TANK = registerBlock("copper_solid_fuel_tank",
-            () -> new SolidFuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5), 100));
+            () -> new SolidFuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).sound(SoundType.COPPER).strength(5), 100));
     public static final RegistryObject<FuelTankBlock> FUEL_TANK = BLOCKS.register("fuel_tank",
-            () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).strength(5).noOcclusion(), 2000));
+            () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).sound(SoundType.COPPER).strength(5).noOcclusion(), 2000));
 
     public static final RegistryObject<LaunchPadBlock> LAUNCH_PAD = registerBlock("launch_pad",
-            () -> new LaunchPadBlock(BlockBehaviour.Properties.of()));
+            () -> new LaunchPadBlock(BlockBehaviour.Properties.of().sound(SoundType.BASALT)));
+    public static final RegistryObject<LaunchPadBlock> EXHAUST_GRATE = registerBlock("exhaust_grate",
+            () -> new LaunchPadBlock(BlockBehaviour.Properties.of().noOcclusion().sound(SoundType.COPPER)));
     public static final RegistryObject<LaunchTowerBlock> LAUNCH_TOWER = registerBlock("launch_tower",
-            () -> new LaunchTowerBlock(BlockBehaviour.Properties.of().noOcclusion()));
+            () -> new LaunchTowerBlock(BlockBehaviour.Properties.of().noOcclusion().sound(SoundType.LANTERN)));
+
+    public static final RegistryObject<Block> HAZARD_STRIP = registerBlock("hazard_strip",
+            () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.BASALT)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

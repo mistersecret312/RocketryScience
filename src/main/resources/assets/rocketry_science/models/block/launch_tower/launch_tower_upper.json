@@ -44,8 +44,8 @@
 			"from": [6.75, 26, 8],
 			"to": [9.25, 28, 8],
 			"forge_data": {
-				"block_light": 8,
-				"sky_light": 8
+				"block_light": 15,
+				"sky_light": 15
 			},
 			"rotation": {"angle": -45, "axis": "y", "origin": [8, 24, 8]},
 			"faces": {
@@ -58,8 +58,8 @@
 			"from": [8, 26, 6.75],
 			"to": [8, 28, 9.25],
 			"forge_data": {
-				"block_light": 8,
-				"sky_light": 8
+				"block_light": 15,
+				"sky_light": 15
 			},
 			"rotation": {"angle": -45, "axis": "y", "origin": [8, 24, 8]},
 			"faces": {

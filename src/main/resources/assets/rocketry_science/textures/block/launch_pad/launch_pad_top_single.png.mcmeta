@@ -7,7 +7,11 @@
     ],
     "extra":{
       "ignore_states":true,
-      "connect_inside":true
+      "connect_inside":true,
+      "connect_to": [
+           { "block": "rocketry_science:launch_pad" },
+           { "block": "rocketry_science:exhaust_grate" }
+      ]
     }
   }
 }
