@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "connection=none": {
+      "model": "rocketry_science:block/launch_tower/launch_tower_single"
+    },
+    "connection=bottom": {
+      "model": "rocketry_science:block/launch_tower/launch_tower_upper"
+    },
+    "connection=up": {
+      "model": "rocketry_science:block/launch_tower/launch_tower_lower"
+    },
+    "connection=middle": {
+      "model": "rocketry_science:block/launch_tower/launch_tower_middle"
+    }
+  }
+}

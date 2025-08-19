@@ -51,7 +51,7 @@ public class BlockInit
     public static final RegistryObject<LaunchPadBlock> LAUNCH_PAD = registerBlock("launch_pad",
             () -> new LaunchPadBlock(BlockBehaviour.Properties.of()));
     public static final RegistryObject<LaunchTowerBlock> LAUNCH_TOWER = registerBlock("launch_tower",
-            () -> new LaunchTowerBlock(BlockBehaviour.Properties.of()));
+            () -> new LaunchTowerBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

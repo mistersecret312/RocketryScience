@@ -116,7 +116,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                 modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
         }
         pose.popPose();
-        if(!ConfigInit.enable_frost_layer.get())
+        if(ConfigInit.enable_frost_layer.get())
         {
             for (int i = 0; i <= 3; i++)
             {
@@ -206,7 +206,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         }
         pose.popPose();
 
-        if(!ConfigInit.enable_frost_layer.get())
+        if(ConfigInit.enable_frost_layer.get())
         {
             for (int i = 0; i <= 3; i++)
             {
@@ -480,13 +480,13 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
             pose.rotateAround(Axis.YP.rotationDegrees(states.get(i).getSecond().getFirst()), x+0.5f, 0, z+0.5f);
             pose.translate(x, y, z);
             BakedModel model = blockRenderer.getBlockModel(state);
-            light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(0, i, 0));
+            light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(x,y,z));
             for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY))
                 modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
             pose.popPose();
         }
 
-        if(!ConfigInit.enable_frost_layer.get())
+        if(ConfigInit.enable_frost_layer.get())
         {
             for (int i = 0; i <= 3; i++)
             {

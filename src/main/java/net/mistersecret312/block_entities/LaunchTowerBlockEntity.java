@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.mistersecret312.blocks.LaunchPadBlock;
 import net.mistersecret312.init.BlockEntityInit;
 import org.jetbrains.annotations.Nullable;
+import team.chisel.ctm.CTM;
 
 import java.util.List;
 
@@ -44,7 +45,8 @@ public class LaunchTowerBlockEntity extends MultiBlockEntity
     @Override
     public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
     {
-        return pos.getX() != this.getBlockPos().getX() && pos.getZ() != this.getBlockPos().getZ();
+        return pos.getX() == this.getBlockPos().getX()
+                && pos.getZ() == this.getBlockPos().getZ();
     }
 
     @Override

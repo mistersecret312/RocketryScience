@@ -119,6 +119,7 @@ public class RocketryScienceMod
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_VACUUM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_SOLID.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.FUEL_TANK.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.LAUNCH_TOWER.get(), RenderType.cutout());
         }
     }
 }

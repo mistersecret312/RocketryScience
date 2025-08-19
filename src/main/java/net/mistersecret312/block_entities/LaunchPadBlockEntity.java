@@ -52,7 +52,7 @@ public class LaunchPadBlockEntity extends MultiBlockEntity
     {
         int distanceX = pos.getX()-this.getBlockPos().getX();
         int distanceZ = pos.getZ()-this.getBlockPos().getZ();
-        System.out.println(distanceX);
+        //System.out.println(distanceX);
         return pos.getY() == this.getBlockPos().getY();
     }
 

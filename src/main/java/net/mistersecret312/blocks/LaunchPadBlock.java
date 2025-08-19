@@ -26,9 +26,9 @@ public class LaunchPadBlock extends MultiblockBlock
         LaunchPadBlockEntity pad = (LaunchPadBlockEntity) pLevel.getBlockEntity(pPos);
         if(pad != null && !pLevel.isClientSide())
         {
-            System.out.println("X size: " + pad.getXSize());
-            System.out.println("Z size: " + pad.getZSize());
-            System.out.println("Complete: " + pad.isComplete());
+            //System.out.println("X size: " + pad.getXSize());
+            //System.out.println("Z size: " + pad.getZSize());
+            //System.out.println("Complete: " + pad.isComplete());
         }
 
         return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
