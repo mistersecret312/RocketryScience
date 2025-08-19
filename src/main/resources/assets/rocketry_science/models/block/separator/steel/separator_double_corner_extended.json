@@ -4,8 +4,8 @@
 	"parent": "minecraft:block/block",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "rocketry_science:block/decoupler/double/decoupler_double_corner",
-		"particle": "rocketry_science:block/decoupler/double/decoupler_double_corner"
+		"0": "rocketry_science:block/separator/double/separator_double_corner",
+		"particle": "rocketry_science:block/separator/double/separator_double_corner"
 	},
 	"elements": [
 		{
