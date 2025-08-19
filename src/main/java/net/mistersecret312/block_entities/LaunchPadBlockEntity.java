@@ -50,9 +50,6 @@ public class LaunchPadBlockEntity extends MultiBlockEntity
     @Override
     public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
     {
-        int distanceX = pos.getX()-this.getBlockPos().getX();
-        int distanceZ = pos.getZ()-this.getBlockPos().getZ();
-        //System.out.println(distanceX);
         return pos.getY() == this.getBlockPos().getY();
     }
 
