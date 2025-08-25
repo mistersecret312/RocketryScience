@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.mistersecret312.client.entity.RocketRenderer;
 import net.mistersecret312.client.model.PlumeModel;
 import net.mistersecret312.client.renderer.FuelTankRenderer;
 import net.mistersecret312.client.renderer.PlumeRenderer;
@@ -58,6 +60,7 @@ public class RocketryScienceMod
         FluidInit.register(modEventBus);
         FluidTypeInit.register(modEventBus);
         SoundInit.register(modEventBus);
+        EntityInit.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigInit.CLIENT_CONFIG, "rocketry_science-client.toml");
 
@@ -107,6 +110,8 @@ public class RocketryScienceMod
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
+            EntityRenderers.register(EntityInit.ROCKET.get(), RocketRenderer::new);
+
             ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_LIQUID_HYDROGEN.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_LIQUID_HYDROGEN.get(), RenderType.translucent());
 
