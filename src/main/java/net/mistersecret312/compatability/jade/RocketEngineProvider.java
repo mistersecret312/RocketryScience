@@ -11,7 +11,6 @@ import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.init.CapabilityInit;
-import net.mistersecret312.mishaps.MishapType;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -44,21 +43,12 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
             fraction.setMinimumFractionDigits(0);
             fraction.setGroupingUsed(false);
 
-            boolean minorMishap = accessor.getServerData().getBoolean("has_minor_mishap");
             double thrust = accessor.getServerData().getDouble("thrust");
             double mass = accessor.getServerData().getDouble("mass");
             int throttle = accessor.getServerData().getInt("throttle");
-            double reliability = accessor.getServerData().getDouble("reliability");
-            double integrity = accessor.getServerData().getDouble("integrity");
-            double maxIntegrity = accessor.getServerData().getDouble("max_integrity");
 
             tooltip.add(Component.translatable("data.rocketry_science.mass", fraction.format(mass)));
             tooltip.add(Component.translatable("data.rocketry_science.thrust", fraction.format(thrust * ((double) throttle / 15)), thrust));
-            tooltip.add(Component.translatable("data.rocketry_science.reliability", String.format("%.0f%%", reliability * 100)));
-            tooltip.add(Component.translatable("data.rocketry_science.integrity", fraction.format(integrity), maxIntegrity));
-
-            if(minorMishap)
-                tooltip.add(Component.translatable("data.rocketry_science.minor_mishap").withStyle(ChatFormatting.RED));
         }
     }
 
@@ -78,13 +68,8 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
                 tag.putBoolean("is_liquid_rocket_engine", nozzle.isLiquidPropellant());
 
             tag.putBoolean("is_built", rocketEngine.isBuilt);
-            tag.putBoolean("has_minor_mishap", rocketEngine.mishaps.stream().anyMatch(mishap -> mishap.getType().category.equals(MishapType.MishapCategory.MINOR)));
-            tag.putBoolean("has_major_mishap", rocketEngine.mishaps.stream().anyMatch(mishap -> mishap.getType().category.equals(MishapType.MishapCategory.MAJOR)));
             tag.putDouble("thrust", blueprint.thrust_kN);
             tag.putDouble("mass", blueprint.mass);
-            tag.putDouble("integrity", rocketEngine.integrity);
-            tag.putDouble("max_integrity", blueprint.maxIntegrity);
-            tag.putDouble("reliability", rocketEngine.reliability);
             tag.putInt("throttle", rocketEngine.throttle);
         });
     }

@@ -30,6 +30,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.mistersecret312.client.model.PlumeModel;
 import net.mistersecret312.client.renderer.FuelTankRenderer;
 import net.mistersecret312.client.renderer.PlumeRenderer;
+import net.mistersecret312.client.renderer.SeparatorRenderer;
 import net.mistersecret312.client.renderer.SolidPlumeRenderer;
 import net.mistersecret312.init.*;
 import org.slf4j.Logger;
@@ -56,7 +57,6 @@ public class RocketryScienceMod
         BlockEntityInit.register(modEventBus);
         FluidInit.register(modEventBus);
         FluidTypeInit.register(modEventBus);
-        MishapInit.register(modEventBus);
         SoundInit.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigInit.CLIENT_CONFIG, "rocketry_science-client.toml");
@@ -100,6 +100,8 @@ public class RocketryScienceMod
                     context -> new SolidPlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
             event.registerBlockEntityRenderer(BlockEntityInit.LIQUID_FUEL_TANK.get(),
                     context -> new FuelTankRenderer());
+            event.registerBlockEntityRenderer(BlockEntityInit.SEPARATOR.get(),
+                    context -> new SeparatorRenderer());
         }
 
         @SubscribeEvent
@@ -120,6 +122,8 @@ public class RocketryScienceMod
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_SOLID.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.FUEL_TANK.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.LAUNCH_TOWER.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.SEPARATOR.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_ROCKET_ENGINE_STUB.get(), RenderType.cutout());
         }
     }
 }

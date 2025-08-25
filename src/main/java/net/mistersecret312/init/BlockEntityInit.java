@@ -27,6 +27,8 @@ public class BlockEntityInit
     public static final RegistryObject<BlockEntityType<LaunchTowerBlockEntity>> LAUNCH_TOWER = BLOCK_ENTITIES.register("launch_tower",
             () -> BlockEntityType.Builder.of(LaunchTowerBlockEntity::new, BlockInit.LAUNCH_TOWER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<SeparatorBlockEntity>> SEPARATOR = BLOCK_ENTITIES.register("separator",
+            () -> BlockEntityType.Builder.of(SeparatorBlockEntity::new, BlockInit.SEPARATOR.get()).build(null));
 
     public static void register(IEventBus bus)
     {

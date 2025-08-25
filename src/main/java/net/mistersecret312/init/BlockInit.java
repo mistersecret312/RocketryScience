@@ -57,6 +57,11 @@ public class BlockInit
 
     public static final RegistryObject<Block> HAZARD_STRIP = registerBlock("hazard_strip",
             () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.BASALT)));
+    public static final RegistryObject<Block> SEPARATOR = BLOCKS.register("separator",
+            () -> new SeparatorBlock(BlockBehaviour.Properties.of().noOcclusion()));
+
+    public static final RegistryObject<Block> STEEL_ROCKET_ENGINE_STUB = registerBlock("steel_rocket_engine_stub",
+            () -> new Block(BlockBehaviour.Properties.of().noOcclusion()));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

@@ -60,7 +60,7 @@
       "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_middle_edge"
     },
     "shape=triple_corner,top=false,bottom=false": {
-      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_middle_corner"
+      "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_middle_edge"
     },
     "shape=triple_center,top=false,bottom=false": {
       "model": "rocketry_science:block/tank/steel/liquid/liquid_fuel_tank_triple_middle_center"

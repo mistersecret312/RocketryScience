@@ -10,6 +10,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.items.BlueprintItem;
 import net.mistersecret312.items.FuelTankBlockItem;
+import net.mistersecret312.items.SeparatorBlockItem;
 
 public class ItemInit
 {
@@ -27,6 +28,8 @@ public class ItemInit
 
     public static final RegistryObject<FuelTankBlockItem> FUEL_TANK = ITEMS.register("fuel_tank",
             () -> new FuelTankBlockItem(BlockInit.FUEL_TANK.get(), new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<SeparatorBlockItem> SEPARATOR = ITEMS.register("separator",
+            () -> new SeparatorBlockItem(BlockInit.SEPARATOR.get(), new Item.Properties().stacksTo(64)));
 
     public static void register(IEventBus bus)
     {

@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "shape=single,extended=false": {
+      "model": "rocketry_science:block/separator/steel/separator_single"
+    },
+    "shape=single,extended=true": {
+      "model": "rocketry_science:block/separator/steel/separator_single_extended"
+    },
+
+    "shape=double,extended=false": {
+      "model": "rocketry_science:block/separator/steel/separator_double_corner"
+    },
+    "shape=double,extended=true": {
+      "model": "rocketry_science:block/separator/steel/separator_double_corner_extended"
+    },
+
+    "shape=triple_corner,extended=false": {
+      "model": "rocketry_science:block/separator/steel/separator_triple_corner"
+    },
+    "shape=triple_corner,extended=true": {
+      "model": "rocketry_science:block/separator/steel/separator_triple_corner_extended"
+    },
+    "shape=triple_edge,extended=false": {
+      "model": "rocketry_science:block/separator/steel/separator_triple_middle"
+    },
+    "shape=triple_edge,extended=true": {
+      "model": "rocketry_science:block/separator/steel/separator_triple_middle_extended"
+    },
+    "shape=triple_center,extended=false": {
+      "model": "rocketry_science:block/separator/steel/separator_triple_center"
+    },
+    "shape=triple_center,extended=true": {
+      "model": "rocketry_science:block/separator/steel/separator_triple_center"
+    }
+  }
+}

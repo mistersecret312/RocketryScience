@@ -21,10 +21,7 @@ import net.mistersecret312.capabilities.BlueprintDataCapability;
 import net.mistersecret312.fluids.RocketFuelTank;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.CapabilityInit;
-import net.mistersecret312.init.MishapInit;
 import net.mistersecret312.init.NetworkInit;
-import net.mistersecret312.mishaps.Mishap;
-import net.mistersecret312.mishaps.MishapType;
 import net.mistersecret312.network.packets.RocketEngineSoundPacket;
 import net.mistersecret312.util.RocketFuel;
 import org.jetbrains.annotations.NotNull;
@@ -150,25 +147,11 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
 
         }
 
-        rocketEngine.getBlueprint().calculateReliability();
-        double reliabilityEffects = 0;
-        for(Mishap<RocketEngineBlockEntity,?> mishap : rocketEngine.mishaps)
-            reliabilityEffects += mishap.getType().physicalEffect;
-        rocketEngine.setReliability(trimDouble(rocketEngine.getBlueprint().reliability*Math.max(0.2d, rocketEngine.integrity/rocketEngine.maxIntegrity))+reliabilityEffects);
-
         BlockPos nozzlePos = pos.relative(state.getValue(FACING).getOpposite());
         BlockState nozzleState = level.getBlockState(nozzlePos);
         if(nozzleState.getBlock() instanceof NozzleBlock && nozzleState.getValue(NozzleBlock.FACING).equals(state.getValue(FACING)))
         {
-            if(rocketEngine.integrity == 0)
-            {
-                level.explode(null, pos.getX(), pos.getY(), pos.getZ(),4, false, Level.ExplosionInteraction.NONE);
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
-                level.destroyBlock(nozzlePos, true);
-            }
-
             rocketEngine.setBuilt(true);
-            rocketEngine.mishaps.forEach(mishap -> mishap.tickToPhysical(rocketEngine));
 
             if (rocketEngine.isRunning())
             {
@@ -176,22 +159,6 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
                     rocketEngine.deactiveEngine(rocketEngine, nozzlePos, nozzleState);
                 else
                 {
-                    RandomSource random = level.getRandom();
-                    if(level.getGameTime() % 20 == 0 && random.nextDouble() > rocketEngine.reliability)
-                    {
-                        RocketEngineBlueprint blueprint = rocketEngine.getBlueprint();
-                        MishapType<?, RocketEngineBlockEntity, RocketEngineBlueprint> mishapType = ((MishapType<?, RocketEngineBlockEntity, RocketEngineBlueprint>) MishapInit.getRandomType(MishapType.MishapTarget.ROCKET_ENGINE));
-
-                        if(mishapType != null && blueprint != null)
-                        {
-                            Mishap<RocketEngineBlockEntity, ?> mishapBlockEntity = mishapType.create(rocketEngine, null);
-                            Mishap<?, RocketEngineBlueprint> mishapBlueprint = mishapType.create(null, blueprint);
-                            //rocketEngine.mishaps.add(mishapBlockEntity);
-                            //blueprint.mishaps.add(mishapBlueprint);
-                            rocketEngine.setChanged();
-                        }
-                    }
-
                     if(rocketEngine.soundTick == 0 && rocketEngine.isRunning)
                     {
                         NetworkInit.sendToTracking(rocketEngine, new RocketEngineSoundPacket(rocketEngine.worldPosition, false));
@@ -199,7 +166,6 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
                     }
                     rocketEngine.soundTick--;
                     rocketEngine.fuelTank.drain(Math.max(1, 8*(rocketEngine.throttle/15)), IFluidHandler.FluidAction.EXECUTE);
-                    rocketEngine.setIntegrity(trimDouble(rocketEngine.integrity - Math.max(0.01, 0.1 * ((double) rocketEngine.throttle / 15))));
                     rocketEngine.setThrottle(15);
                     rocketEngine.setRuntime(rocketEngine.runtime+1);
                     if (nozzleState.getValue(NozzleBlock.HOT) < 3 && level.getGameTime() % 200 == 0)

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "rocketry_science:block/rocket_engine/stub/steel"
+    }
+  }
+}

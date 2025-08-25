@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.mistersecret312.block_entities.FuelTankBlockEntity;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
+import net.mistersecret312.block_entities.SeparatorBlockEntity;
 import net.mistersecret312.init.SoundInit;
 import net.mistersecret312.network.packets.FuelTankFrostPacket;
 import net.mistersecret312.network.packets.FuelTankSizePacket;
@@ -42,6 +43,10 @@ public class ClientPacketHandler
         if(blockEntity instanceof FuelTankBlockEntity fuelTank)
         {
             fuelTank.load(packet.tag);
+        }
+        if(blockEntity instanceof SeparatorBlockEntity separator)
+        {
+            separator.load(packet.tag);
         }
     }
 

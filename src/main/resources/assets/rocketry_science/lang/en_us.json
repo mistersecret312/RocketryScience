@@ -15,6 +15,7 @@
   "block.rocketry_science.steel_nozzle_atmosphere": "Atmosphere-Optimized Steel Nozzle",
   "block.rocketry_science.steel_nozzle_vacuum": "Vacuum-Optimized Steel Nozzle",
   "block.rocketry_science.steel_nozzle_solid": "Solid Rocket Booster Steel Nozzle",
+  "block.rocketry_science.steel_rocket_engine_stub": "Steel Stub",
 
   "block.rocketry_science.copper_solid_fuel_tank": "Copper Solid Fuel Tank",
   "block.rocketry_science.fuel_tank": "Fuel Tank",
@@ -22,6 +23,7 @@
   "block.rocketry_science.launch_pad": "Launch Pad",
   "block.rocketry_science.exhaust_grate": "Exhaust Grate",
   "block.rocketry_science.launch_tower": "Launch Tower",
+  "block.rocketry_science.separator": "Separator",
 
   "block.rocketry_science.hazard_strip": "Hazard Strip",
 

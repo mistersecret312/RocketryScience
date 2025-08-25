@@ -22,6 +22,7 @@ public class ItemTabInit
                         output.accept(BlockInit.STEEL_NOZZLE_ATMOPSHERE.get());
                         output.accept(BlockInit.STEEL_NOZZLE_VACUUM.get());
                         output.accept(BlockInit.STEEL_NOZZLE_SOLID.get());
+                        output.accept(BlockInit.STEEL_ROCKET_ENGINE_STUB.get());
 
                         output.accept(BlockInit.COPPER_SOLID_FUEL_TANK.get());
                         output.accept(ItemInit.FUEL_TANK.get());
@@ -35,6 +36,7 @@ public class ItemTabInit
                         output.accept(BlockInit.LAUNCH_TOWER.get());
 
                         output.accept(BlockInit.HAZARD_STRIP.get());
+                        output.accept(ItemInit.SEPARATOR.get());
                     })
                     .build());
 
