@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.RenderTypeHelper;
@@ -73,27 +74,27 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         {
             if(fuelTank.getControllerBE().getWidth() == 3)
             {
-                renderTripleWidth(fuelTank, pose, buffer, overlay, light);
+                renderTripleWidth(fuelTank.getHeight(), fuelTank.getLevel(), fuelTank.getBlockPos(), fuelTank.ratio, pose, buffer, overlay, light);
             }
             if (fuelTank.getControllerBE().getWidth() == 2)
             {
-                renderDoubleWidth(fuelTank, pose, buffer, overlay, light);
+                renderDoubleWidth(fuelTank.getHeight(), fuelTank.getLevel(), fuelTank.getBlockPos(), fuelTank.ratio, pose, buffer, overlay, light);
 
             }
             if (fuelTank.getControllerBE().getWidth() == 1)
             {
-                renderSingularWidth(fuelTank, pose, buffer, overlay, light);
+                renderSingularWidth(fuelTank.getHeight(), fuelTank.getLevel(), fuelTank.getBlockPos(), fuelTank.ratio, pose, buffer, overlay, light);
             }
         }
     }
 
-    public void renderSingularWidth(FuelTankBlockEntity fuelTank, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
+    public static void renderSingularWidth(int height, Level level, BlockPos pos, float ratio, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
     {
         List<BlockState> states = new ArrayList<>();
-        if(fuelTank.getHeight() != 1)
+        if(height != 1)
         {
             states.add(SINGLE_BOTTOM);
-            for (int i = 0; i < fuelTank.getHeight()-2; i++)
+            for (int i = 0; i < height-2; i++)
             {
                 states.add(SINGLE_MIDDLE);
             }
@@ -111,7 +112,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
             BlockState state = states.get(i);
             pose.translate(0f, i == 0 ? 0f : 1f, 0f);
             BakedModel model = blockRenderer.getBlockModel(state);
-            light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(0, i, 0));
+            light = LevelRenderer.getLightColor(level, pos.offset(0, i, 0));
             for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY))
                 modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
         }
@@ -120,8 +121,8 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         {
             for (int i = 0; i <= 3; i++)
             {
-                float level = (fuelTank.getHeight()-0.1F) * fuelTank.ratio;
-                if (level != 0.0F)
+                float fluidLevel = (height-0.1F) * ratio;
+                if (fluidLevel != 0.0F)
                 {
                     pose.pushPose();
                     if (i == 0)
@@ -145,13 +146,13 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                         pose.translate(0f, 0f, 0.9f);
 
                     }
-                    pose.translate(0f, level, 0f);
+                    pose.translate(0f, fluidLevel, 0f);
                     int r = 255, g = 255, b = 255, a = 120;
                     VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
                     pose.mulPose(Axis.XP.rotationDegrees(90));
                     consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
-                    consumer.vertex(pose.last().pose(), 0, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
-                    consumer.vertex(pose.last().pose(), 0.9f, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, fluidLevel - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0.9f, 0.05f, fluidLevel - 0.1f).color(r, g, b, a).uv2(light).endVertex();
                     consumer.vertex(pose.last().pose(), 0.9f, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
                     pose.popPose();
                 }
@@ -159,15 +160,13 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         }
     }
 
-    public void renderDoubleWidth(FuelTankBlockEntity fuelTank, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
+    public static void renderDoubleWidth(int height, Level level, BlockPos pos, float ratio, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
     {
-
-
         List<BlockState> states = new ArrayList<>();
-        if(fuelTank.getHeight() != 1)
+        if(height != 1)
         {
             states.add(DOUBLE_BOTTOM);
-            for (int i = 0; i < fuelTank.getHeight()-2; i++)
+            for (int i = 0; i < height-2; i++)
             {
                 states.add(DOUBLE_MIDDLE);
             }
@@ -198,7 +197,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                 BlockState state = states.get(i);
                 pose.translate(0f, i == 0 ? 0f : 1f, 0f);
                 BakedModel model = blockRenderer.getBlockModel(state);
-                light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(0, i, 0));
+                light = LevelRenderer.getLightColor(level, pos.offset(0, i, 0));
                 for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY))
                     modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
             }
@@ -210,8 +209,8 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         {
             for (int i = 0; i <= 3; i++)
             {
-                float level = (fuelTank.getHeight()-0.1F) * fuelTank.ratio;
-                if (level != 0.0F)
+                float fluidLevel = (height-0.1F) * ratio;
+                if (fluidLevel != 0.0F)
                 {
                     pose.pushPose();
                     if (i == 0)
@@ -235,13 +234,13 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                         pose.translate(0f, 0f, 1.9f);
 
                     }
-                    pose.translate(0f, level, 0f);
+                    pose.translate(0f, fluidLevel, 0f);
                     int r = 255, g = 255, b = 255, a = 120;
                     VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
                     pose.mulPose(Axis.XP.rotationDegrees(90));
                     consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
-                    consumer.vertex(pose.last().pose(), 0, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
-                    consumer.vertex(pose.last().pose(), 1.9f, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, fluidLevel - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 1.9f, 0.05f, fluidLevel - 0.1f).color(r, g, b, a).uv2(light).endVertex();
                     consumer.vertex(pose.last().pose(), 1.9f, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
                     pose.popPose();
                 }
@@ -249,14 +248,14 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         }
     }
 
-    public void renderTripleWidth(FuelTankBlockEntity fuelTank, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
+    public static void renderTripleWidth(int height, Level level, BlockPos pos, float ratio, PoseStack pose, MultiBufferSource buffer, int overlay, int light)
     {
         List<Pair<BlockPos, Pair<Integer, BlockState>>> states = new ArrayList<>();
         BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
         ModelBlockRenderer modelRenderer = blockRenderer.getModelRenderer();
-        if (fuelTank.getHeight() != 1)
+        if (height != 1)
         {
-            for (int y = 0; y < fuelTank.getHeight(); y++)
+            for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < 3; x++)
                 {
@@ -268,7 +267,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             if (x == 2)
                             {
                                 rotation = 90;
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
                                     continue;
@@ -283,7 +282,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             if (x == 1)
                             {
                                 rotation = 180;
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
                                     continue;
@@ -298,7 +297,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             if (x == 0)
                             {
                                 rotation = 180;
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
                                     continue;
@@ -316,7 +315,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             if (x == 2)
                             {
                                 rotation = 90;
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                         states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
                                     continue;
@@ -330,7 +329,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             }
                             if (x == 1)
                             {
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CENTER)));
                                     continue;
@@ -344,7 +343,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             if (x == 0)
                             {
                                 rotation = 270;
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
                                     continue;
@@ -361,7 +360,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                         {
                             if (x == 2)
                             {
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
                                     continue;
@@ -375,7 +374,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             }
                             if (x == 1)
                             {
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_EDGE)));
                                     continue;
@@ -390,7 +389,7 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                             if (x == 0)
                             {
                                 rotation = 270;
-                                if(y == fuelTank.getHeight()-1)
+                                if(y == height-1)
                                 {
                                     states.add(Pair.of(new BlockPos(x, y, z), Pair.of(rotation, TRIPLE_UPPER_CORNER)));
                                     continue;
@@ -472,15 +471,15 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         for (int i = 0; i < states.size(); i++)
         {
             BlockState state = states.get(i).getSecond().getSecond();
-            BlockPos pos = states.get(i).getFirst();
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
+            BlockPos statePos = states.get(i).getFirst();
+            int x = statePos.getX();
+            int y = statePos.getY();
+            int z = statePos.getZ();
             pose.pushPose();
             pose.rotateAround(Axis.YP.rotationDegrees(states.get(i).getSecond().getFirst()), x+0.5f, 0, z+0.5f);
             pose.translate(x, y, z);
             BakedModel model = blockRenderer.getBlockModel(state);
-            light = LevelRenderer.getLightColor(fuelTank.getLevel(), fuelTank.getBlockPos().offset(x,y,z));
+            light = LevelRenderer.getLightColor(level, pos.offset(x,y,z));
             for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY))
                 modelRenderer.renderModel(pose.last(), buffer.getBuffer(rt), null, model, 1f, 1f, 1f, light, overlay);
             pose.popPose();
@@ -490,8 +489,8 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
         {
             for (int i = 0; i <= 3; i++)
             {
-                float level = (fuelTank.getHeight()-0.1F) * fuelTank.ratio;
-                if (level != 0.0F)
+                float fluidLevel = (height-0.1F) * ratio;
+                if (fluidLevel != 0.0F)
                 {
                     pose.pushPose();
                     if (i == 0)
@@ -515,13 +514,13 @@ public class FuelTankRenderer implements BlockEntityRenderer<FuelTankBlockEntity
                         pose.translate(0f, 0f, 2.9f);
 
                     }
-                    pose.translate(0f, level, 0f);
+                    pose.translate(0f, fluidLevel, 0f);
                     int r = 255, g = 255, b = 255, a = 120;
                     VertexConsumer consumer = buffer.getBuffer(RocketRenderTypes.frost());
                     pose.mulPose(Axis.XP.rotationDegrees(90));
                     consumer.vertex(pose.last().pose(), 0, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
-                    consumer.vertex(pose.last().pose(), 0, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
-                    consumer.vertex(pose.last().pose(), 2.9f, 0.05f, level - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 0, 0.05f, fluidLevel - 0.1f).color(r, g, b, a).uv2(light).endVertex();
+                    consumer.vertex(pose.last().pose(), 2.9f, 0.05f, fluidLevel - 0.1f).color(r, g, b, a).uv2(light).endVertex();
                     consumer.vertex(pose.last().pose(), 2.9f, 0.05f, 0).color(r, g, b, a).uv2(light).endVertex();
                     pose.popPose();
                 }
