@@ -44,11 +44,25 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
             fraction.setGroupingUsed(false);
 
             double thrust = accessor.getServerData().getDouble("thrust");
+            String thrustMeasure = "kN";
             double mass = accessor.getServerData().getDouble("mass");
+            String massMeasure = "kg";
             int throttle = accessor.getServerData().getInt("throttle");
 
-            tooltip.add(Component.translatable("data.rocketry_science.mass", fraction.format(mass)));
-            tooltip.add(Component.translatable("data.rocketry_science.thrust", fraction.format(thrust * ((double) throttle / 15)), thrust));
+            if(thrust > 1000)
+            {
+                thrust /= 1000;
+                thrustMeasure = "MN";
+                fraction.setMaximumFractionDigits(1);
+            }
+            if(mass > 1000)
+            {
+                mass /= 1000;
+                massMeasure = "t";
+                fraction.setMaximumFractionDigits(1);
+            }
+            tooltip.add(Component.translatable("data.rocketry_science.mass", fraction.format(mass)).append(massMeasure));
+            tooltip.add(Component.translatable("data.rocketry_science.thrust", fraction.format(thrust * ((double) throttle / 15)), fraction.format(thrust)).append(thrustMeasure));
         }
     }
 
@@ -62,15 +76,12 @@ public class RocketEngineProvider implements IBlockComponentProvider, IServerDat
     public void appendServerData(CompoundTag tag, BlockAccessor blockAccessor)
     {
         RocketEngineBlockEntity rocketEngine = (RocketEngineBlockEntity) blockAccessor.getBlockEntity();
-        rocketEngine.getLevel().getCapability(CapabilityInit.BLUEPRINTS_DATA).ifPresent(cap -> {
-            RocketEngineBlueprint blueprint = cap.rocketEngineBlueprints.get(rocketEngine.getBlueprintID());
-            if(rocketEngine.getNozzle() != null && rocketEngine.getNozzle().getBlock() instanceof NozzleBlock nozzle)
-                tag.putBoolean("is_liquid_rocket_engine", nozzle.isLiquidPropellant());
+        if(rocketEngine.getNozzle() != null && rocketEngine.getNozzle().getBlock() instanceof NozzleBlock nozzle)
+            tag.putBoolean("is_liquid_rocket_engine", nozzle.isLiquidPropellant());
 
-            tag.putBoolean("is_built", rocketEngine.isBuilt);
-            tag.putDouble("thrust", blueprint.thrust_kN);
-            tag.putDouble("mass", blueprint.mass);
-            tag.putInt("throttle", rocketEngine.throttle);
-        });
+        tag.putBoolean("is_built", rocketEngine.isBuilt);
+        tag.putDouble("thrust", rocketEngine.thrust);
+        tag.putDouble("mass", rocketEngine.mass);
+        tag.putInt("throttle", rocketEngine.throttle);
     }
 }

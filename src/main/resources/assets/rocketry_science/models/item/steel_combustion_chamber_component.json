@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "rocketry_science:item/bipropellant_combustion_chamber"
+  }
+}

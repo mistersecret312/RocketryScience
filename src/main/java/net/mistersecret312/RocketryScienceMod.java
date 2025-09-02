@@ -2,6 +2,7 @@ package net.mistersecret312;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -34,6 +35,7 @@ import net.mistersecret312.client.renderer.FuelTankRenderer;
 import net.mistersecret312.client.renderer.PlumeRenderer;
 import net.mistersecret312.client.renderer.SeparatorRenderer;
 import net.mistersecret312.client.renderer.SolidPlumeRenderer;
+import net.mistersecret312.client.screen.CombustionChamberScreen;
 import net.mistersecret312.init.*;
 import org.slf4j.Logger;
 
@@ -61,6 +63,7 @@ public class RocketryScienceMod
         FluidTypeInit.register(modEventBus);
         SoundInit.register(modEventBus);
         EntityInit.register(modEventBus);
+        MenuInit.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigInit.CLIENT_CONFIG, "rocketry_science-client.toml");
 
@@ -111,6 +114,7 @@ public class RocketryScienceMod
         public static void onClientSetup(FMLClientSetupEvent event)
         {
             EntityRenderers.register(EntityInit.ROCKET.get(), RocketRenderer::new);
+            MenuScreens.register(MenuInit.COMBUSTION_CHAMBER.get(), CombustionChamberScreen::new);
 
             ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_LIQUID_HYDROGEN.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_LIQUID_HYDROGEN.get(), RenderType.translucent());

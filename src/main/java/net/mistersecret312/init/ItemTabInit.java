@@ -7,6 +7,10 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
+import net.mistersecret312.items.CombustionChamberItem;
+import net.mistersecret312.items.TurboPumpItem;
+import net.mistersecret312.util.RocketFuel;
+import net.mistersecret312.util.RocketMaterial;
 
 public class ItemTabInit
 {
@@ -37,6 +41,11 @@ public class ItemTabInit
 
                         output.accept(BlockInit.HAZARD_STRIP.get());
                         output.accept(ItemInit.SEPARATOR.get());
+
+                        output.accept(CombustionChamberItem.create(ItemInit.STEEL_COMBUSTION_CHAMBER.get(),
+                                RocketFuel.HYDROLOX, RocketMaterial.STAINLESS_STEEL));
+                        output.accept(TurboPumpItem.create(ItemInit.STEEL_TURBOPUMP.get(),
+                                RocketMaterial.STAINLESS_STEEL));
                     })
                     .build());
 

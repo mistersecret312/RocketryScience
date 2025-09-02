@@ -7,6 +7,8 @@
   "item.rocketry_science.liquid_hydrogen_bucket": "Liquid Hydrogen Bucket",
   "item.rocketry_science.liquid_oxygen_bucket": "Liquid Oxygen Bucket",
   "item.rocketry_science.liquid_nitrogen_bucket": "Liquid Nitrogen Bucket",
+  "item.rocketry_science.steel_turbopump": "Steel Turbopump",
+  "item.rocketry_science.steel_combustion_chamber_component": "Steel  Combustion Chamber",
 
   "block.rocketry_science.liquid_oxygen": "Liquid Oxygen",
   "block.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
@@ -31,12 +33,12 @@
   "fluid_type.rocketry_science.liquid_oxygen": "Liquid Oxygen",
   "fluid_type.rocketry_science.liquid_nitrogen": "Liquid Nitrogen",
 
-  "data.rocketry_science.minor_mishap": "Suffered a minor mishap!",
-  "data.rocketry_science.mass": "Mass: %d kg",
-  "data.rocketry_science.thrust": "Thrust: %1$d/%2$d kN",
-  "data.rocketry_science.reliability": "Reliability: %s",
-  "data.rocketry_science.integrity": "Integrity: %1$d/%2$d",
+  "data.rocketry_science.mass": "Mass: %d ",
+  "data.rocketry_science.thrust": "Thrust: %1$d/%2$d ",
   "data.rocketry_science.fuel": "Fuel: %1$s/%2$s",
+
+  "desc.rocketry_science.rocket_fuel.hydrolox": "Fuel Type: Hydrolox",
+  "desc.rocketry_science.rocket_material.stainless_steel": "Material: Stainless Steel",
 
   "rocket.rocketry_science.steel_rocket_engine": "Steel Rocket Engine",
 

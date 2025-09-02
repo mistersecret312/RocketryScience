@@ -18,13 +18,14 @@ public class SolidRocketBoosterBlockEntity extends RocketEngineBlockEntity
     public SolidRocketBoosterBlockEntity(BlockPos pos, BlockState state)
     {
         super(BlockEntityInit.SRB.get(), pos, state);
+        this.mass = 25000;
+        this.efficiency = 250;
+        this.thrust = 10000;
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SolidRocketBoosterBlockEntity rocketEngine)
     {
         if(level.isClientSide())
-            return;
-        if(rocketEngine.getBlueprint() == null)
             return;
 
         BlockPos nozzlePos = pos;

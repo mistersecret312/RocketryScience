@@ -3,16 +3,13 @@ package net.mistersecret312.block_entities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
 import net.mistersecret312.blocks.NozzleBlock;
-import net.mistersecret312.blueprint.RocketEngineBlueprint;
-import net.mistersecret312.capabilities.BlueprintDataCapability;
 import net.mistersecret312.init.*;
 import net.mistersecret312.network.packets.RocketEngineSoundPacket;
 import net.mistersecret312.network.packets.RocketEngineUpdatePacket;
@@ -20,20 +17,20 @@ import net.mistersecret312.sound.RocketEngineSoundWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import static net.mistersecret312.blocks.CombustionChamberBlock.FACING;
 
-public class RocketEngineBlockEntity extends BlueprintBlockEntity
+public class RocketEngineBlockEntity extends BlockEntity
 {
     public static final int COMBUSTION_CHAMBER_CAPACITY = 1000;
 
-    public int blueprintID = 0;
     public boolean isRunning = false;
     public boolean isBuilt = false;
     public int throttle = 0;
+
+    public double mass;
+    public double thrust;
+    public double efficiency;
 
     public int animTick = 0;
     public int soundTick = 0;
@@ -52,30 +49,11 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     public void onLoad()
     {
         super.onLoad();
-        updateBlueprintData();
-    }
-
-    public void updateBlueprintData()
-    {
-
     }
 
     public boolean hasPropellantMixture()
     {
         return true;
-    }
-
-    @Nullable
-    public RocketEngineBlueprint getBlueprint()
-    {
-        LazyOptional<BlueprintDataCapability> lazyCapability = this.level.getCapability(CapabilityInit.BLUEPRINTS_DATA);
-        if(lazyCapability.isPresent())
-        {
-            Optional<BlueprintDataCapability> optionalCapability = lazyCapability.resolve();
-            if(optionalCapability.isPresent())
-                return optionalCapability.get().rocketEngineBlueprints.get(this.getBlueprintID());
-        }
-        return null;
     }
 
     @Nullable
@@ -99,6 +77,36 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         level.setBlock(nozzlePos, nozzleState.setValue(NozzleBlock.ACTIVE, false), 2);
     }
 
+    public void setMass(double mass)
+    {
+        this.mass = trimDouble(mass);
+    }
+
+    public void setEfficiency(double efficiency)
+    {
+        this.efficiency = trimDouble(efficiency);
+    }
+
+    public void setThrust(double thrust)
+    {
+        this.thrust = trimDouble(thrust);
+    }
+
+    public double getMass()
+    {
+        return mass;
+    }
+
+    public double getEfficiency()
+    {
+        return efficiency;
+    }
+
+    public double getThrust()
+    {
+        return thrust;
+    }
+
     @Override
     protected void saveAdditional(CompoundTag tag)
     {
@@ -106,6 +114,9 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         tag.putBoolean("is_running", this.isRunning);
         tag.putBoolean("is_built", this.isBuilt);
         tag.putInt("throttle", this.throttle);
+        tag.putDouble("mass", this.mass);
+        tag.putDouble("thrust", this.thrust);
+        tag.putDouble("efficiency", this.efficiency);
         tag.putDouble("runtime", this.runtime);
     }
 
@@ -116,6 +127,9 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
         this.isRunning = tag.getBoolean("is_running");
         this.isBuilt = tag.getBoolean("is_built");
         this.throttle = tag.getInt("throttle");
+        this.mass = tag.getDouble("mass");
+        this.thrust = tag.getDouble("thrust");
+        this.efficiency = tag.getDouble("efficiency");
         this.runtime = tag.getDouble("runtime");
     }
 
@@ -128,13 +142,6 @@ public class RocketEngineBlockEntity extends BlueprintBlockEntity
     {
         isRunning = running;
         NetworkInit.sendToTracking(this, new RocketEngineUpdatePacket(this.getBlockPos(), isBuilt, isRunning, throttle));
-        setChanged();
-    }
-
-    @Override
-    public void setBlueprintID(int blueprintID)
-    {
-        this.blueprintID = blueprintID;
         setChanged();
     }
 

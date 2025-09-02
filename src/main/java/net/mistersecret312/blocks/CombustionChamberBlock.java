@@ -2,11 +2,16 @@ package net.mistersecret312.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -31,9 +36,11 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.network.NetworkHooks;
 import net.mistersecret312.block_entities.LiquidRocketEngineBlockEntity;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.init.BlockEntityInit;
+import net.mistersecret312.menus.CombustionChamberMenu;
 import org.jetbrains.annotations.Nullable;
 
 public class CombustionChamberBlock extends BaseEntityBlock
@@ -68,6 +75,34 @@ public class CombustionChamberBlock extends BaseEntityBlock
                     return InteractionResult.SUCCESS;
                 }
 
+            }
+        }
+
+        if(!level.isClientSide())
+        {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+
+            if(blockEntity instanceof LiquidRocketEngineBlockEntity)
+            {
+                MenuProvider containerProvider = new MenuProvider()
+                {
+                    @Override
+                    public Component getDisplayName()
+                    {
+                        return Component.translatable("screen.rocketry_science.combustion_chamber");
+                    }
+
+                    @Override
+                    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity)
+                    {
+                        return new CombustionChamberMenu(windowId, playerInventory, blockEntity);
+                    }
+                };
+                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, blockEntity.getBlockPos());
+            }
+            else
+            {
+                throw new IllegalStateException("Our named container provider is missing!");
             }
         }
 

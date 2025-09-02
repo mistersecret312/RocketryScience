@@ -25,7 +25,7 @@ public class SolidPlumeRenderer implements BlockEntityRenderer<RocketEngineBlock
     public void render(RocketEngineBlockEntity rocketEngine, float partialTick, PoseStack poseStack,
                        MultiBufferSource buffer, int light, int overlay)
     {
-        if(rocketEngine.getBlueprint() != null && rocketEngine.isRunning() && rocketEngine.getNozzle() != null)
+        if(rocketEngine.isRunning() && rocketEngine.getNozzle() != null)
         {
             int length = Math.max(0, Math.min(4, rocketEngine.throttle-2));
             rocketEngine.animTick++;
