@@ -10,6 +10,7 @@ import net.mistersecret312.util.RocketFuel;
 import net.mistersecret312.util.RocketMaterial;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CombustionChamberItem extends Item
@@ -51,7 +52,7 @@ public class CombustionChamberItem extends Item
         {
             try
             {
-                return RocketFuel.valueOf(stack.getTag().getString("fuel_type"));
+                return RocketFuel.valueOf(stack.getTag().getString("fuel_type").toUpperCase());
             } catch (IllegalArgumentException e)
             {
                 this.setFuelType(stack, RocketFuel.HYDROLOX);
@@ -63,7 +64,7 @@ public class CombustionChamberItem extends Item
 
     public void setFuelType(ItemStack stack, RocketFuel fuel)
     {
-        stack.getOrCreateTag().putString("fuel_type", fuel.toString());
+        stack.getOrCreateTag().putString("fuel_type", fuel.toString().toLowerCase());
     }
 
     @Nullable
@@ -73,7 +74,7 @@ public class CombustionChamberItem extends Item
         {
             try
             {
-                return RocketMaterial.valueOf(stack.getTag().getString("material"));
+                return RocketMaterial.valueOf(stack.getTag().getString("material").toUpperCase());
             } catch (IllegalArgumentException e)
             {
                 this.setMaterial(stack, RocketMaterial.STAINLESS_STEEL);
@@ -85,7 +86,7 @@ public class CombustionChamberItem extends Item
 
     public void setMaterial(ItemStack stack, RocketMaterial fuel)
     {
-        stack.getOrCreateTag().putString("material", fuel.toString());
+        stack.getOrCreateTag().putString("material", fuel.toString().toLowerCase());
     }
 
 }
