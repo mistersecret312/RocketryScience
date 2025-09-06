@@ -99,6 +99,7 @@ public class CombustionChamberBlock extends BaseEntityBlock
                     }
                 };
                 NetworkHooks.openScreen((ServerPlayer) player, containerProvider, blockEntity.getBlockPos());
+                return InteractionResult.SUCCESS;
             }
             else
             {

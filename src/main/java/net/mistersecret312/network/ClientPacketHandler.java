@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.mistersecret312.block_entities.FuelTankBlockEntity;
@@ -70,5 +71,14 @@ public class ClientPacketHandler
             return null;
         BlockEntity blockEntity = level.getBlockEntity(pos);
         return (T) blockEntity;
+    }
+
+    public static <T extends Entity> T getEntity(int id)
+    {
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null)
+            return null;
+        Entity entity = level.getEntity(id);
+        return (T) entity;
     }
 }
