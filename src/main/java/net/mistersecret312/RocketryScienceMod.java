@@ -37,7 +37,10 @@ import net.mistersecret312.client.renderer.SeparatorRenderer;
 import net.mistersecret312.client.renderer.SolidPlumeRenderer;
 import net.mistersecret312.client.screen.CombustionChamberScreen;
 import net.mistersecret312.init.*;
+import net.mistersecret312.util.rocket.RocketEngineData;
 import org.slf4j.Logger;
+
+import javax.swing.text.html.parser.Entity;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(RocketryScienceMod.MODID)
@@ -64,6 +67,8 @@ public class RocketryScienceMod
         SoundInit.register(modEventBus);
         EntityInit.register(modEventBus);
         MenuInit.register(modEventBus);
+        RocketBlockDataInit.register(modEventBus);
+        EntityDataSerializersInit.register(modEventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigInit.CLIENT_CONFIG, "rocketry_science-client.toml");
 

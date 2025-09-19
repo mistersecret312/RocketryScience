@@ -1,5 +1,8 @@
 package net.mistersecret312.util.rocket;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.mistersecret312.entities.RocketEntity;
@@ -24,7 +27,7 @@ public class Rocket
             stage.tick(level);
     }
 
-    public RocketEntity getRocket()
+    public RocketEntity getRocketEntity()
     {
         return rocket;
     }
@@ -43,5 +46,30 @@ public class Rocket
 
         rocket.stages = stages;
         return rocket;
+    }
+
+    public CompoundTag save()
+    {
+        CompoundTag tag = new CompoundTag();
+
+        ListTag stageTag = new ListTag();
+        for(Stage stage : stages)
+            stageTag.add(stage.save());
+        tag.put("stages", stageTag);
+
+        return tag;
+    }
+
+    public void load(CompoundTag tag)
+    {
+        ListTag stageTag = tag.getList("stages", Tag.TAG_COMPOUND);
+        LinkedHashSet<Stage> stages = new LinkedHashSet<>();
+        for(Tag listTag : stageTag)
+        {
+            Stage stage = new Stage(this);
+            stage.load((CompoundTag) listTag);
+            stages.add(stage);
+        }
+        this.stages = stages;
     }
 }

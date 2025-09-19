@@ -8,7 +8,7 @@
   "item.rocketry_science.liquid_oxygen_bucket": "Liquid Oxygen Bucket",
   "item.rocketry_science.liquid_nitrogen_bucket": "Liquid Nitrogen Bucket",
   "item.rocketry_science.steel_turbopump": "Steel Turbopump",
-  "item.rocketry_science.steel_combustion_chamber_component": "Steel  Combustion Chamber",
+  "item.rocketry_science.steel_combustion_chamber_component": "Steel Combustion Chamber",
 
   "block.rocketry_science.liquid_oxygen": "Liquid Oxygen",
   "block.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
@@ -41,6 +41,8 @@
   "desc.rocketry_science.rocket_material.stainless_steel": "Material: Stainless Steel",
 
   "rocket.rocketry_science.steel_rocket_engine": "Steel Rocket Engine",
+
+  "entity.rocketry_science.rocket": "Rocket",
 
   "sounds.rocketry_science.engine_run": "Rocket engine blasting",
 

@@ -34,6 +34,7 @@ public class RocketFuelTank implements IFluidHandler
         this.propellants = new ArrayList<>();
         for (int tank = 0; tank < tanks; tank++)
             this.propellants.add(new FluidTank(capacity, propellants.get(tank)));
+
     }
 
     public RocketFuelTank(RocketFuelTank otherTank, int capacity)
