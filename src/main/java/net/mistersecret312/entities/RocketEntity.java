@@ -96,50 +96,26 @@ public class RocketEntity extends Entity
         double minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
         double minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
         double minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+
+        AABB aabb = null;
         for (Stage stage : this.getRocket().stages)
         {
             for (Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
             {
-                if(entry.getValue() instanceof FuelTankData tank)
-                {
-                    switch(tank.width)
-                    {
-                        case 1:
-                            minX = Math.min(minX, entry.getKey().getX()-1);
-                            minZ = Math.min(minZ, entry.getKey().getZ()-1);
-                            break;
-                        case 2:
-                            minX = Math.min(minX, entry.getKey().getX()-1);
-                            minZ = Math.min(minZ, entry.getKey().getZ()-1);
-                            maxX = Math.max(maxX, entry.getKey().getX()+1);
-                            maxZ = Math.max(maxX, entry.getKey().getZ()+1);
-                            break;
-                        case 3:
-                            minX = Math.min(minX, entry.getKey().getX()-1);
-                            minZ = Math.min(minZ, entry.getKey().getZ()-1);
-                            maxX = Math.max(maxX, entry.getKey().getX()+2);
-                            maxZ = Math.max(maxX, entry.getKey().getZ()+2);
-                            break;
-                    }
-
-                    minY = Math.min(minY, entry.getKey().getY())*tank.height;
-                    maxY = Math.max(maxY, entry.getKey().getY())*tank.height;
-
-                    continue;
-                }
-
-                minX = Math.min(minX, entry.getKey().getX());
-                minY = Math.min(minY, entry.getKey().getY());
-                minZ = Math.min(minZ, entry.getKey().getZ());
-                maxX = Math.max(maxX, entry.getKey().getX());
-                maxY = Math.max(maxY, entry.getKey().getY());
-                maxZ = Math.max(maxZ, entry.getKey().getZ());
+                if(aabb == null)
+                    aabb = entry.getValue().affectBoundingBox(new AABB(this.position(),
+                            this.position()), this);
+                else aabb = entry.getValue().affectBoundingBox(aabb, this);
             }
         }
 
+        if(aabb == null)
+            return new AABB(this.getOnPos().above());
 
-        return new AABB(this.position().x+minX, this.position().y+minY, this.position().z+minZ,
-                this.position().x+maxX, this.position().y+maxY+1, this.position().z+maxZ).move(0.5d, 0d, 0.5d);
+        return aabb;
+
+        //return new AABB(this.position().x+minX, this.position().y+minY, this.position().z+minZ,
+        //        this.position().x+maxX, this.position().y+maxY+1, this.position().z+maxZ).move(0.5d, 0d, 0.5d);
     }
 
     @Override

@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.mistersecret312.block_entities.FuelTankBlockEntity;
 import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
@@ -47,6 +48,40 @@ public class FuelTankData extends BlockData
         width = this.extraData.getInt("Size");
     }
 
+    public AABB affectBoundingBox(AABB aabb, RocketEntity rocket)
+    {
+        double minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        double minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+        double minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+
+        switch(width)
+        {
+            case 1:
+                minX = Math.min(aabb.minX, rocket.position().x+pos.getX()-0.5);
+                minZ = Math.min(aabb.minZ, rocket.position().z+pos.getZ()-0.5);
+                maxX = Math.max(aabb.maxX, rocket.position().x+pos.getX()+0.5);
+                maxZ = Math.max(aabb.maxZ, rocket.position().z+pos.getZ()+0.5);
+                break;
+            case 2:
+                minX = Math.min(aabb.minX, rocket.position().x+pos.getX()-0.5);
+                minZ = Math.min(aabb.minZ, rocket.position().z+pos.getZ()-0.5);
+                maxX = Math.max(aabb.maxX, rocket.position().x+pos.getX()+1.5);
+                maxZ = Math.max(aabb.maxZ, rocket.position().z+pos.getZ()+1.5);
+                break;
+            case 3:
+                minX = Math.min(aabb.minX, rocket.position().x+pos.getX()-0.5);
+                minZ = Math.min(aabb.minZ, rocket.position().z+pos.getZ()-0.5);
+                maxX = Math.max(aabb.maxX, rocket.position().x+pos.getX()+2.5);
+                maxZ = Math.max(aabb.maxZ, rocket.position().z+pos.getZ()+2.5);
+                break;
+        }
+
+        minY = Math.min(aabb.minY, rocket.position().y+pos.getY());
+        maxY = Math.max(aabb.maxY, rocket.position().y+pos.getY())+height;
+
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
     public BiFunction<Stage, BlockPos, BlockData> create()
     {
         return (stage, pos) ->
@@ -61,6 +96,7 @@ public class FuelTankData extends BlockData
                     CompoundTag extraData = blockEntity.saveWithId();
                     return new FuelTankData(stage, stage.palette.indexOf(state), pos, extraData);
                 }
+                else return BlockData.VOID;
             }
             return null;
         };

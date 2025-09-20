@@ -9,18 +9,23 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.model.data.ModelData;
 import net.mistersecret312.entities.RocketEntity;
+import net.mistersecret312.init.RocketBlockDataInit;
 
 import java.util.function.BiFunction;
 
 public class BlockData
 {
+    public static final BlockData VOID = new BlockData(null, -1, null, null);
+
     public BlockPos pos;
     public int state;
     public CompoundTag extraData;
@@ -59,6 +64,22 @@ public class BlockData
     public void initializeData()
     {
 
+    }
+    
+    public AABB affectBoundingBox(AABB aabb, RocketEntity rocket)
+    {
+        double minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        double minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+        double minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+
+        minX = (Math.min(aabb.minX, rocket.position().x+pos.getX()-0.5));
+        minY = (Math.min(aabb.minY, rocket.position().y+pos.getY()));
+        minZ = (Math.min(aabb.minZ, rocket.position().z+pos.getZ()-0.5));
+        maxX = (Math.max(aabb.maxX, rocket.position().x+pos.getX()+0.5));
+        maxY = (Math.max(aabb.maxY, rocket.position().y+pos.getY()+1));
+        maxZ = (Math.max(aabb.maxZ, rocket.position().z+pos.getZ()+0.5));
+
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public BiFunction<Stage, BlockPos, BlockData> create()

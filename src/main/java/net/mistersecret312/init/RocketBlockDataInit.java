@@ -27,9 +27,10 @@ public class RocketBlockDataInit
 
     public static final List<BiFunction<Stage, BlockPos, BlockData>> DATA_FACTORY = new ArrayList<>();
 
-    public static final RegistryObject<BlockData> BASE = registerBlockData(BlockData::new, "base");
     public static final RegistryObject<BlockData> FUEL_TANK = registerBlockData(FuelTankData::new, "fuel_tank");
     public static final RegistryObject<BlockData> ROCKET_ENGINE = registerBlockData(RocketEngineData::new, "rocket_engine");
+
+    public static final RegistryObject<BlockData> BASE = registerBlockData(BlockData::new, "base");
 
     public static RegistryObject<BlockData> registerBlockData(Supplier<BlockData> data, String id)
     {

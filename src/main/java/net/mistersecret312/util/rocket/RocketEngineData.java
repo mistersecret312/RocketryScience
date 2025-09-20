@@ -30,13 +30,20 @@ public class RocketEngineData extends BlockData
             Level level = stage.getRocket().getRocketEntity().level();
             BlockState state = level.getBlockState(pos);
             BlockEntity blockEntity = level.getBlockEntity(pos);
-            CompoundTag extraData = new CompoundTag();
+            CompoundTag extraData;
             if(blockEntity instanceof RocketEngineBlockEntity rocketEngine)
             {
                 extraData = blockEntity.saveWithId();
                 return new RocketEngineData(stage, stage.palette.indexOf(state), pos, extraData);
             }
-            else return new BlockData(stage, stage.palette.indexOf(state), pos, extraData);
+            if(state.getBlock() instanceof NozzleBlock)
+            {
+                RocketEngineBlockEntity rocketEngineBlockEntity = (RocketEngineBlockEntity) level.getBlockEntity(pos.relative(state.getValue(NozzleBlock.FACING)));
+                if(rocketEngineBlockEntity != null && rocketEngineBlockEntity.isBuilt)
+                    return BlockData.VOID;
+
+            }
+            return null;
         };
     }
 
