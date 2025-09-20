@@ -49,12 +49,15 @@ public class RocketEntity extends Entity
             Stage stage = new Stage(rocket);
 
             LinkedHashSet<Stage> stages = new LinkedHashSet<>();
-            List<BlockState> palette = List.of(Blocks.STONE.defaultBlockState(), BlockInit.FUEL_TANK.get().defaultBlockState());
+            List<BlockState> palette = List.of(Blocks.DRAGON_HEAD.defaultBlockState(), BlockInit.FUEL_TANK.get().defaultBlockState());
             HashMap<BlockPos, BlockData> blocks = new HashMap<>();
-            blocks.put(BlockPos.ZERO, new BlockData(stage, 0, BlockPos.ZERO, new CompoundTag()));
+            CompoundTag tag0 = new CompoundTag();
+            tag0.putString("id", "minecraft:skull");
+            blocks.put(BlockPos.ZERO, new BlockData(stage, 0, BlockPos.ZERO, tag0));
             CompoundTag tank1 = new CompoundTag();
             tank1.putInt("Height", 3);
             tank1.putInt("Size", 1);
+            //tank1.putString("id", "rocketry_science:fuel_tank");
             blocks.put(new BlockPos(0,1,0), new FuelTankData(stage, 1, new BlockPos(0, 1, 0), tank1));
 
             stage.palette = palette;
@@ -93,10 +96,6 @@ public class RocketEntity extends Entity
     @Override
     protected AABB makeBoundingBox()
     {
-        double minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
-        double minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
-        double minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
-
         AABB aabb = null;
         for (Stage stage : this.getRocket().stages)
         {
@@ -113,9 +112,6 @@ public class RocketEntity extends Entity
             return new AABB(this.getOnPos().above());
 
         return aabb;
-
-        //return new AABB(this.position().x+minX, this.position().y+minY, this.position().z+minZ,
-        //        this.position().x+maxX, this.position().y+maxY+1, this.position().z+maxZ).move(0.5d, 0d, 0.5d);
     }
 
     @Override

@@ -1,25 +1,36 @@
 package net.mistersecret312.util.rocket;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.blockentity.BeaconRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.model.data.ModelData;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.RocketBlockDataInit;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class BlockData
@@ -53,10 +64,35 @@ public class BlockData
     public void render(RocketEntity rocket, BlockRenderDispatcher dispatcher, float yaw, float partial, PoseStack pose,
                        MultiBufferSource buffer, BlockPos.MutableBlockPos mutablePos)
     {
+        BlockEntityRenderDispatcher blockDispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
         BakedModel model = dispatcher.getBlockModel(getBlockState());
         for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(getBlockState(), RandomSource.create(42), ModelData.EMPTY))
         {
-            dispatcher.renderBatched(getBlockState(), mutablePos.move(pos), rocket.level(), pose, buffer.getBuffer(rt), true, RandomSource.create(42), model.getModelData(rocket.level(), pos, getBlockState(), ModelData.EMPTY), null);
+            if((!extraData.isEmpty() && extraData != null) || getBlockState().hasBlockEntity())
+            {
+                BlockEntity blockEntity = BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(ResourceLocation.tryParse(extraData.getString("id")))
+                        .map(type ->
+                        {
+                            BlockEntity be = type.create(mutablePos.move(pos), getBlockState());
+                            return be;
+                        })
+                        .map(be ->
+                        {
+                            be.load(extraData);
+                            return be;
+                        }).orElseGet(() -> null);
+
+                if(blockEntity != null)
+                {
+                    BlockEntityRenderer<BlockEntity> renderer = blockDispatcher.getRenderer(blockEntity);
+                    blockEntity.setLevel(rocket.level());
+                    pose.pushPose();
+                    blockDispatcher.render(blockEntity, partial, pose, buffer);
+                    pose.popPose();
+                }
+            }
+            else
+                dispatcher.renderBatched(getBlockState(), mutablePos.move(pos), rocket.level(), pose, buffer.getBuffer(rt), true, RandomSource.create(42), model.getModelData(rocket.level(), pos, getBlockState(), ModelData.EMPTY), null);
             mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
         }
     }
