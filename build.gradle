@@ -171,6 +171,7 @@ dependencies {
 
     compileOnly fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
     implementation fg.deobf("curse.maven:create-328085:6641603")
+    implementation fg.deobf("curse.maven:sgjourney-689083:7011774")
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

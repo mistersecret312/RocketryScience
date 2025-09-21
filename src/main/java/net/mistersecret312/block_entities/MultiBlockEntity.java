@@ -10,14 +10,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.mistersecret312.blocks.MultiblockBlock;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MultiBlockEntity extends BlockEntity
 {
     public BlockPos masterVector = BlockPos.ZERO;
-    public List<BlockPos> slaveVectors = new ArrayList<>();
+    public UUID uuid = UUID.randomUUID();
+    public LinkedHashSet<BlockPos> slaveVectors = new LinkedHashSet<>();
 
     public MultiBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState)
     {
@@ -35,6 +34,7 @@ public class MultiBlockEntity extends BlockEntity
         masterPos.putInt("z", this.masterVector.getZ());
 
         tag.put("master_pos", masterPos);
+        tag.putUUID("uuid", uuid);
 
         if(this.isMaster())
         {
@@ -62,10 +62,11 @@ public class MultiBlockEntity extends BlockEntity
         int z = masterTag.getInt("z");
 
         this.masterVector = new BlockPos(x, y, z);
+        this.uuid = tag.getUUID("uuid");
 
         if (this.isMaster())
         {
-            List<BlockPos> slaves = new ArrayList<>();
+            LinkedHashSet<BlockPos> slaves = new LinkedHashSet<>();
             tag.getList("slaves", Tag.TAG_COMPOUND).forEach(compound ->
             {
                 int slaveX = ((CompoundTag) compound).getInt("x");
@@ -100,7 +101,7 @@ public class MultiBlockEntity extends BlockEntity
         return masterVector;
     }
 
-    public List<BlockPos> getSlaveRelativePositions()
+    public LinkedHashSet<BlockPos> getSlaveRelativePositions()
     {
         return slaveVectors;
     }

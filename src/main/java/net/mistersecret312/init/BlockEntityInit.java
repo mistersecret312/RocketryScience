@@ -22,8 +22,8 @@ public class BlockEntityInit
     public static final RegistryObject<BlockEntityType<FuelTankBlockEntity>> LIQUID_FUEL_TANK = BLOCK_ENTITIES.register("fuel_tank",
             () -> BlockEntityType.Builder.of(FuelTankBlockEntity::new, BlockInit.FUEL_TANK.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<LaunchPadBlockEntity>> LAUNCH_PAD = BLOCK_ENTITIES.register("launch_pad",
-            () -> BlockEntityType.Builder.of(LaunchPadBlockEntity::new, BlockInit.LAUNCH_PAD.get()).build(null));
+    public static final RegistryObject<BlockEntityType<RocketPadBlockEntity>> ROCKET_PAD = BLOCK_ENTITIES.register("launch_pad",
+            () -> BlockEntityType.Builder.of(RocketPadBlockEntity::new, BlockInit.ROCKET_PAD.get()).build(null));
     public static final RegistryObject<BlockEntityType<LaunchTowerBlockEntity>> LAUNCH_TOWER = BLOCK_ENTITIES.register("launch_tower",
             () -> BlockEntityType.Builder.of(LaunchTowerBlockEntity::new, BlockInit.LAUNCH_TOWER.get()).build(null));
 

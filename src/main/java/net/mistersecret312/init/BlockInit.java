@@ -1,6 +1,5 @@
 package net.mistersecret312.init;
 
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -12,7 +11,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.blocks.*;
-import net.mistersecret312.items.FuelTankBlockItem;
 
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -48,10 +46,10 @@ public class BlockInit
     public static final RegistryObject<FuelTankBlock> FUEL_TANK = BLOCKS.register("fuel_tank",
             () -> new FuelTankBlock(BlockBehaviour.Properties.of().explosionResistance(5).sound(SoundType.COPPER).strength(5).noOcclusion(), 2000));
 
-    public static final RegistryObject<LaunchPadBlock> LAUNCH_PAD = registerBlock("launch_pad",
-            () -> new LaunchPadBlock(BlockBehaviour.Properties.of().sound(SoundType.BASALT)));
-    public static final RegistryObject<LaunchPadBlock> EXHAUST_GRATE = registerBlock("exhaust_grate",
-            () -> new LaunchPadBlock(BlockBehaviour.Properties.of().noOcclusion().sound(SoundType.COPPER)));
+    public static final RegistryObject<RocketPadBlock> ROCKET_PAD = registerBlock("rocket_pad",
+            () -> new RocketPadBlock(BlockBehaviour.Properties.of().sound(SoundType.BASALT)));
+    public static final RegistryObject<RocketPadBlock> EXHAUST_GRATE = registerBlock("exhaust_grate",
+            () -> new RocketPadBlock(BlockBehaviour.Properties.of().noOcclusion().sound(SoundType.COPPER)));
     public static final RegistryObject<LaunchTowerBlock> LAUNCH_TOWER = registerBlock("launch_tower",
             () -> new LaunchTowerBlock(BlockBehaviour.Properties.of().noOcclusion().sound(SoundType.LANTERN)));
 

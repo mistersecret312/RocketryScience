@@ -1,6 +1,7 @@
 package net.mistersecret312.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,6 +21,9 @@ import net.mistersecret312.util.rocket.BlockData;
 import net.mistersecret312.util.rocket.FuelTankData;
 import net.mistersecret312.util.rocket.Rocket;
 import net.mistersecret312.util.rocket.Stage;
+import net.povstalec.sgjourney.common.blocks.stargate.AbstractStargateBlock;
+import net.povstalec.sgjourney.common.blocks.stargate.MilkyWayStargateBlock;
+import net.povstalec.sgjourney.common.blockstates.Orientation;
 
 import java.util.*;
 
@@ -49,16 +53,16 @@ public class RocketEntity extends Entity
             Stage stage = new Stage(rocket);
 
             LinkedHashSet<Stage> stages = new LinkedHashSet<>();
-            List<BlockState> palette = List.of(Blocks.DRAGON_HEAD.defaultBlockState(), BlockInit.FUEL_TANK.get().defaultBlockState());
+            List<BlockState> palette = List.of(
+                    Blocks.STONE.defaultBlockState(),
+                    BlockInit.FUEL_TANK.get().defaultBlockState());
             HashMap<BlockPos, BlockData> blocks = new HashMap<>();
             CompoundTag tag0 = new CompoundTag();
-            tag0.putString("id", "minecraft:skull");
-            blocks.put(BlockPos.ZERO, new BlockData(stage, 0, BlockPos.ZERO, tag0));
+            blocks.put(BlockPos.ZERO.above(3), new BlockData(stage, 0, BlockPos.ZERO.above(3), tag0));
             CompoundTag tank1 = new CompoundTag();
             tank1.putInt("Height", 3);
             tank1.putInt("Size", 1);
-            //tank1.putString("id", "rocketry_science:fuel_tank");
-            blocks.put(new BlockPos(0,1,0), new FuelTankData(stage, 1, new BlockPos(0, 1, 0), tank1));
+            blocks.put(new BlockPos(0,0,0), new FuelTankData(stage, 1, new BlockPos(0, 0, 0), tank1));
 
             stage.palette = palette;
             stage.blocks = blocks;

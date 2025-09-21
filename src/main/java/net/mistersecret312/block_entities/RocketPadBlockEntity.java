@@ -1,24 +1,21 @@
 package net.mistersecret312.block_entities;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.mistersecret312.blocks.LaunchPadBlock;
+import net.mistersecret312.blocks.RocketPadBlock;
 import net.mistersecret312.blocks.MultiblockBlock;
+import net.mistersecret312.data.RocketPads;
 import net.mistersecret312.init.BlockEntityInit;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
 
-public class LaunchPadBlockEntity extends MultiBlockEntity
+public class RocketPadBlockEntity extends MultiBlockEntity
 {
-    public LaunchPadBlockEntity(BlockPos pPos, BlockState pBlockState)
+    public RocketPadBlockEntity(BlockPos pPos, BlockState pBlockState)
     {
-        super(BlockEntityInit.LAUNCH_PAD.get(), pPos, pBlockState);
+        super(BlockEntityInit.ROCKET_PAD.get(), pPos, pBlockState);
     }
 
     public int getXSize()
@@ -53,6 +50,15 @@ public class LaunchPadBlockEntity extends MultiBlockEntity
         return pos.getY() == this.getBlockPos().getY();
     }
 
+    @Override
+    public void updateMaster()
+    {
+        if(level == null || level.isClientSide() || level.getServer() == null)
+            return;
+
+        RocketPads.get(level.getServer()).addRocketPad(uuid, getBlockPos(), level.dimension());
+    }
+
     public boolean isComplete()
     {
         List<MultiBlockEntity> parts = MultiblockBlock.findAllParts(this.getLevel(), this.getBlockPos());
@@ -67,6 +73,6 @@ public class LaunchPadBlockEntity extends MultiBlockEntity
         int minZ = parts.get(0).getBlockPos().getZ();
         int maxZ = parts.get(parts.size()-1).getBlockPos().getZ();
 
-        return level.getBlockStates(new AABB(minX, this.getBlockPos().getY(), minZ, maxX, this.getBlockPos().getY(), maxZ)).allMatch(state -> state.getBlock() instanceof LaunchPadBlock);
+        return level.getBlockStates(new AABB(minX, this.getBlockPos().getY(), minZ, maxX, this.getBlockPos().getY(), maxZ)).allMatch(state -> state.getBlock() instanceof RocketPadBlock);
     }
 }

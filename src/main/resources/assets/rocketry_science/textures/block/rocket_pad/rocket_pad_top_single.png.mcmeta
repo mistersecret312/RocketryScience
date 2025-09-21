@@ -3,13 +3,13 @@
     "ctm_version": 1,
     "type":"CTM",
     "textures":[
-      "rocketry_science:block/launch_pad/launch_pad_top"
+      "rocketry_science:block/rocket_pad/rocket_pad_top"
     ],
     "extra":{
       "ignore_states":true,
       "connect_inside":true,
       "connect_to": [
-           { "block": "rocketry_science:launch_pad" },
+           { "block": "rocketry_science:rocket_pad" },
            { "block": "rocketry_science:exhaust_grate" }
       ]
     }

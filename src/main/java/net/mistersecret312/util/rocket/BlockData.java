@@ -20,15 +20,20 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.model.data.ModelData;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.RocketBlockDataInit;
+import net.povstalec.sgjourney.client.render.block_entity.MilkyWayStargateRenderer;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -68,30 +73,39 @@ public class BlockData
         BakedModel model = dispatcher.getBlockModel(getBlockState());
         for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(getBlockState(), RandomSource.create(42), ModelData.EMPTY))
         {
-            if((!extraData.isEmpty() && extraData != null) || getBlockState().hasBlockEntity())
+            if(getBlockState().getRenderShape() == RenderShape.MODEL || getBlockState().getRenderShape() == RenderShape.ENTITYBLOCK_ANIMATED)
             {
-                BlockEntity blockEntity = BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(ResourceLocation.tryParse(extraData.getString("id")))
-                        .map(type ->
-                        {
-                            BlockEntity be = type.create(mutablePos.move(pos), getBlockState());
-                            return be;
-                        })
-                        .map(be ->
-                        {
-                            be.load(extraData);
-                            return be;
-                        }).orElseGet(() -> null);
-
-                if(blockEntity != null)
+                if ((!extraData.isEmpty() && extraData != null) || getBlockState().hasBlockEntity())
                 {
-                    BlockEntityRenderer<BlockEntity> renderer = blockDispatcher.getRenderer(blockEntity);
-                    blockEntity.setLevel(rocket.level());
-                    pose.pushPose();
-                    blockDispatcher.render(blockEntity, partial, pose, buffer);
-                    pose.popPose();
+                    BlockEntity blockEntity = BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(ResourceLocation.tryParse(extraData.getString("id"))).map(type ->
+                    {
+                        BlockEntity be = type.create(mutablePos.move(pos), getBlockState());
+                        return be;
+                    }).map(be ->
+                    {
+                        be.load(extraData);
+                        return be;
+                    }).orElseGet(() -> null);
+
+                    if (blockEntity != null)
+                    {
+                        BlockEntityRenderer<BlockEntity> renderer = blockDispatcher.getRenderer(blockEntity);
+                        blockEntity.setLevel(rocket.level());
+                        if(blockEntity.getBlockState().getBlock() instanceof BaseEntityBlock baseEntity)
+                        {
+                            BlockEntityTicker<BlockEntity> ticker = (BlockEntityTicker<BlockEntity>) baseEntity.getTicker(rocket.level(), getBlockState(), blockEntity.getType());
+                            if(ticker != null)
+                            {
+                                ticker.tick(rocket.level(), rocket.level().getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, blockEntity.getBlockPos()).below(), blockEntity.getBlockState(), blockEntity);
+                            }
+                        }
+                        pose.pushPose();
+                        blockDispatcher.render(blockEntity, partial, pose, buffer);
+                        pose.popPose();
+                    }
                 }
             }
-            else
+            if(getBlockState().getRenderShape() == RenderShape.MODEL)
                 dispatcher.renderBatched(getBlockState(), mutablePos.move(pos), rocket.level(), pose, buffer.getBuffer(rt), true, RandomSource.create(42), model.getModelData(rocket.level(), pos, getBlockState(), ModelData.EMPTY), null);
             mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
         }

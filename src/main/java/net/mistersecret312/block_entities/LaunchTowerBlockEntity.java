@@ -3,10 +3,8 @@ package net.mistersecret312.block_entities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
-import net.mistersecret312.blocks.LaunchPadBlock;
+import net.mistersecret312.blocks.RocketPadBlock;
 import net.mistersecret312.init.BlockEntityInit;
-import org.jetbrains.annotations.Nullable;
-import team.chisel.ctm.CTM;
 
 import java.util.List;
 
@@ -54,7 +52,7 @@ public class LaunchTowerBlockEntity extends MultiBlockEntity
     {
         for(Direction direction : Direction.values())
         {
-            if(level.getBlockState(this.getBlockPos().relative(direction)).getBlock() instanceof LaunchPadBlock)
+            if(level.getBlockState(this.getBlockPos().relative(direction)).getBlock() instanceof RocketPadBlock)
                 return true;
         }
 

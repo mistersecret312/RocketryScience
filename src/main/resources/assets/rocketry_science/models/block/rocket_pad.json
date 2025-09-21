@@ -3,10 +3,10 @@
 	"credit": "Made with Blockbench",
 	"parent": "minecraft:block/block",
 	"textures": {
-		"0": "rocketry_science:block/launch_pad/launch_pad_top_single",
-		"1": "rocketry_science:block/launch_pad/launch_pad_single_bottom",
-		"2": "rocketry_science:block/launch_pad/launch_pad_single_side",
-		"particle": "rocketry_science:block/launch_pad/launch_pad_top_single"
+		"0": "rocketry_science:block/rocket_pad/rocket_pad_top_single",
+		"1": "rocketry_science:block/rocket_pad/rocket_pad_single_bottom",
+		"2": "rocketry_science:block/rocket_pad/rocket_pad_single_side",
+		"particle": "rocketry_science:block/rocket_pad/rocket_pad_top_single"
 	},
 	"elements": [
 		{

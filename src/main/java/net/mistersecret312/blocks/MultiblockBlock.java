@@ -70,11 +70,16 @@ public abstract class MultiblockBlock extends BaseEntityBlock
             masterPart = parts.get(0);
         }
 
-        List<BlockPos> slaveVectors = new ArrayList<>();
+        LinkedHashSet<BlockPos> slaveVectors = new LinkedHashSet<>();
         for(MultiBlockEntity part : parts)
         {
             slaveVectors.add(part.getBlockPos().subtract(masterPart.getBlockPos()));
             part.masterVector = masterPart.getBlockPos().subtract(part.getBlockPos());
+            if(part.masterVector != BlockPos.ZERO)
+                part.slaveVectors = new LinkedHashSet<>();
+
+            if(!part.isMaster())
+                part.uuid = masterPart.uuid;
         }
 
         masterPart.slaveVectors = slaveVectors;

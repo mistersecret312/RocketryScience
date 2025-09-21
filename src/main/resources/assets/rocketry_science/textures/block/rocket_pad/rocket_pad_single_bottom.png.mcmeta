@@ -3,7 +3,7 @@
     "ctm_version": 1,
     "type":"ctm",
     "textures":[
-      "rocketry_science:block/launch_pad/launch_pad_bottom"
+      "rocketry_science:block/rocket_pad/rocket_pad_bottom"
     ],
     "extra":{
       "ignore_states":true,
