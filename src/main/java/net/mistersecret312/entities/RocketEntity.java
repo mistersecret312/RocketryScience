@@ -14,13 +14,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.mistersecret312.blocks.CombustionChamberBlock;
+import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.init.BlockInit;
 import net.mistersecret312.init.EntityDataSerializersInit;
 import net.mistersecret312.init.EntityInit;
-import net.mistersecret312.util.rocket.BlockData;
-import net.mistersecret312.util.rocket.FuelTankData;
-import net.mistersecret312.util.rocket.Rocket;
-import net.mistersecret312.util.rocket.Stage;
+import net.mistersecret312.util.rocket.*;
 import net.povstalec.sgjourney.common.blocks.stargate.AbstractStargateBlock;
 import net.povstalec.sgjourney.common.blocks.stargate.MilkyWayStargateBlock;
 import net.povstalec.sgjourney.common.blockstates.Orientation;
@@ -47,7 +46,13 @@ public class RocketEntity extends Entity
     public void tick()
     {
         super.tick();
-        if(level().getGameTime() % 5 == 0)
+        for (Stage stage : this.getRocket().stages)
+        {
+            for(Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
+                entry.getValue().tick(level());
+        }
+
+        if(level().getGameTime() % 100 == 0)
         {
             Rocket rocket = new Rocket(this, new LinkedHashSet<>());
             Stage stage = new Stage(rocket);
@@ -55,14 +60,20 @@ public class RocketEntity extends Entity
             LinkedHashSet<Stage> stages = new LinkedHashSet<>();
             List<BlockState> palette = List.of(
                     Blocks.STONE.defaultBlockState(),
-                    BlockInit.FUEL_TANK.get().defaultBlockState());
+                    BlockInit.FUEL_TANK.get().defaultBlockState(),
+                    BlockInit.STEEL_COMBUSTION_CHAMBER.get().defaultBlockState().setValue(CombustionChamberBlock.FACING, Direction.UP));
             HashMap<BlockPos, BlockData> blocks = new HashMap<>();
             CompoundTag tag0 = new CompoundTag();
-            blocks.put(BlockPos.ZERO.above(3), new BlockData(stage, 0, BlockPos.ZERO.above(3), tag0));
+            blocks.put(new BlockPos(0, -1, 0), new RocketEngineData(stage, 2, BlockInit.STEEL_NOZZLE_ATMOPSHERE.get().defaultBlockState().setValue(NozzleBlock.FACING, Direction.UP), new BlockPos(0, 0, 0), new CompoundTag()));
+            //blocks.put(new BlockPos(0, -1, 0), new BlockData(stage, 0, new BlockPos(0, -1, 0), new CompoundTag()));
+
+
+            blocks.put(new BlockPos(0, 0, 0), new BlockData(stage, 0, new BlockPos(0, 0, 0), tag0));
             CompoundTag tank1 = new CompoundTag();
             tank1.putInt("Height", 3);
             tank1.putInt("Size", 1);
-            blocks.put(new BlockPos(0,0,0), new FuelTankData(stage, 1, new BlockPos(0, 0, 0), tank1));
+            blocks.put(new BlockPos(0,1,0), new FuelTankData(stage, 1, new BlockPos(0, 1, 0), tank1));
+
 
             stage.palette = palette;
             stage.blocks = blocks;

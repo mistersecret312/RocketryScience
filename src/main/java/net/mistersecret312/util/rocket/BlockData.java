@@ -80,6 +80,7 @@ public class BlockData
                     BlockEntity blockEntity = BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(ResourceLocation.tryParse(extraData.getString("id"))).map(type ->
                     {
                         BlockEntity be = type.create(mutablePos.move(pos), getBlockState());
+                        mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
                         return be;
                     }).map(be ->
                     {

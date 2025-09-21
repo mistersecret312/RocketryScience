@@ -54,6 +54,7 @@ public class RocketRenderer extends EntityRenderer<RocketEntity>
                 BlockPos pos = data.getKey();
                 pose.translate(pos.getX(), pos.getY(), pos.getZ());
                 data.getValue().render(rocket, dispatcher, yaw, partial, pose, buffer, mutablePos);
+                pose.translate(-pos.getX(), -pos.getY(), -pos.getZ());
             }
         }
         pose.popPose();

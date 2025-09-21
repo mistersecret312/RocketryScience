@@ -31,7 +31,6 @@ public class ItemInit
     public static final RegistryObject<CombustionChamberItem> STEEL_COMBUSTION_CHAMBER = ITEMS.register("steel_combustion_chamber_component",
             () -> new CombustionChamberItem(new Item.Properties().stacksTo(64)));
 
-
     public static final RegistryObject<FuelTankBlockItem> FUEL_TANK = ITEMS.register("fuel_tank",
             () -> new FuelTankBlockItem(BlockInit.FUEL_TANK.get(), new Item.Properties().stacksTo(64)));
     public static final RegistryObject<SeparatorBlockItem> SEPARATOR = ITEMS.register("separator",
