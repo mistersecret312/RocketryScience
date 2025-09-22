@@ -8,10 +8,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
-import net.mistersecret312.items.CombustionChamberItem;
-import net.mistersecret312.items.FuelTankBlockItem;
-import net.mistersecret312.items.SeparatorBlockItem;
-import net.mistersecret312.items.TurboPumpItem;
+import net.mistersecret312.items.*;
 import net.mistersecret312.util.RocketFuel;
 import net.mistersecret312.util.RocketMaterial;
 
@@ -35,6 +32,9 @@ public class ItemInit
             () -> new FuelTankBlockItem(BlockInit.FUEL_TANK.get(), new Item.Properties().stacksTo(64)));
     public static final RegistryObject<SeparatorBlockItem> SEPARATOR = ITEMS.register("separator",
             () -> new SeparatorBlockItem(BlockInit.SEPARATOR.get(), new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<PadLinkingItem> PAD_LINKING = ITEMS.register("pad_linking",
+            () -> new PadLinkingItem(new Item.Properties().stacksTo(1)));
 
     public static void register(IEventBus bus)
     {

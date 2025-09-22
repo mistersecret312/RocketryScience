@@ -56,6 +56,8 @@ public class RocketEngineData extends BlockData
                 if (rocketEngine.isBuilt && nozzleState.getBlock() instanceof NozzleBlock)
                 {
                     extraData = blockEntity.saveWithId();
+                    if(!stage.palette.contains(state))
+                        stage.palette.add(state);
                     return new RocketEngineData(stage, stage.palette.indexOf(state), nozzleState, pos, extraData);
                 }
             }
@@ -77,13 +79,21 @@ public class RocketEngineData extends BlockData
         double minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
 
         minX = (Math.min(aabb.minX, rocket.position().x+pos.getX()-0.5));
-        minY = (Math.min(aabb.minY, rocket.position().y+pos.getY()-1));
+        minY = (Math.min(aabb.minY, rocket.position().y+pos.getY()-2));
         minZ = (Math.min(aabb.minZ, rocket.position().z+pos.getZ()-0.5));
         maxX = (Math.max(aabb.maxX, rocket.position().x+pos.getX()+0.5));
         maxY = (Math.max(aabb.maxY, rocket.position().y+pos.getY()+1));
         maxZ = (Math.max(aabb.maxZ, rocket.position().z+pos.getZ()+0.5));
 
         return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    @Override
+    public void placeInLevel(Level level, BlockPos pos)
+    {
+        super.placeInLevel(level, pos);
+
+        level.setBlock(pos.offset(this.getBlockState().getValue(CombustionChamberBlock.FACING).getOpposite().getNormal()), nozzleState, 2);
     }
 
     @Override

@@ -46,9 +46,9 @@ public class RocketRenderer extends EntityRenderer<RocketEntity>
         pose.mulPose(Axis.YP.rotationDegrees(yaw));
         pose.mulPose(Axis.ZP.rotationDegrees(rocket.getViewXRot(partial)));
         pose.translate(-0.5f, 0f, -0.5f);
-        BlockPos.MutableBlockPos mutablePos = rocket.getOnPos().mutable().move(0, 1, 0);
         for(Stage stage : rocket.getRocket().stages)
         {
+            BlockPos.MutableBlockPos mutablePos = rocket.blockPosition().mutable().move(0, 0, 0);
             for(Map.Entry<BlockPos, BlockData> data : stage.blocks.entrySet())
             {
                 BlockPos pos = data.getKey();

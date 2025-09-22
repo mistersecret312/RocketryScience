@@ -53,6 +53,9 @@ public class BlockInit
     public static final RegistryObject<LaunchTowerBlock> LAUNCH_TOWER = registerBlock("launch_tower",
             () -> new LaunchTowerBlock(BlockBehaviour.Properties.of().noOcclusion().sound(SoundType.LANTERN)));
 
+    public static final RegistryObject<RocketConstructorBlock> CONSTRUCTOR = registerBlock("constructor",
+            () -> new RocketConstructorBlock(BlockBehaviour.Properties.of().sound(SoundType.BASALT)));
+
     public static final RegistryObject<Block> HAZARD_STRIP = registerBlock("hazard_strip",
             () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.BASALT)));
     public static final RegistryObject<Block> SEPARATOR = BLOCKS.register("separator",

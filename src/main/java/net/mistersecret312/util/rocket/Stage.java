@@ -29,6 +29,13 @@ public class Stage
     public Stage(Rocket rocket)
     {
         this.rocket = rocket;
+
+        this.palette = new ArrayList<>();
+        this.blocks = new HashMap<>();
+        this.fluidStacks = new ArrayList<>();
+        this.maxFluids = new ArrayList<>();
+        this.solidFuel = 0;
+        this.maxSolidFuel = 0;
     }
 
     public Stage(Rocket rocket, List<BlockState> palette, HashMap<BlockPos, BlockData> blocks,
@@ -159,7 +166,7 @@ public class Stage
         for(Tag listTag : blocksTag)
         {
             CompoundTag listCompound = ((CompoundTag) listTag);
-            BlockPos pos = NbtUtils.readBlockPos(listCompound);
+            BlockPos pos = NbtUtils.readBlockPos(listCompound.getCompound("pos"));
             blocks.put(pos, new BlockData(this, listCompound.getInt("state"), pos, listCompound.getCompound("extra_data")));
         }
         this.blocks = blocks;

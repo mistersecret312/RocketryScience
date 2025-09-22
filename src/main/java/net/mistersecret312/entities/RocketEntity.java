@@ -51,41 +51,6 @@ public class RocketEntity extends Entity
             for(Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
                 entry.getValue().tick(level());
         }
-
-        if(level().getGameTime() % 100 == 0)
-        {
-            Rocket rocket = new Rocket(this, new LinkedHashSet<>());
-            Stage stage = new Stage(rocket);
-
-            LinkedHashSet<Stage> stages = new LinkedHashSet<>();
-            List<BlockState> palette = List.of(
-                    Blocks.STONE.defaultBlockState(),
-                    BlockInit.FUEL_TANK.get().defaultBlockState(),
-                    BlockInit.STEEL_COMBUSTION_CHAMBER.get().defaultBlockState().setValue(CombustionChamberBlock.FACING, Direction.UP));
-            HashMap<BlockPos, BlockData> blocks = new HashMap<>();
-            CompoundTag tag0 = new CompoundTag();
-            blocks.put(new BlockPos(0, -1, 0), new RocketEngineData(stage, 2, BlockInit.STEEL_NOZZLE_ATMOPSHERE.get().defaultBlockState().setValue(NozzleBlock.FACING, Direction.UP), new BlockPos(0, 0, 0), new CompoundTag()));
-            //blocks.put(new BlockPos(0, -1, 0), new BlockData(stage, 0, new BlockPos(0, -1, 0), new CompoundTag()));
-
-
-            blocks.put(new BlockPos(0, 0, 0), new BlockData(stage, 0, new BlockPos(0, 0, 0), tag0));
-            CompoundTag tank1 = new CompoundTag();
-            tank1.putInt("Height", 3);
-            tank1.putInt("Size", 1);
-            blocks.put(new BlockPos(0,1,0), new FuelTankData(stage, 1, new BlockPos(0, 1, 0), tank1));
-
-
-            stage.palette = palette;
-            stage.blocks = blocks;
-            stage.maxSolidFuel = 0;
-            stage.solidFuel = 0;
-            stage.maxFluids = new ArrayList<>();
-            stage.fluidStacks = new ArrayList<>();
-            stages.add(stage);
-            rocket.stages = stages;
-
-            this.setRocket(rocket);
-        }
     }
 
     @Override

@@ -30,6 +30,9 @@ public class BlockEntityInit
     public static final RegistryObject<BlockEntityType<SeparatorBlockEntity>> SEPARATOR = BLOCK_ENTITIES.register("separator",
             () -> BlockEntityType.Builder.of(SeparatorBlockEntity::new, BlockInit.SEPARATOR.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<RocketConstructorBlockEntity>> CONSTRUCTOR = BLOCK_ENTITIES.register("constructor",
+            () -> BlockEntityType.Builder.of(RocketConstructorBlockEntity::new, BlockInit.CONSTRUCTOR.get()).build(null));
+
     public static void register(IEventBus bus)
     {
         BLOCK_ENTITIES.register(bus);

@@ -94,6 +94,8 @@ public class FuelTankData extends BlockData
                 if(fuelTank.isController())
                 {
                     CompoundTag extraData = blockEntity.saveWithId();
+                    if(!stage.palette.contains(state))
+                        stage.palette.add(state);
                     return new FuelTankData(stage, stage.palette.indexOf(state), pos, extraData);
                 }
                 else return BlockData.VOID;

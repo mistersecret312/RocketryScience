@@ -74,22 +74,27 @@ public class RocketPads extends SavedData
     {
         this.rocketPads.put(uuid, new RocketPad(pos, dimension));
 
+        this.setDirty();
+    }
+
+    @Override
+    public void setDirty()
+    {
+        super.setDirty();
         Iterator<Map.Entry<UUID, RocketPad>> iterator = this.rocketPads.entrySet().iterator();
         while(iterator.hasNext())
         {
             Map.Entry<UUID, RocketPad> entry = iterator.next();
-            ServerLevel level = server.getLevel(dimension);
+            ServerLevel level = server.getLevel(entry.getValue().getDimension());
             if(level == null)
                 continue;
             if(level.getBlockEntity(entry.getValue().getPos()) instanceof RocketPadBlockEntity pad)
             {
-                if(pad.uuid != entry.getKey())
+                if(!pad.uuid.equals(entry.getKey()))
                     iterator.remove();
             }
             else iterator.remove();
         }
-
-        this.setDirty();
     }
 
     public RocketPads(MinecraftServer server)

@@ -35,6 +35,7 @@ import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.RocketBlockDataInit;
 import net.povstalec.sgjourney.client.render.block_entity.MilkyWayStargateRenderer;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
@@ -73,31 +74,21 @@ public class BlockData
         BakedModel model = dispatcher.getBlockModel(getBlockState());
         for (net.minecraft.client.renderer.RenderType rt : model.getRenderTypes(getBlockState(), RandomSource.create(42), ModelData.EMPTY))
         {
-            if(getBlockState().getRenderShape() == RenderShape.MODEL || getBlockState().getRenderShape() == RenderShape.ENTITYBLOCK_ANIMATED)
+            if((getBlockState().getRenderShape() == RenderShape.MODEL && getBlockState().hasBlockEntity()) || getBlockState().getRenderShape() == RenderShape.ENTITYBLOCK_ANIMATED)
             {
-                if ((!extraData.isEmpty() && extraData != null) || getBlockState().hasBlockEntity())
+                if ((!extraData.isEmpty() && extraData != null))
                 {
-                    BlockEntity blockEntity = BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(ResourceLocation.tryParse(extraData.getString("id"))).map(type ->
-                    {
-                        BlockEntity be = type.create(mutablePos.move(pos), getBlockState());
-                        mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
-                        return be;
-                    }).map(be ->
-                    {
-                        be.load(extraData);
-                        return be;
-                    }).orElseGet(() -> null);
-
+                    BlockEntity blockEntity = BlockEntity.loadStatic(mutablePos.move(pos), getBlockState(), extraData);
+                    mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
                     if (blockEntity != null)
                     {
-                        BlockEntityRenderer<BlockEntity> renderer = blockDispatcher.getRenderer(blockEntity);
                         blockEntity.setLevel(rocket.level());
                         if(blockEntity.getBlockState().getBlock() instanceof BaseEntityBlock baseEntity)
                         {
                             BlockEntityTicker<BlockEntity> ticker = (BlockEntityTicker<BlockEntity>) baseEntity.getTicker(rocket.level(), getBlockState(), blockEntity.getType());
                             if(ticker != null)
                             {
-                                ticker.tick(rocket.level(), rocket.level().getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, blockEntity.getBlockPos()).below(), blockEntity.getBlockState(), blockEntity);
+                                ticker.tick(rocket.level(), blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity);
                             }
                         }
                         pose.pushPose();
@@ -107,8 +98,10 @@ public class BlockData
                 }
             }
             if(getBlockState().getRenderShape() == RenderShape.MODEL)
+            {
                 dispatcher.renderBatched(getBlockState(), mutablePos.move(pos), rocket.level(), pose, buffer.getBuffer(rt), true, RandomSource.create(42), model.getModelData(rocket.level(), pos, getBlockState(), ModelData.EMPTY), null);
-            mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
+                mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
+            }
         }
     }
 
@@ -143,6 +136,9 @@ public class BlockData
             CompoundTag extraData = new CompoundTag();
             if(blockEntity != null)
                 extraData = blockEntity.saveWithId();
+
+            if(!stage.palette.contains(state))
+                stage.palette.add(state);
 
             return new BlockData(stage, stage.palette.indexOf(state), pos, extraData);
         };

@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -64,7 +65,7 @@ public class MultiBlockEntity extends BlockEntity
         this.masterVector = new BlockPos(x, y, z);
         this.uuid = tag.getUUID("uuid");
 
-        if (this.isMaster())
+        if (this.masterVector != BlockPos.ZERO)
         {
             LinkedHashSet<BlockPos> slaves = new LinkedHashSet<>();
             tag.getList("slaves", Tag.TAG_COMPOUND).forEach(compound ->

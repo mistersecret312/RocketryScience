@@ -46,6 +46,9 @@ public class ItemTabInit
                                 RocketFuel.HYDROLOX, RocketMaterial.STAINLESS_STEEL));
                         output.accept(TurboPumpItem.create(ItemInit.STEEL_TURBOPUMP.get(),
                                 RocketMaterial.STAINLESS_STEEL));
+
+                        output.accept(ItemInit.PAD_LINKING.get());
+                        output.accept(BlockInit.CONSTRUCTOR.get());
                     })
                     .build());
 
