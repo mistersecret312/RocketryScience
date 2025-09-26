@@ -95,7 +95,11 @@ public class NozzleBlock extends Block
         Player player = context.getPlayer();
         Direction facing = context.getClickedFace().getOpposite();
         BlockState blockState = accessor.getBlockState(context.getClickedPos().relative(facing));
-        return this.defaultBlockState().setValue(FACING, facing).setValue(HOT, 0).setValue(ACTIVE, false)
+
+        boolean invert = false;
+        if(context.getPlayer() != null)
+            invert = context.getPlayer().isCrouching() && !(blockState.getBlock() instanceof CombustionChamberBlock);
+        return this.defaultBlockState().setValue(FACING, invert ? facing.getOpposite() : facing).setValue(HOT, 0).setValue(ACTIVE, false)
                 .setValue(HAS_PIPE, blockState.getBlock() instanceof CombustionChamberBlock && blockState.getValue(FACING) == facing);
     }
 

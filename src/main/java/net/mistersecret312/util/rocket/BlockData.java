@@ -15,6 +15,8 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -30,6 +32,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.data.ModelData;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.RocketBlockDataInit;
@@ -57,14 +60,19 @@ public class BlockData
         this.pos = pos;
         this.extraData = tag;
 
-        initializeData();
-
         this.stage = stage;
+
+        this.initializeData(stage);
     }
 
     public void tick(Level level)
     {
 
+    }
+
+    public BlockDataType<?> getType()
+    {
+        return RocketBlockDataInit.BASE.get();
     }
 
     public void render(RocketEntity rocket, BlockRenderDispatcher dispatcher, float yaw, float partial, PoseStack pose,
@@ -105,7 +113,7 @@ public class BlockData
         }
     }
 
-    public void initializeData()
+    public void initializeData(Stage stage)
     {
 
     }
@@ -140,6 +148,9 @@ public class BlockData
             if(!stage.palette.contains(state))
                 stage.palette.add(state);
 
+            level.removeBlockEntity(pos);
+            level.removeBlock(pos, false);
+
             return new BlockData(stage, stage.palette.indexOf(state), pos, extraData);
         };
     }
@@ -157,7 +168,46 @@ public class BlockData
         if(extraData == null || extraData.isEmpty())
             return;
 
-        BlockEntity.loadStatic(pos, state, this.extraData);
+        BlockEntity entity = BlockEntity.loadStatic(pos, state, this.extraData);
+        if(entity != null)
+        {
+            level.setBlockEntity(entity);
+            entity.setChanged();
+        }
+    }
+
+    public void toNetwork(FriendlyByteBuf buffer)
+    {
+        buffer.writeInt(this.state);
+        buffer.writeNbt(this.extraData);
+    }
+
+    public void fromNetwork(FriendlyByteBuf buffer, BlockPos pos, Stage stage)
+    {
+        this.stage = stage;
+        this.pos = pos;
+        this.state = buffer.readInt();
+        this.extraData = buffer.readNbt();
+    }
+
+    public CompoundTag save()
+    {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("type", RocketBlockDataInit.ROCKET_DATA.get().getKey(getType()).toString());
+        tag.put("pos", NbtUtils.writeBlockPos(this.pos));
+        tag.putInt("state", this.state);
+        tag.put("extra_data", this.extraData);
+
+        return tag;
+    }
+
+    public void load(CompoundTag tag, Stage stage)
+    {
+        this.pos = NbtUtils.readBlockPos(tag.getCompound("pos"));
+        this.state = tag.getInt("state");
+        this.extraData = tag.getCompound("extra_data");
+
+        this.stage = stage;
     }
 
     public BlockState getBlockState()

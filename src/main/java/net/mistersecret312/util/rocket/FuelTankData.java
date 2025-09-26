@@ -17,13 +17,22 @@ import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.client.renderer.FuelTankRenderer;
 import net.mistersecret312.entities.RocketEntity;
+import net.mistersecret312.fluids.RocketFuelTank;
+import net.mistersecret312.init.BlockInit;
+import net.mistersecret312.init.RocketBlockDataInit;
+import net.mistersecret312.util.RocketFuel;
 
+import java.util.ArrayList;
 import java.util.function.BiFunction;
 
 public class FuelTankData extends BlockData
 {
     public int height;
     public int width;
+
+    public RocketFuel fuel;
+    public int capacity;
+    public RocketFuelTank tank;
 
     public FuelTankData(Stage stage, int state, BlockPos pos, CompoundTag tag)
     {
@@ -42,10 +51,28 @@ public class FuelTankData extends BlockData
     }
 
     @Override
-    public void initializeData()
+    public BlockDataType<FuelTankData> getType()
+    {
+        return RocketBlockDataInit.FUEL_TANK.get();
+    }
+
+    @Override
+    public void initializeData(Stage stage)
     {
         height = this.extraData.getInt("Height");
         width = this.extraData.getInt("Size");
+        fuel = RocketFuel.valueOf(this.extraData.getString("fuel_type").toUpperCase());
+        capacity = width*width*height;
+        tank = new RocketFuelTank(fuel.getPropellants(), capacity)
+        {
+            @Override
+            protected void onContentsChanged()
+            {
+                extraData.put("TankContent", this.writeToNBT(new CompoundTag()));
+            }
+        };
+
+        tank.readFromNBT(this.extraData.getCompound("TankContent"));
     }
 
     public AABB affectBoundingBox(AABB aabb, RocketEntity rocket)
@@ -77,7 +104,7 @@ public class FuelTankData extends BlockData
         }
 
         minY = Math.min(aabb.minY, rocket.position().y+pos.getY());
-        maxY = Math.max(aabb.maxY, rocket.position().y+pos.getY())+height;
+        maxY = Math.max(aabb.maxY, rocket.position().y+pos.getY()+height);
 
         return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
@@ -96,6 +123,12 @@ public class FuelTankData extends BlockData
                     CompoundTag extraData = blockEntity.saveWithId();
                     if(!stage.palette.contains(state))
                         stage.palette.add(state);
+                    for (int x = pos.getX(); x < pos.getX()+fuelTank.getWidth(); x++)
+                        for (int z = pos.getZ(); z < pos.getZ() + fuelTank.getWidth() ; z++)
+                            for (int y = pos.getY(); y < pos.getY() + fuelTank.getHeight(); y++)
+                            {
+                                level.removeBlock(new BlockPos(x, y, z), false);
+                            }
                     return new FuelTankData(stage, stage.palette.indexOf(state), pos, extraData);
                 }
                 else return BlockData.VOID;
@@ -112,31 +145,35 @@ public class FuelTankData extends BlockData
             case 1:
                 for (int j = 0; j < height; j++)
                 {
-                    super.placeInLevel(level, pos.offset(0, j, 0));
+                    level.setBlock(pos.offset(0, j, 0), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
                 }
+                super.placeInLevel(level, pos);
                 return;
             case 2:
                 for (int j = 0; j < height; j++)
                 {
-                    super.placeInLevel(level, pos.offset(0, j, 0));
-                    super.placeInLevel(level, pos.offset(1, j, 0));
-                    super.placeInLevel(level, pos.offset(0, j, 1));
-                    super.placeInLevel(level, pos.offset(1, j, 1));
+                    level.setBlock(pos.offset(0, j, 0), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(1, j, 0), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(0, j, 1), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(1, j, 1), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
                 }
+                super.placeInLevel(level, pos);
                 return;
             case 3:
                 for (int j = 0; j < height; j++)
                 {
-                    super.placeInLevel(level, pos.offset(0, j, 0));
-                    super.placeInLevel(level, pos.offset(1, j, 0));
-                    super.placeInLevel(level, pos.offset(2, j, 0));
-                    super.placeInLevel(level, pos.offset(0, j, 1));
-                    super.placeInLevel(level, pos.offset(0, j, 2));
-                    super.placeInLevel(level, pos.offset(1, j, 1));
-                    super.placeInLevel(level, pos.offset(1, j, 2));
-                    super.placeInLevel(level, pos.offset(2, j, 1));
-                    super.placeInLevel(level, pos.offset(2, j, 2));
+                    level.setBlock(pos.offset(0, j, 0), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(1, j, 0), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(2, j, 0), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(0, j, 1), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(0, j, 2), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(1, j, 1), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(1, j, 2), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(2, j, 1), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
+                    level.setBlock(pos.offset(2, j, 2), BlockInit.FUEL_TANK.get().defaultBlockState(), 2);
                 }
+                super.placeInLevel(level, pos);
+
         }
     }
 

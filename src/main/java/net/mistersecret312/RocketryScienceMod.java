@@ -96,6 +96,8 @@ public class RocketryScienceMod
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
+        public static PlumeModel plumeModel;
+
         @SubscribeEvent
         public static void bakeModels(EntityRenderersEvent.RegisterLayerDefinitions event)
         {
@@ -105,10 +107,16 @@ public class RocketryScienceMod
         @SubscribeEvent
         public static void registerRenderer(EntityRenderersEvent.RegisterRenderers event)
         {
+
+
             event.registerBlockEntityRenderer(BlockEntityInit.ROCKET_ENGINE.get(),
-                    context -> new PlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
+                    context ->
+                    {
+                        plumeModel = new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION));
+                        return new PlumeRenderer(plumeModel);
+                    });
             event.registerBlockEntityRenderer(BlockEntityInit.SRB.get(),
-                    context -> new SolidPlumeRenderer(new PlumeModel(context.bakeLayer(PlumeModel.LAYER_LOCATION))));
+                    context -> new SolidPlumeRenderer(plumeModel));
             event.registerBlockEntityRenderer(BlockEntityInit.LIQUID_FUEL_TANK.get(),
                     context -> new FuelTankRenderer());
             event.registerBlockEntityRenderer(BlockEntityInit.SEPARATOR.get(),

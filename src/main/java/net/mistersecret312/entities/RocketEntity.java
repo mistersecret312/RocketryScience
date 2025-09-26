@@ -9,11 +9,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.init.BlockInit;
@@ -28,6 +31,9 @@ import java.util.*;
 
 public class RocketEntity extends Entity
 {
+    public static final double MAX_SPEED_UP_BT = 4.0;
+    public static final double MAX_SPEED_DOWN_BT = -1.0;
+
     private static final String ROCKET_DATA = "rocket_data";
     private static final EntityDataAccessor<Rocket> ROCKET =
             SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializersInit.ROCKET.get());
@@ -46,11 +52,28 @@ public class RocketEntity extends Entity
     public void tick()
     {
         super.tick();
+        this.move(MoverType.SELF, this.getDeltaMovement());
+
         for (Stage stage : this.getRocket().stages)
         {
             for(Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
                 entry.getValue().tick(level());
         }
+
+        if(level().getGameTime() % 20 == 0)
+            this.setBoundingBox(makeBoundingBox());
+
+        if(level().isClientSide())
+            return;
+
+        if (!this.isNoGravity())
+        {
+             this.addDeltaMovement(new Vec3(0.0D, -0.04D, 0.0D));
+        }
+
+        this.setDeltaMovement(0, Math.max(Math.min(this.getDeltaMovement().y, MAX_SPEED_UP_BT), MAX_SPEED_DOWN_BT), 0);
+
+        this.setDeltaMovement(getDeltaMovement().multiply(0.8, 1, 0.8));
     }
 
     @Override
@@ -74,7 +97,7 @@ public class RocketEntity extends Entity
     }
 
     @Override
-    protected AABB makeBoundingBox()
+    public AABB makeBoundingBox()
     {
         AABB aabb = null;
         for (Stage stage : this.getRocket().stages)
@@ -91,6 +114,7 @@ public class RocketEntity extends Entity
         if(aabb == null)
             return new AABB(this.getOnPos().above());
 
+        this.setBoundingBox(aabb);
         return aabb;
     }
 
@@ -100,14 +124,36 @@ public class RocketEntity extends Entity
         if(player.level().isClientSide())
             return InteractionResult.SUCCESS;
 
-        for (Stage stage : this.getRocket().stages)
+        if(player.getItemInHand(hand).is(Items.STICK))
         {
-            for (Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
+            for (Stage stage : this.getRocket().stages)
             {
-                entry.getValue().placeInLevel(player.level(), entry.getKey().offset(this.getOnPos().above()));
+                for (Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
+                {
+                    if(entry.getValue() instanceof RocketEngineData engine)
+                        engine.toggle();
+                }
             }
+
+            return InteractionResult.SUCCESS;
         }
-        this.discard();
+
+        if(this.getRocket().stages.size() == 1)
+        {
+            for (Stage stage : this.getRocket().stages)
+            {
+                for (Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
+                {
+                    entry.getValue().placeInLevel(player.level(), entry.getKey().offset(this.getOnPos().above()));
+                }
+            }
+            this.discard();
+        }
+        else if(this.getRocket().stages.size() > 1)
+        {
+            this.getRocket().stage(level());
+            return InteractionResult.SUCCESS;
+        }
 
         return InteractionResult.PASS;
     }

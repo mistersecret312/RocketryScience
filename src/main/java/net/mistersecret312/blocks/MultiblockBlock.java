@@ -106,9 +106,8 @@ public abstract class MultiblockBlock extends BaseEntityBlock
             {
                 visited.add(pos);
 
-                if (level.getBlockState(pos).getBlock() != masterBlock) continue;
-
-                if (!blockEntity.getType().equals(master.getType())) continue;
+                if(master.shouldSkip(level, pos, masterBlock, blockEntity))
+                    continue;
 
                 if(master.findingPartsCheck(pos, parts))
                     parts.add(blockEntity);
@@ -123,8 +122,6 @@ public abstract class MultiblockBlock extends BaseEntityBlock
 
         return parts;
     }
-
-
 
     @Override
     public RenderShape getRenderShape(BlockState pState)

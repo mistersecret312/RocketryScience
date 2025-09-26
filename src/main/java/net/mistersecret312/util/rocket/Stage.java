@@ -7,11 +7,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeFriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
+import net.mistersecret312.init.RocketBlockDataInit;
 
 import java.util.*;
 
@@ -39,8 +41,7 @@ public class Stage
     }
 
     public Stage(Rocket rocket, List<BlockState> palette, HashMap<BlockPos, BlockData> blocks,
-                 List<FluidStack> fluidStacks, List<FluidStack> maxFluids,
-                 int solidFuel, int maxSolidFuel)
+                 List<FluidStack> fluidStacks, List<FluidStack> maxFluids, int solidFuel, int maxSolidFuel)
     {
         this.palette = palette;
         this.blocks = blocks;
@@ -54,11 +55,10 @@ public class Stage
 
     public void tick(Level level)
     {
-        for(Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
+        for (Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
         {
             BlockData data = entry.getValue();
-            if(data.doesTick(level))
-                data.tick(level);
+            if (data.doesTick(level)) data.tick(level);
         }
     }
 
@@ -75,8 +75,8 @@ public class Stage
 
         buffer.writeCollection(this.blocks.entrySet(), (writer, data) -> {
             writer.writeBlockPos(data.getKey());
-            writer.writeInt(data.getValue().state);
-            writer.writeNbt(data.getValue().extraData);
+            writer.writeRegistryId(RocketBlockDataInit.ROCKET_DATA.get(), data.getValue().getType());
+            data.getValue().toNetwork(writer);
         });
 
         buffer.writeCollection(fluidStacks, IForgeFriendlyByteBuf::writeFluidStack);
@@ -97,7 +97,9 @@ public class Stage
         for (int i = 0; i < sizeBlocks; i++)
         {
             BlockPos pos = buffer.readBlockPos();
-            blocks.put(pos, new BlockData(stage, buffer.readInt(), pos, buffer.readNbt()));
+            BlockData data = buffer.readRegistryId();
+            data.fromNetwork(buffer, pos, stage);
+            blocks.put(pos, data);
         }
         List<FluidStack> fluidStacks = buffer.readCollection(ArrayList::new, FriendlyByteBuf::readFluidStack);
         List<FluidStack> maxFluids = buffer.readCollection(ArrayList::new, FriendlyByteBuf::readFluidStack);
@@ -130,11 +132,7 @@ public class Stage
         ListTag blocksTag = new ListTag();
         for(Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
         {
-            CompoundTag data = new CompoundTag();
-            data.put("pos", NbtUtils.writeBlockPos(entry.getKey()));
-            data.putInt("state", entry.getValue().state);
-            data.put("extra_data", entry.getValue().extraData);
-            blocksTag.add(data);
+            blocksTag.add(entry.getValue().save());
         }
         tag.put("blocks", blocksTag);
 
@@ -166,8 +164,13 @@ public class Stage
         for(Tag listTag : blocksTag)
         {
             CompoundTag listCompound = ((CompoundTag) listTag);
-            BlockPos pos = NbtUtils.readBlockPos(listCompound.getCompound("pos"));
-            blocks.put(pos, new BlockData(this, listCompound.getInt("state"), pos, listCompound.getCompound("extra_data")));
+            ResourceLocation type = ResourceLocation.tryParse(listCompound.getString("type"));
+            BlockDataType<?> dataType = RocketBlockDataInit.ROCKET_DATA.get().getValue(type);
+            BlockData data = dataType.supplier.get();
+
+            data.load(listCompound, this);
+            data.initializeData(this);
+            blocks.put(data.pos, data);
         }
         this.blocks = blocks;
 

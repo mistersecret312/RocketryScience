@@ -3,6 +3,7 @@ package net.mistersecret312.block_entities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -10,6 +11,7 @@ import net.mistersecret312.blocks.RocketPadBlock;
 import net.mistersecret312.blocks.MultiblockBlock;
 import net.mistersecret312.data.RocketPads;
 import net.mistersecret312.init.BlockEntityInit;
+import net.mistersecret312.init.BlockInit;
 
 import java.util.Comparator;
 import java.util.List;
@@ -62,6 +64,16 @@ public class RocketPadBlockEntity extends MultiBlockEntity
     public boolean findingPartsCheck(BlockPos pos, List<MultiBlockEntity> blockEntity)
     {
         return pos.getY() == this.getBlockPos().getY();
+    }
+
+    @Override
+    public boolean shouldSkip(Level level, BlockPos pos, Block masterBlock, BlockEntity be)
+    {
+        if(be.getBlockState().is(masterBlock) || be.getBlockState().is(BlockInit.EXHAUST_GRATE.get())
+           || be.getBlockState().is(BlockInit.ROCKET_PAD.get()))
+            return false;
+
+        return super.shouldSkip(level, pos, masterBlock, be);
     }
 
     @Override

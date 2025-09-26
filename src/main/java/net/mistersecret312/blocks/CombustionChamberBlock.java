@@ -81,7 +81,6 @@ public class CombustionChamberBlock extends BaseEntityBlock
         if(!level.isClientSide())
         {
             BlockEntity blockEntity = level.getBlockEntity(pos);
-
             if(blockEntity instanceof LiquidRocketEngineBlockEntity)
             {
                 MenuProvider containerProvider = new MenuProvider()
@@ -107,7 +106,7 @@ public class CombustionChamberBlock extends BaseEntityBlock
             }
         }
 
-        return InteractionResult.PASS;
+        return InteractionResult.CONSUME;
     }
 
     @Override
@@ -133,7 +132,10 @@ public class CombustionChamberBlock extends BaseEntityBlock
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
     {
-        return this.defaultBlockState().setValue(FACING, context.getClickedFace().getOpposite());
+        boolean invert = false;
+        if(context.getPlayer() != null)
+            invert = context.getPlayer().isCrouching();
+        return this.defaultBlockState().setValue(FACING, invert ? context.getClickedFace() : context.getClickedFace().getOpposite());
     }
 
     @Override

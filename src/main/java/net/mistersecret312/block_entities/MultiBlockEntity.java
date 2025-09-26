@@ -5,6 +5,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -90,6 +92,17 @@ public class MultiBlockEntity extends BlockEntity
     public void updateMaster()
     {
 
+    }
+
+    public boolean shouldSkip(Level level, BlockPos pos,
+                              Block masterBlock, BlockEntity be)
+    {
+        if(!be.getType().equals(this.getType()))
+            return true;
+        if(!level.getBlockState(pos).is(masterBlock))
+            return true;
+
+        return false;
     }
 
     public boolean isMaster()

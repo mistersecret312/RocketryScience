@@ -38,6 +38,9 @@ public class RocketConstructorBlock extends BaseEntityBlock
                 return InteractionResult.FAIL;
 
             RocketPad rocketPad = RocketPads.get(level.getServer()).rocketPads.get(constructor.getPadUUID());
+            if(rocketPad == null)
+                return InteractionResult.FAIL;
+
             BlockPos padPos = rocketPad.getPos();
             Level padLevel = level.getServer().getLevel(rocketPad.getDimension());
             if(padLevel == null)
