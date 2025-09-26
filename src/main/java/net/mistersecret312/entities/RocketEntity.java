@@ -68,7 +68,7 @@ public class RocketEntity extends Entity
 
         if (!this.isNoGravity())
         {
-             this.addDeltaMovement(new Vec3(0.0D, -0.04D, 0.0D));
+             this.addDeltaMovement(new Vec3(0.0D, -0.08D, 0.0D));
         }
 
         this.setDeltaMovement(0, Math.max(Math.min(this.getDeltaMovement().y, MAX_SPEED_UP_BT), MAX_SPEED_DOWN_BT), 0);

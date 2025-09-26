@@ -60,7 +60,7 @@ public class RocketEngineData extends BlockData
             return;
 
         RocketEntity rocket = this.getStage().getRocket().getRocketEntity();
-        rocket.addDeltaMovement(new Vec3(0, 0.056, 0));
+        rocket.addDeltaMovement(new Vec3(0, 0.112, 0));
 
         animTick++;
         if(animTick > 10)

@@ -9,7 +9,8 @@ import java.util.function.Predicate;
 
 public enum RocketFuel implements StringRepresentable
 {
-    HYDROLOX("hydrolox", List.of(stack -> stack.getFluid().is(RocketryScienceMod.HYDROGEN), stack -> stack.getFluid().is(RocketryScienceMod.OXYGEN)),
+    HYDROLOX("hydrolox", List.of(stack -> stack.getFluid().is(RocketryScienceMod.HYDROGEN),
+                                 stack -> stack.getFluid().is(RocketryScienceMod.OXYGEN)),
             380d, 2000);
 
     String name;
