@@ -50,7 +50,7 @@ public class BlockData
     public int state;
     public CompoundTag extraData;
 
-    private Stage stage;
+    public Stage stage;
 
     public BlockData() {}
 
@@ -111,6 +111,11 @@ public class BlockData
                 mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
             }
         }
+    }
+
+    public double getMass()
+    {
+        return 1000;
     }
 
     public void initializeData(Stage stage)

@@ -26,6 +26,8 @@ public class Stage
     public int solidFuel;
     public int maxSolidFuel;
 
+    public double mass = 10000;
+
     private Rocket rocket;
 
     public Stage(Rocket rocket)
@@ -58,7 +60,8 @@ public class Stage
         for (Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
         {
             BlockData data = entry.getValue();
-            if (data.doesTick(level)) data.tick(level);
+            if (data.doesTick(level))
+                data.tick(level);
         }
     }
 

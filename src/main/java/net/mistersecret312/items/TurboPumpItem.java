@@ -14,7 +14,7 @@ import java.util.List;
 
 public class TurboPumpItem extends Item
 {
-    public TurboPumpItem(Properties properties, RocketMaterial material)
+    public TurboPumpItem(Properties properties)
     {
         super(properties);
     }

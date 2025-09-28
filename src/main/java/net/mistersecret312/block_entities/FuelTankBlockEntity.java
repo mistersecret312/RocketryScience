@@ -85,7 +85,8 @@ public class FuelTankBlockEntity extends BlockEntity implements IConnectiveBlock
                     totalRatio += ratio;
 
                 ratio = totalRatio;
-                NetworkInit.sendToTracking(fuelTank, new FuelTankFrostPacket(getBlockPos(), ratio));
+                if(level != null && !level.isClientSide())
+                    NetworkInit.sendToTracking(fuelTank, new FuelTankFrostPacket(getBlockPos(), ratio));
             }
         };
     }

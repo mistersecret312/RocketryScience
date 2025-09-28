@@ -22,6 +22,7 @@ import net.mistersecret312.blocks.NozzleBlock;
 import net.mistersecret312.init.BlockInit;
 import net.mistersecret312.init.EntityDataSerializersInit;
 import net.mistersecret312.init.EntityInit;
+import net.mistersecret312.util.RocketState;
 import net.mistersecret312.util.rocket.*;
 import net.povstalec.sgjourney.common.blocks.stargate.AbstractStargateBlock;
 import net.povstalec.sgjourney.common.blocks.stargate.MilkyWayStargateBlock;
@@ -32,7 +33,7 @@ import java.util.*;
 public class RocketEntity extends Entity
 {
     public static final double MAX_SPEED_UP_BT = 4.0;
-    public static final double MAX_SPEED_DOWN_BT = -1.0;
+    public static final double MAX_SPEED_DOWN_BT = -4.0;
 
     private static final String ROCKET_DATA = "rocket_data";
     private static final EntityDataAccessor<Rocket> ROCKET =
@@ -54,11 +55,7 @@ public class RocketEntity extends Entity
         super.tick();
         this.move(MoverType.SELF, this.getDeltaMovement());
 
-        for (Stage stage : this.getRocket().stages)
-        {
-            for(Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
-                entry.getValue().tick(level());
-        }
+        getRocket().tick(level());
 
         if(level().getGameTime() % 20 == 0)
             this.setBoundingBox(makeBoundingBox());
@@ -68,7 +65,7 @@ public class RocketEntity extends Entity
 
         if (!this.isNoGravity())
         {
-             this.addDeltaMovement(new Vec3(0.0D, -0.08D, 0.0D));
+             this.addDeltaMovement(new Vec3(0.0D, -0.025D, 0.0D));
         }
 
         this.setDeltaMovement(0, Math.max(Math.min(this.getDeltaMovement().y, MAX_SPEED_UP_BT), MAX_SPEED_DOWN_BT), 0);
@@ -126,15 +123,7 @@ public class RocketEntity extends Entity
 
         if(player.getItemInHand(hand).is(Items.STICK))
         {
-            for (Stage stage : this.getRocket().stages)
-            {
-                for (Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
-                {
-                    if(entry.getValue() instanceof RocketEngineData engine)
-                        engine.toggle();
-                }
-            }
-
+            getRocket().setState(RocketState.TAKEOFF);
             return InteractionResult.SUCCESS;
         }
 

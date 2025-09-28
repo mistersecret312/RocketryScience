@@ -25,6 +25,7 @@ import net.mistersecret312.util.rocket.BlockData;
 import net.mistersecret312.util.rocket.Stage;
 import org.joml.Quaternionf;
 
+import java.util.Iterator;
 import java.util.Map;
 
 public class RocketRenderer extends EntityRenderer<RocketEntity>
@@ -46,8 +47,10 @@ public class RocketRenderer extends EntityRenderer<RocketEntity>
         pose.mulPose(Axis.YP.rotationDegrees(yaw));
         pose.mulPose(Axis.ZP.rotationDegrees(rocket.getViewXRot(partial)));
         pose.translate(-0.5f, 0f, -0.5f);
-        for(Stage stage : rocket.getRocket().stages)
+        Iterator<Stage> stageIterator = rocket.getRocket().stages.iterator();
+        while(stageIterator.hasNext())
         {
+            Stage stage = stageIterator.next();
             BlockPos.MutableBlockPos mutablePos = rocket.blockPosition().mutable().move(0, 0, 0);
             for(Map.Entry<BlockPos, BlockData> data : stage.blocks.entrySet())
             {

@@ -24,7 +24,7 @@ public class ItemInit
             () -> new BucketItem(FluidInit.SOURCE_LIQUID_NITROGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
 
     public static final RegistryObject<TurboPumpItem> STEEL_TURBOPUMP = ITEMS.register("steel_turbopump",
-            () -> new TurboPumpItem(new Item.Properties().stacksTo(64), RocketMaterial.STAINLESS_STEEL));
+            () -> new TurboPumpItem(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<CombustionChamberItem> STEEL_COMBUSTION_CHAMBER = ITEMS.register("steel_combustion_chamber_component",
             () -> new CombustionChamberItem(new Item.Properties().stacksTo(64)));
 

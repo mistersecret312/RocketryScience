@@ -64,6 +64,12 @@ public class SeparatorData extends BlockData
     }
 
     @Override
+    public double getMass()
+    {
+        return super.getMass()*2;
+    }
+
+    @Override
     public BlockDataType<SeparatorData> getType()
     {
         return RocketBlockDataInit.SEPARATOR.get();
@@ -192,5 +198,11 @@ public class SeparatorData extends BlockData
             }
         }
         mutablePos.move(-pos.getX(), -pos.getY(), -pos.getZ());
+    }
+
+    @Override
+    public boolean doesTick(Level level)
+    {
+        return true;
     }
 }

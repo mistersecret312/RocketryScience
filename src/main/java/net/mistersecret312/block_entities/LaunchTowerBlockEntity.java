@@ -50,12 +50,6 @@ public class LaunchTowerBlockEntity extends MultiBlockEntity
     @Override
     public boolean isMaster()
     {
-        for(Direction direction : Direction.values())
-        {
-            if(level.getBlockState(this.getBlockPos().relative(direction)).getBlock() instanceof RocketPadBlock)
-                return true;
-        }
-
-        return false;
+        return super.isMaster();
     }
 }

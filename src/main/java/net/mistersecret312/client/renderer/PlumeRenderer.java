@@ -49,7 +49,7 @@ public class PlumeRenderer implements BlockEntityRenderer<RocketEngineBlockEntit
     public void renderPlume(int frame, int throttle, BlockState state, PoseStack poseStack, MultiBufferSource buffer,
                             int overlay)
     {
-        int length = Math.max(0, Math.min(4, throttle-2));
+        int length = Math.max(0, Math.min(7, throttle-2));
         int offset = 0;
 
         ResourceLocation textureStart = new ResourceLocation(RocketryScienceMod.MODID, "textures/misc/plume/hydrolox/atmosphere/start/"+frame+".png");

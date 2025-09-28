@@ -180,8 +180,7 @@ public class RocketFuelTank implements IFluidHandler
             if(tankFluid.isEmpty())
                 continue;
 
-            tankFluid.shrink(maxDrain);
-            this.propellants.get(tank).setFluid(tankFluid);
+            this.drain(new FluidStack(tankFluid, maxDrain), FluidAction.EXECUTE);
         }
 
         return FluidStack.EMPTY;

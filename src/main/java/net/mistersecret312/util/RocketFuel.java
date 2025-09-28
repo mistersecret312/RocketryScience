@@ -11,7 +11,7 @@ public enum RocketFuel implements StringRepresentable
 {
     HYDROLOX("hydrolox", List.of(stack -> stack.getFluid().is(RocketryScienceMod.HYDROGEN),
                                  stack -> stack.getFluid().is(RocketryScienceMod.OXYGEN)),
-            380d, 2000);
+            380d, 450);
 
     String name;
     List<Predicate<FluidStack>> fluids;
