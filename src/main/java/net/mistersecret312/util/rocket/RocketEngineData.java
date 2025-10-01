@@ -55,6 +55,7 @@ public class RocketEngineData extends BlockData
 
     public double mass;
     public double thrust_kN;
+    public double Isp;
     public double thrustPercentage = 0.0;
 
     public ItemStackHandler handler = new ItemStackHandler(3);
@@ -113,9 +114,10 @@ public class RocketEngineData extends BlockData
             if(fuelTank != null)
                 for(int i = 0; i < fuelTank.tank.getTanks(); i++)
                 {
-                    if(this.tank.getSpace(i) > 8)
+                    int maxFuelUsage = calculateMaxFuelUsage();
+                    if(this.tank.getSpace(i) > maxFuelUsage)
                     {
-                        FluidStack stack = fuelTank.tank.drain(new FluidStack(fuelTank.tank.getFluidInTank(i), 8),
+                        FluidStack stack = fuelTank.tank.drain(new FluidStack(fuelTank.tank.getFluidInTank(i), maxFuelUsage),
                                                                IFluidHandler.FluidAction.EXECUTE);
                         this.tank.fill(stack, IFluidHandler.FluidAction.EXECUTE);
                     }
@@ -145,7 +147,7 @@ public class RocketEngineData extends BlockData
             else
             {
                 FluidStack drained = this.tank.drain(
-                        new FluidStack(this.tank.getFluidInTank(i), (int) (8 * (thrustPercentage))),
+                        new FluidStack(this.tank.getFluidInTank(i), (int) (calculateMaxFuelUsage() * (thrustPercentage))),
                         IFluidHandler.FluidAction.EXECUTE);
 
                 if(drained.isEmpty() && thrustPercentage*8 == 0 && !(thrustPercentage == 0))
@@ -199,6 +201,11 @@ public class RocketEngineData extends BlockData
         return getBestFuelTank() != null || tanks.stream().allMatch(bool -> bool);
     }
 
+    public int calculateMaxFuelUsage()
+    {
+        return (int) (((thrust_kN*1000)/(Isp*9.8))/20);
+    }
+
     public FuelTankData getBestFuelTank()
     {
         FuelTankData tank = null;
@@ -229,6 +236,17 @@ public class RocketEngineData extends BlockData
     }
 
     @Override
+    public double getDryMass()
+    {
+        return this.mass;
+    }
+
+    public double getIsp()
+    {
+        return Isp;
+    }
+
+    @Override
     public BlockDataType<?> getType()
     {
         return RocketBlockDataInit.ROCKET_ENGINE.get();
@@ -239,6 +257,7 @@ public class RocketEngineData extends BlockData
     {
         this.mass = this.extraData.getDouble("mass");
         this.thrust_kN = this.extraData.getDouble("thrust");
+        this.Isp = this.extraData.getDouble("efficiency");
 
         this.handler = new ItemStackHandler(3);
         this.handler.deserializeNBT(this.extraData.getCompound("chamber"));

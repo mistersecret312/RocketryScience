@@ -118,6 +118,11 @@ public class BlockData
         return 1000;
     }
 
+    public double getDryMass()
+    {
+        return getMass();
+    }
+
     public void initializeData(Stage stage)
     {
 

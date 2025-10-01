@@ -32,7 +32,7 @@ import java.util.*;
 
 public class RocketEntity extends Entity
 {
-    public static final double MAX_SPEED_UP_BT = 4.0;
+    public static final double MAX_SPEED_UP_BT = 8.0;
     public static final double MAX_SPEED_DOWN_BT = -4.0;
 
     private static final String ROCKET_DATA = "rocket_data";

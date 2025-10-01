@@ -70,6 +70,56 @@ public class Stage
         return rocket;
     }
 
+    public double calculateDeltaV()
+    {
+        double averageIsp = getAverageIsp();
+        double massRatio = getTotalMass()/getTotalDryMass();
+        return 9.8*averageIsp*Math.log(massRatio);
+    }
+
+    public double getTotalMass()
+    {
+        double mass = 0;
+        for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
+        {
+            mass += entry.getValue().getMass();
+        }
+
+        return mass;
+    }
+
+    public double getFuelMass()
+    {
+        return getTotalMass()-getTotalDryMass();
+    }
+
+    public double getTotalDryMass()
+    {
+        double mass = 0;
+        for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
+        {
+            mass += entry.getValue().getDryMass();
+        }
+
+        return mass;
+    }
+
+    public double getAverageIsp()
+    {
+        double Isp = 0;
+        int amount = 0;
+        for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
+        {
+            if(entry.getValue() instanceof RocketEngineData data)
+            {
+                Isp += data.getIsp();
+                amount++;
+            }
+        }
+
+        return Isp/amount;
+    }
+
     public void toNetwork(FriendlyByteBuf buffer)
     {
         buffer.writeCollection(this.palette, (writer, state) -> {

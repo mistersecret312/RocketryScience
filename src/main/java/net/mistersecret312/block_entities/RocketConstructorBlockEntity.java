@@ -102,6 +102,13 @@ public class RocketConstructorBlockEntity extends BlockEntity implements IRocket
         {
             pad.getLevel().addFreshEntity(rocketEntity);
             player.displayClientMessage(Component.literal("SUCCESS! Rocket assembled!"), true);
+            int stageI = 0;
+            for(Stage stage : rocket.stages)
+            {
+                System.out.println("Stage " + stageI + " DeltaV - " + stage.calculateDeltaV());
+                stageI++;
+            }
+            System.out.println("Target Orbit DeltaV Requirement - Fuck do I know?");
         } else player.displayClientMessage(Component.literal("ERROR: Rocket Pad is empty! Report to developer!"), true);
 
 

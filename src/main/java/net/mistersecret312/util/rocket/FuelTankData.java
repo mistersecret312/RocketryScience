@@ -53,15 +53,21 @@ public class FuelTankData extends BlockData
     @Override
     public double getMass()
     {
-        int fluidMass = 0;
+        double fluidMass = 0;
         for(int tank = 0; tank < this.tank.getTanks(); tank++)
         {
             fluidMass += this.tank.getFluidInTank(tank).getAmount();
         }
 
-        int hullMass = this.width*width*height*1000;
+        double hullMass = getDryMass();
 
         return fluidMass+hullMass;
+    }
+
+    @Override
+    public double getDryMass()
+    {
+    return this.width*width*height*500;
     }
 
     @Override

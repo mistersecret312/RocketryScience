@@ -60,7 +60,14 @@ public class Rocket
             case COASTING ->
             {
                 if(this.stages.size() > 1)
+                {
+                    for(Stage stage : this.stages)
+                        System.out.println("Orbital - " + stage.calculateDeltaV());
                     stage(level);
+                    return;
+                }
+
+                //TODO: Early out of fuel handling && staging related && do payload stuff
 
                 if(this.canLand())
                     setState(RocketState.LANDING);
@@ -75,9 +82,8 @@ public class Rocket
 
     public void takeoff(Level level)
     {
-        double altitude = rocket.position().y-level.getHeight(Heightmap.Types.MOTION_BLOCKING, rocket.blockPosition().getX(), rocket.blockPosition().getZ());
-
-        double spaceY = (level.getMaxBuildHeight()-level.getMinBuildHeight())*2;
+        double altitude = getAltitude(level);
+        double spaceY = getSpaceHeight(level);
         if(altitude < spaceY)
         {
             toggleEngines(true);
@@ -104,7 +110,7 @@ public class Rocket
 
     public void land(Level level)
     {
-        double altitude = rocket.position().y-level.getHeight(Heightmap.Types.MOTION_BLOCKING, rocket.blockPosition().getX(), rocket.blockPosition().getZ());
+        double altitude = getAltitude(level);
         double thrustLevel = 0.0; // fraction [0,1]
         double twr = getMaxTWR();
         double safeLandingSpeed = -0.1;
@@ -191,7 +197,7 @@ public class Rocket
             }
 
             rocketEntityNew.setPos(this.getRocketEntity().position());
-            this.getRocketEntity().setPos(this.getRocketEntity().position().add(0, height+2, 8));
+            this.getRocketEntity().setPos(this.getRocketEntity().position().add(0, height+2, 0));
             this.getRocketEntity().getRocket().setState(RocketState.COASTING);
             rocketEntityNew.getRocket().setState(RocketState.COASTING);
             rocketEntityNew.setDeltaMovement(this.getRocketEntity().getDeltaMovement().add(0, -0.8, 0));
@@ -200,9 +206,40 @@ public class Rocket
         }
     }
 
+    public double getAltitude(Level level)
+    {
+        return rocket.position().y-level.getHeight(Heightmap.Types.MOTION_BLOCKING, rocket.blockPosition().getX(), rocket.blockPosition().getZ());
+    }
+
+    public double getSpaceHeight(Level level)
+    {
+        return (level.getMaxBuildHeight()-level.getMinBuildHeight())*2;
+    }
+
+    public boolean hasFuel()
+    {
+        Stage local = null;
+        for(Stage stage : this.stages)
+        {
+            local = stage;
+        }
+        if(local == null)
+            return false;
+
+        for(Map.Entry<BlockPos, BlockData> entry : local.blocks.entrySet())
+        {
+            if(entry.getValue() instanceof RocketEngineData engineData)
+            {
+                if(engineData.hasFuel())
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     public void setEngineThrust(double thrust)
     {
-        int amount = this.getEngineAmount();
         for(Stage stage : this.stages)
             for(Map.Entry<BlockPos, BlockData > entry :stage.blocks.entrySet())
             {
