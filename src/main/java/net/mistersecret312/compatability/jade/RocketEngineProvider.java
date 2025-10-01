@@ -9,7 +9,6 @@ import net.minecraft.world.phys.Vec2;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.blocks.NozzleBlock;
-import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.init.CapabilityInit;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;

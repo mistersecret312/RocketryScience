@@ -1,16 +1,19 @@
 package net.mistersecret312.util.rocket;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
+import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.network.ClientPacketHandler;
 import net.mistersecret312.util.RocketState;
@@ -211,6 +214,18 @@ public class Rocket
         return rocket.position().y-level.getHeight(Heightmap.Types.MOTION_BLOCKING, rocket.blockPosition().getX(), rocket.blockPosition().getZ());
     }
 
+    public CelestialBody getCelestialBody(Level level)
+    {
+        Registry<CelestialBody> registry = level.getServer().registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+        for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : registry.entrySet())
+        {
+            if(entry.getValue().getDimension().equals(level.dimension()))
+                return entry.getValue();
+        }
+
+        return null;
+    }
+
     public double getSpaceHeight(Level level)
     {
         return (level.getMaxBuildHeight()-level.getMinBuildHeight())*2;
@@ -218,11 +233,7 @@ public class Rocket
 
     public boolean hasFuel()
     {
-        Stage local = null;
-        for(Stage stage : this.stages)
-        {
-            local = stage;
-        }
+        Stage local = getCurrentStage();
         if(local == null)
             return false;
 

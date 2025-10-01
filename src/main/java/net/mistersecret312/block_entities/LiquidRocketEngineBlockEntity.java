@@ -16,7 +16,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.mistersecret312.blocks.NozzleBlock;
-import net.mistersecret312.blueprint.RocketEngineBlueprint;
 import net.mistersecret312.fluids.RocketFuelTank;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.NetworkInit;
@@ -85,7 +84,7 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
                 this.setMass(2500*material.getMassCoefficient());
                 this.setThrust(fuelType.getThrustKiloNewtons());
                 this.setEfficiency(fuelType.getEfficiency());
-                materialEfficiencyMult += isVacuum() ? material.getEfficiencyCoefficientVacuum() : material.getEfficiencyCoefficientAtmosphere();
+                materialEfficiencyMult += material.getEfficiencyCoefficient();
                 materialThrustMult += material.getThrustCoefficient();
             }
             else if(stack.getItem() instanceof TurboPumpItem pump)
@@ -97,7 +96,7 @@ public class LiquidRocketEngineBlockEntity extends RocketEngineBlockEntity
 
                 this.setMass(this.getMass()+(1000*material.getMassCoefficient()));
                 materialThrustMult += material.getThrustCoefficient();
-                materialEfficiencyMult += isVacuum() ? material.getEfficiencyCoefficientVacuum() : material.getEfficiencyCoefficientAtmosphere();
+                materialEfficiencyMult += material.getEfficiencyCoefficient();
             }
         }
         this.setThrust(this.getThrust()*(materialThrustMult/3));

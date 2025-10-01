@@ -28,6 +28,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DataPackRegistryEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.mistersecret312.client.entity.RocketRenderer;
 import net.mistersecret312.client.model.PlumeModel;
@@ -36,6 +37,7 @@ import net.mistersecret312.client.renderer.PlumeRenderer;
 import net.mistersecret312.client.renderer.SeparatorRenderer;
 import net.mistersecret312.client.renderer.SolidPlumeRenderer;
 import net.mistersecret312.client.screen.CombustionChamberScreen;
+import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.init.*;
 import net.mistersecret312.util.rocket.RocketEngineData;
 import org.slf4j.Logger;
@@ -69,6 +71,12 @@ public class RocketryScienceMod
         MenuInit.register(modEventBus);
         RocketBlockDataInit.register(modEventBus);
         EntityDataSerializersInit.register(modEventBus);
+
+        modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) ->
+                                {
+                                    event.dataPackRegistry(CelestialBody.REGISTRY_KEY, CelestialBody.CODEC,
+                                                           CelestialBody.CODEC);
+                                });
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigInit.CLIENT_CONFIG, "rocketry_science-client.toml");
 

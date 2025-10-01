@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -47,7 +48,11 @@ public class SeparatorData extends BlockData
         {
             Stage stage0 = stage.next();
             if(foundSelf)
+            {
                 stage1 = stage0;
+                break;
+            }
+
             if(stage0.blocks.equals(this.getStage().blocks))
                 foundSelf = true;
         }
@@ -80,6 +85,20 @@ public class SeparatorData extends BlockData
     {
         extended = false;
         width = this.extraData.getInt("Size");
+    }
+
+    @Override
+    public void toNetwork(FriendlyByteBuf buffer)
+    {
+        super.toNetwork(buffer);
+        buffer.writeBoolean(this.extended);
+    }
+
+    @Override
+    public void fromNetwork(FriendlyByteBuf buffer, BlockPos pos, Stage stage)
+    {
+        super.fromNetwork(buffer, pos, stage);
+        this.extended = buffer.readBoolean();
     }
 
     public AABB affectBoundingBox(AABB aabb, RocketEntity rocket)

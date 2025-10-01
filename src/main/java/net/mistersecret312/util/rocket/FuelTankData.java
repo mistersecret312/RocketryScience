@@ -67,7 +67,7 @@ public class FuelTankData extends BlockData
     @Override
     public double getDryMass()
     {
-    return this.width*width*height*500;
+        return this.width*width*height*500;
     }
 
     @Override

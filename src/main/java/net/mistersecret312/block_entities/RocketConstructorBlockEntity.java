@@ -14,6 +14,7 @@ import net.mistersecret312.blocks.SeparatorBlock;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.RocketBlockDataInit;
+import net.mistersecret312.util.OrbitalMath;
 import net.mistersecret312.util.rocket.BlockData;
 import net.mistersecret312.util.rocket.Rocket;
 import net.mistersecret312.util.rocket.Stage;
@@ -102,13 +103,15 @@ public class RocketConstructorBlockEntity extends BlockEntity implements IRocket
         {
             pad.getLevel().addFreshEntity(rocketEntity);
             player.displayClientMessage(Component.literal("SUCCESS! Rocket assembled!"), true);
-            int stageI = 0;
+            double deltaV = 0;
             for(Stage stage : rocket.stages)
             {
-                System.out.println("Stage " + stageI + " DeltaV - " + stage.calculateDeltaV());
-                stageI++;
+                deltaV += stage.calculateDeltaV();
             }
-            System.out.println("Target Orbit DeltaV Requirement - Fuck do I know?");
+
+            System.out.println("Rocket DeltaV - " + deltaV);
+            System.out.println("Rocket TWR - " + rocket.getMaxTWR());
+            System.out.println("Target Orbit DeltaV Requirement - " + OrbitalMath.getOrbitDeltaV(rocket.getCelestialBody(pad.getLevel()), 300*1000));
         } else player.displayClientMessage(Component.literal("ERROR: Rocket Pad is empty! Report to developer!"), true);
 
 

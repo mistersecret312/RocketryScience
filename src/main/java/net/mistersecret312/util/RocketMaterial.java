@@ -4,24 +4,19 @@ import net.minecraft.util.StringRepresentable;
 
 public enum RocketMaterial implements StringRepresentable
 {
-    COPPER("copper",  0.5, 0.75, 0.95, 0.9),
-    STAINLESS_STEEL("stainless_steel", 1.0, 1.0, 1.0, 1.0),
-    COSMIC_ALLOY("cosmic_alloy", 0.8, 1.5, 1.5, 1.5);
-
+    STAINLESS_STEEL("stainless_steel", 1.0, 1.0, 1.0);
     String name;
     double massCoefficient;
     double thrustCoefficient;
-    double efficiencyCoefficientVacuum;
-    double efficiencyCoefficientAtmosphere;
+    double efficiencyCoefficient;
 
     RocketMaterial(String name, double massCoefficient,
-                   double thrustCoefficient, double efficiencyCoefficientVacuum, double efficiencyCoefficientAtmosphere)
+                   double thrustCoefficient, double efficiencyCoefficient)
     {
         this.name = name;
         this.massCoefficient = massCoefficient;
         this.thrustCoefficient = thrustCoefficient;
-        this.efficiencyCoefficientVacuum = efficiencyCoefficientVacuum;
-        this.efficiencyCoefficientAtmosphere = efficiencyCoefficientAtmosphere;
+        this.efficiencyCoefficient = efficiencyCoefficient;
     }
 
 
@@ -35,14 +30,9 @@ public enum RocketMaterial implements StringRepresentable
         return thrustCoefficient;
     }
 
-    public double getEfficiencyCoefficientVacuum()
+    public double getEfficiencyCoefficient()
     {
-        return efficiencyCoefficientVacuum;
-    }
-
-    public double getEfficiencyCoefficientAtmosphere()
-    {
-        return efficiencyCoefficientAtmosphere;
+        return efficiencyCoefficient;
     }
 
     @Override

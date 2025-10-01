@@ -74,7 +74,8 @@ public class Stage
     {
         double averageIsp = getAverageIsp();
         double massRatio = getTotalMass()/getTotalDryMass();
-        return 9.8*averageIsp*Math.log(massRatio);
+        double log = Math.log(massRatio);
+        return 9.8*averageIsp*log;
     }
 
     public double getTotalMass()
@@ -116,6 +117,8 @@ public class Stage
                 amount++;
             }
         }
+        if(amount == 0)
+            return 0;
 
         return Isp/amount;
     }
