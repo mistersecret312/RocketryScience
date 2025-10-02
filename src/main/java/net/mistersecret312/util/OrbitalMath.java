@@ -10,13 +10,23 @@ public class OrbitalMath
         return Math.sqrt(body.getGravitationalParameter()/altitude);
     }
 
+    public static double getLaunchDeltaV(CelestialBody body, double targetOrbitHeight)
+    {
+        double startHeight = 120000;
+
+        double part1 = getOrbitDeltaV(body, startHeight);
+        double part2 = getTransferDeltaV(body, startHeight, targetOrbitHeight);
+
+        return part1+part2;
+    }
+
     public static double getTransferDeltaV(CelestialBody body, double initialHeight, double targetHeight)
     {
         initialHeight += body.getRadius();
         targetHeight += body.getRadius();
 
-        double part1 = Math.sqrt(body.getGravitationalParameter()/initialHeight)*(Math.sqrt((2*targetHeight)/initialHeight+targetHeight)-1);
-        double part2 = Math.sqrt(body.getGravitationalParameter()/targetHeight)*(1-Math.sqrt((2*targetHeight)/initialHeight+targetHeight));
+        double part1 = Math.sqrt(body.getGravitationalParameter()/initialHeight)*(Math.sqrt((2*targetHeight)/(initialHeight+targetHeight))-1);
+        double part2 = Math.sqrt(body.getGravitationalParameter()/targetHeight)*(1-Math.sqrt((2*initialHeight)/(initialHeight+targetHeight)));
 
         return part1+part2;
     }

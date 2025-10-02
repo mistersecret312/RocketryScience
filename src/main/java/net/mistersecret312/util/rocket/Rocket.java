@@ -35,6 +35,9 @@ public class Rocket
 
     public void tick(Level level)
     {
+        if(stages.isEmpty())
+            rocket.discard();
+
         for(Stage stage : stages)
             stage.tick(level);
 
@@ -142,7 +145,7 @@ public class Rocket
                 double thrustFraction = (g + accelCmd) / (twr * g);
                 thrustLevel = Mth.clamp(thrustFraction, 0.0, 1.0);
             }
-            setEngineThrust(thrustLevel);
+            setEngineThrust(0);
             //System.out.println("New Thrust level = " + thrustLevel);
         }
         else
@@ -293,7 +296,9 @@ public class Rocket
 
     public double getMaxTWR()
     {
-        return (getMaxThrustKiloNewtons()*1000)/(getMassKilogram()*9.80665);
+        double thrust = getMaxThrustKiloNewtons()*1000;
+        double mass = getMassKilogram()*9.80665;
+        return thrust / mass;
     }
 
     public double getMaxThrustKiloNewtons()
@@ -312,14 +317,94 @@ public class Rocket
         return (thrustkN);
     }
 
+    public double getDeltaVForTakeoff()
+    {
+        double acceleration = this.getCelestialBody(rocket.level()).getGravity()*0.025*(getMaxTWR()-1);
+        double heightMaxSpeed = (RocketEntity.MAX_SPEED_UP_BT*RocketEntity.MAX_SPEED_UP_BT)/(2*acceleration);
+
+        int ticksToTravel = 0;
+
+        if(heightMaxSpeed > getSpaceHeight(getRocketEntity().level()))
+        {
+            ticksToTravel = (int) Math.sqrt((2*getSpaceHeight(getRocketEntity().level()))/acceleration);
+        }
+        else
+        {
+            double heightLeft = getSpaceHeight(getRocketEntity().level())-heightMaxSpeed;
+            double ticksToTraverse = heightLeft/RocketEntity.MAX_SPEED_UP_BT;
+            double ticksToSpeed = RocketEntity.MAX_SPEED_UP_BT/acceleration;
+
+            ticksToTravel = (int) (ticksToTraverse+ticksToSpeed);
+        }
+
+        int fuelUsed = getAverageFuelUsage()*ticksToTravel;
+        double mass = getMassDryKilogram();
+        double wet = getMassKilogram();
+
+        double massRatio = (mass+fuelUsed)/mass;
+
+        double rocketDeltaV = 0;
+        Stage current = getCurrentStage();
+        if(current != null)
+            rocketDeltaV = current.calculateDeltaV();
+
+        double deltaV = 9.8*getAverageIsp()*Math.log(massRatio);
+        return deltaV;
+    }
+
+    public int getAverageFuelUsage()
+    {
+        int fuelUse = 0;
+        int amount = 0;
+
+        Stage current = getCurrentStage();
+
+        for(Map.Entry<BlockPos, BlockData> entry : current.blocks.entrySet())
+        {
+            if(entry.getValue() instanceof RocketEngineData data)
+            {
+                fuelUse += data.calculateMaxFuelUsage();
+                amount++;
+            }
+        }
+
+        if(amount == 0) return 0;
+        return fuelUse / amount;
+    }
+
+    public double getAverageIsp()
+    {
+        double Isp = 0;
+        int amount = 0;
+
+        Stage current = this.getCurrentStage();
+        if(current == null) return 0;
+
+        for(Map.Entry<BlockPos, BlockData> entry : current.blocks.entrySet())
+        {
+            if(entry.getValue() instanceof RocketEngineData data)
+            {
+                Isp += data.getIsp();
+                amount++;
+            }
+        }
+        if(amount == 0) return 0;
+        return Isp / amount;
+    }
+
     public double getMassKilogram()
     {
         double mass = 0;
         for(Stage stage : this.stages)
-            for(Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
-            {
-                mass += entry.getValue().getMass();
-            }
+            mass += stage.getTotalMass();
+        return mass;
+    }
+
+    public double getMassDryKilogram()
+    {
+        double mass = 0;
+        for(Stage stage : this.stages)
+            mass += stage.getTotalDryMass();
         return mass;
     }
 

@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeFriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
+import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.RocketBlockDataInit;
 
 import java.util.*;
@@ -57,6 +58,11 @@ public class Stage
 
     public void tick(Level level)
     {
+        if(this.blocks.isEmpty())
+            this.rocket.stages.remove(this);
+        if(this.blocks.isEmpty() && this.rocket.stages.size() == 1)
+            this.rocket.getRocketEntity().discard();
+
         for (Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
         {
             BlockData data = entry.getValue();
@@ -73,6 +79,8 @@ public class Stage
     public double calculateDeltaV()
     {
         double averageIsp = getAverageIsp();
+        if(getTotalDryMass() == 0)
+            return 0;
         double massRatio = getTotalMass()/getTotalDryMass();
         double log = Math.log(massRatio);
         return 9.8*averageIsp*log;
