@@ -110,7 +110,7 @@ public class RocketConstructorBlockEntity extends BlockEntity implements IRocket
             }
 
             System.out.println("Rocket TWR - " + rocket.getMaxTWR());
-            System.out.println("Theoretical deltaV to travel - " + rocket.getDeltaVForTakeoff());
+            rocket.landingSimulation();
             System.out.println("Target Orbit DeltaV Requirement - " + OrbitalMath.getLaunchDeltaV(rocket.getCelestialBody(pad.getLevel()), 120*1000));
         } else player.displayClientMessage(Component.literal("ERROR: Rocket Pad is empty! Report to developer!"), true);
 

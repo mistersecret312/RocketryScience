@@ -19,6 +19,7 @@ import net.mistersecret312.network.ClientPacketHandler;
 import net.mistersecret312.util.RocketState;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Rocket
 {
@@ -77,7 +78,6 @@ public class Rocket
 
                 if(this.canLand())
                     setState(RocketState.LANDING);
-                else getRocketEntity().discard();
             }
             case ORBIT ->
             {
@@ -90,7 +90,8 @@ public class Rocket
     {
         double altitude = getAltitude(level);
         double spaceY = getSpaceHeight(level);
-        if(altitude < spaceY)
+
+        if(rocket.getY() <= spaceY)
         {
             toggleEngines(true);
             double engineThrust = 0.0D;
@@ -109,7 +110,9 @@ public class Rocket
         }
         else
         {
-            System.out.println("ORBITAL - " + altitude);
+            System.out.println("ORBITAL - " + altitude + " DeltaV Left - " + getCurrentStage().calculateDeltaV());
+            this.toggleEngines(false);
+            rocket.setDeltaMovement(0, 0, 0);
             setState(RocketState.COASTING);
         }
     }
@@ -128,7 +131,7 @@ public class Rocket
 
             double stoppingDistance = 0;
             if (netAccelMax > 0 && velocity < 0) {
-                stoppingDistance = Math.max(this.rocket.makeBoundingBox().getYsize(), (velocity * velocity) / (2.0 * netAccelMax))*Math.max(1, 0.5*getMaxTWR());
+                stoppingDistance = Math.max(this.rocket.makeBoundingBox().getYsize(), (velocity * velocity) / (2.0 * netAccelMax));
             }
 
             if (altitude <= stoppingDistance + this.rocket.makeBoundingBox().getYsize())
@@ -145,7 +148,7 @@ public class Rocket
                 double thrustFraction = (g + accelCmd) / (twr * g);
                 thrustLevel = Mth.clamp(thrustFraction, 0.0, 1.0);
             }
-            setEngineThrust(0);
+            setEngineThrust(thrustLevel);
             //System.out.println("New Thrust level = " + thrustLevel);
         }
         else
@@ -153,7 +156,7 @@ public class Rocket
             toggleEngines(false);
             setState(RocketState.IDLE);
             setEngineThrust(thrustLevel);
-            System.out.println("LANDED");
+            System.out.println("LANDED" + " DeltaV Left - " + getCurrentStage().calculateDeltaV());
         }
     }
 
@@ -317,38 +320,138 @@ public class Rocket
         return (thrustkN);
     }
 
-    public double getDeltaVForTakeoff()
+    public void landingSimulation()
     {
-        double acceleration = this.getCelestialBody(rocket.level()).getGravity()*0.025*(getMaxTWR()-1);
-        double heightMaxSpeed = (RocketEntity.MAX_SPEED_UP_BT*RocketEntity.MAX_SPEED_UP_BT)/(2*acceleration);
+        AtomicInteger takeOffFuel = new AtomicInteger(0);
+        double takeoffDeltaV = takeoffSimulation(takeOffFuel);
 
-        int ticksToTravel = 0;
+        int fuelUsed = 0;
+        int ticks = 0;
+        Stage stage = getCurrentStage();
 
-        if(heightMaxSpeed > getSpaceHeight(getRocketEntity().level()))
+        double thrust = getMaxThrustKiloNewtons();
+        double fuelFlow = getAverageFuelUsage();
+        double mass = stage.getTotalMass()-takeOffFuel.get();
+        double massAccounted = stage.getTotalMass()-takeOffFuel.get();
+
+        double altitude = getSpaceHeight(rocket.level())-rocket.level().getHeight(Heightmap.Types.WORLD_SURFACE, rocket.blockPosition().getX(), rocket.blockPosition().getZ());
+        double acceleration = 0;
+        double velocity = -4;
+
+        double safeLandingSpeed = -0.1;
+        double g = 0.025;
+
+        int ticksRan = 0;
+
+        while(altitude > 0.25)
         {
-            ticksToTravel = (int) Math.sqrt((2*getSpaceHeight(getRocketEntity().level()))/acceleration);
+            velocity -= g;
+            velocity = Mth.clamp(velocity, -4, 0);
+
+            double twr = (thrust*1000)/(massAccounted*9.80665);
+            double netAccelMax = (twr - 1.0) * g;
+
+            double stoppingDistance = 0;
+            if (netAccelMax > 0 && velocity < 0)
+            {
+                stoppingDistance = Math.max(this.rocket.makeBoundingBox().getYsize(), (velocity * velocity) / (2.0 * netAccelMax));
+            }
+
+            double thrustLevel = 0.0;
+            if (altitude <= stoppingDistance + this.rocket.makeBoundingBox().getYsize())
+            {
+                double desiredVelocity = safeLandingSpeed;
+                double error = desiredVelocity - velocity;
+
+                double Kp = 0.5;
+                double Kd = 0.2;
+
+                double accelCmd = Kp * error - Kd * velocity;
+                double thrustFraction = (g + accelCmd) / (twr * g);
+                thrustLevel = Mth.clamp(thrustFraction, 0.0, 1.0);
+
+                fuelUsed += (int) (fuelFlow * thrustLevel) * stage.getFuelTypeAmount() * getEngineAmount();
+                massAccounted -= (int) (fuelFlow * thrustLevel) * stage.getFuelTypeAmount() * getEngineAmount();
+
+                ticksRan++;
+            }
+            else thrustLevel = 0.0;
+
+            acceleration = 0.025*twr*thrustLevel;
+            velocity += acceleration;
+
+            altitude += velocity;
+            altitude = Math.max(0, altitude);
+
+            ticks++;
         }
-        else
+
+        double Isp = getAverageIsp();
+        double massRatio = mass/(massAccounted);
+        double deltaV = 9.8*Isp*Math.log(massRatio);
+
+        System.out.println("Cursed ticks - " + ticksRan);
+        System.out.println("Simulated landing fuel - " + fuelUsed);
+        System.out.println("Simulated deltaV - " + takeoffDeltaV + " Landing - " + deltaV);
+    }
+
+    public double takeoffSimulation(AtomicInteger fuel)
+    {
+        int fuelUsed = 0;
+        int ticks = 0;
+        Stage stage = getCurrentStage();
+
+        double thrust = getMaxThrustKiloNewtons();
+        double height = this.getRocketEntity().makeBoundingBox().getYsize();
+        double fuelFlow = getAverageFuelUsage();
+        double mass = stage.getTotalMass();
+        double massAccounted = stage.getTotalMass();
+        double rocketMass = getMassKilogram();
+
+        double altitude = 0;
+        double acceleration = 0;
+        double velocity = 0;
+        double spaceY = getSpaceHeight(rocket.level())-rocket.getY();
+
+        if(stage == null)
+            return 0;
+
+        while(altitude < spaceY)
         {
-            double heightLeft = getSpaceHeight(getRocketEntity().level())-heightMaxSpeed;
-            double ticksToTraverse = heightLeft/RocketEntity.MAX_SPEED_UP_BT;
-            double ticksToSpeed = RocketEntity.MAX_SPEED_UP_BT/acceleration;
+            velocity -= 0.025;
+            double engineThrust = 0.0D;
+            double hover = (rocketMass*9.80665)/(thrust*1000);
 
-            ticksToTravel = (int) (ticksToTraverse+ticksToSpeed);
+            if(altitude < height)
+                engineThrust = hover*1.1;
+            else
+                engineThrust = hover*(altitude/height);
+
+            engineThrust = Math.max(0, Math.min(engineThrust, 1));
+
+            fuelUsed += (int) (fuelFlow * engineThrust) * stage.getFuelTypeAmount() * getEngineAmount();
+            massAccounted -= (int) (fuelFlow*engineThrust) * stage.getFuelTypeAmount() * getEngineAmount();
+            rocketMass -= (int) (fuelFlow*engineThrust) * stage.getFuelTypeAmount() * getEngineAmount();
+
+            double twr = (thrust*1000)/(rocketMass*9.80665);
+            acceleration = 0.025*twr*engineThrust;
+
+            velocity = Math.min(RocketEntity.MAX_SPEED_UP_BT, acceleration+velocity);
+            velocity = Math.max(velocity, 0);
+            altitude += velocity;
+            altitude = Math.max(0, altitude);
+
+            ticks++;
         }
 
-        int fuelUsed = getAverageFuelUsage()*ticksToTravel;
-        double mass = getMassDryKilogram();
-        double wet = getMassKilogram();
+        double Isp = getAverageIsp();
+        double massRatio = mass/(massAccounted);
+        double deltaV = 9.8*Isp*Math.log(massRatio);
 
-        double massRatio = (mass+fuelUsed)/mass;
+        fuel.set(fuelUsed);
 
-        double rocketDeltaV = 0;
-        Stage current = getCurrentStage();
-        if(current != null)
-            rocketDeltaV = current.calculateDeltaV();
-
-        double deltaV = 9.8*getAverageIsp()*Math.log(massRatio);
+        System.out.println("Simulated time - " + ticks);
+        System.out.println("Simulated takeoff fuel - " + fuelUsed);
         return deltaV;
     }
 
@@ -425,7 +528,7 @@ public class Rocket
 
     public boolean canLand()
     {
-        return true;
+        return getMaxTWR() > 1.0;
     }
 
     public RocketEntity getRocketEntity()

@@ -59,10 +59,16 @@ public class Stage
     public void tick(Level level)
     {
         if(this.blocks.isEmpty())
+        {
             this.rocket.stages.remove(this);
-        if(this.blocks.isEmpty() && this.rocket.stages.size() == 1)
-            this.rocket.getRocketEntity().discard();
+            return;
+        }
 
+        if(this.blocks.isEmpty() && this.rocket.stages.size() == 1)
+        {
+            this.rocket.getRocketEntity().discard();
+            return;
+        }
         for (Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
         {
             BlockData data = entry.getValue();
@@ -100,6 +106,20 @@ public class Stage
     public double getFuelMass()
     {
         return getTotalMass()-getTotalDryMass();
+    }
+
+    public int getFuelTypeAmount()
+    {
+        int amount = 0;
+        for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
+        {
+            if(entry.getValue() instanceof RocketEngineData data)
+            {
+                amount = data.fuelType.getPropellants().size();
+            }
+        }
+
+        return amount;
     }
 
     public double getTotalDryMass()

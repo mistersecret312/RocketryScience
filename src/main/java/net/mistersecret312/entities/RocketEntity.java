@@ -127,22 +127,14 @@ public class RocketEntity extends Entity
             return InteractionResult.SUCCESS;
         }
 
-        if(this.getRocket().stages.size() == 1)
-        {
-            for (Stage stage : this.getRocket().stages)
+        for (Stage stage : this.getRocket().stages)
             {
                 for (Map.Entry<BlockPos, BlockData> entry : stage.blocks.entrySet())
                 {
                     entry.getValue().placeInLevel(player.level(), entry.getKey().offset(this.getOnPos().above()));
                 }
             }
-            this.discard();
-        }
-        else if(this.getRocket().stages.size() > 1)
-        {
-            this.getRocket().stage(level());
-            return InteractionResult.SUCCESS;
-        }
+        this.discard();
 
         return InteractionResult.PASS;
     }
