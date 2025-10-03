@@ -131,10 +131,10 @@ public class Rocket
 
             double stoppingDistance = 0;
             if (netAccelMax > 0 && velocity < 0) {
-                stoppingDistance = Math.max(this.rocket.makeBoundingBox().getYsize(), (velocity * velocity) / (2.0 * netAccelMax));
+                stoppingDistance = Math.max(this.rocket.makeBoundingBox().getYsize(), (velocity * velocity) / (2.0 * netAccelMax))*Math.max(1, 0.5*getMaxTWR());;
             }
 
-            if (altitude <= stoppingDistance + this.rocket.makeBoundingBox().getYsize())
+            if (altitude <= stoppingDistance + 1)
             {
                 toggleEngines(true);
 
@@ -149,7 +149,6 @@ public class Rocket
                 thrustLevel = Mth.clamp(thrustFraction, 0.0, 1.0);
             }
             setEngineThrust(thrustLevel);
-            //System.out.println("New Thrust level = " + thrustLevel);
         }
         else
         {
@@ -336,7 +335,7 @@ public class Rocket
 
         double altitude = getSpaceHeight(rocket.level())-rocket.level().getHeight(Heightmap.Types.WORLD_SURFACE, rocket.blockPosition().getX(), rocket.blockPosition().getZ());
         double acceleration = 0;
-        double velocity = -4;
+        double velocity = 0;
 
         double safeLandingSpeed = -0.1;
         double g = 0.025;
@@ -345,6 +344,9 @@ public class Rocket
 
         while(altitude > 0.25)
         {
+            if(altitude < rocket.makeBoundingBox().getYsize() && velocity > safeLandingSpeed)
+                break;
+
             velocity -= g;
             velocity = Mth.clamp(velocity, -4, 0);
 
@@ -354,7 +356,7 @@ public class Rocket
             double stoppingDistance = 0;
             if (netAccelMax > 0 && velocity < 0)
             {
-                stoppingDistance = Math.max(this.rocket.makeBoundingBox().getYsize(), (velocity * velocity) / (2.0 * netAccelMax));
+                stoppingDistance = Math.max(rocket.makeBoundingBox().getYsize(), (velocity * velocity) / (2.0 * netAccelMax))*Math.max(1, 0.5*getMaxTWR());;
             }
 
             double thrustLevel = 0.0;
