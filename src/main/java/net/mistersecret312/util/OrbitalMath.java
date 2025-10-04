@@ -1,6 +1,7 @@
 package net.mistersecret312.util;
 
 import net.mistersecret312.datapack.CelestialBody;
+import net.mistersecret312.util.rocket.Stage;
 
 public class OrbitalMath
 {
@@ -29,5 +30,13 @@ public class OrbitalMath
         double part2 = Math.sqrt(body.getGravitationalParameter()/targetHeight)*(1-Math.sqrt((2*initialHeight)/(initialHeight+targetHeight)));
 
         return part1+part2;
+    }
+
+    public static int deltaVToFuelMass(Stage stage, double deltaV)
+    {
+        double stageMass = stage.getTotalMass();
+        double massWithoutDeltaV = stage.getTotalMass()*Math.pow(2.718, -(deltaV/(stage.getAverageIsp()*stage.getRocket().getCelestialBody().getGravityMS2())));
+
+        return (int) (stageMass-massWithoutDeltaV);
     }
 }

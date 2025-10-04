@@ -31,9 +31,9 @@ public class ItemTabInit
                         output.accept(BlockInit.COPPER_SOLID_FUEL_TANK.get());
                         output.accept(ItemInit.FUEL_TANK.get());
 
-                        output.accept(ItemInit.LIQUID_HYDROGEN_BUCKET.get());
-                        output.accept(ItemInit.LIQUID_OXYGEN_BUCKET.get());
-                        output.accept(ItemInit.LIQUID_NITROGEN_BUCKET.get());
+                        output.accept(ItemInit.CRYOGENIC_HYDROGEN_BUCKET.get());
+                        output.accept(ItemInit.CRYOGENIC_OXYGEN_BUCKET.get());
+                        output.accept(ItemInit.CRYOGENIC_NITROGEN_BUCKET.get());
 
                         output.accept(BlockInit.ROCKET_PAD.get());
                         output.accept(BlockInit.EXHAUST_GRATE.get());

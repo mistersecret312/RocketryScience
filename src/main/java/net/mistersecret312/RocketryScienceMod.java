@@ -137,14 +137,14 @@ public class RocketryScienceMod
             EntityRenderers.register(EntityInit.ROCKET.get(), RocketRenderer::new);
             MenuScreens.register(MenuInit.COMBUSTION_CHAMBER.get(), CombustionChamberScreen::new);
 
-            ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_LIQUID_HYDROGEN.get(), RenderType.translucent());
-            ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_LIQUID_HYDROGEN.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_CRYOGENIC_HYDROGEN.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_CRYOGENIC_HYDROGEN.get(), RenderType.translucent());
 
-            ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_LIQUID_OXYGEN.get(), RenderType.translucent());
-            ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_LIQUID_OXYGEN.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_CRYOGENIC_OXYGEN.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_CRYOGENIC_OXYGEN.get(), RenderType.translucent());
 
-            ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_LIQUID_NITROGEN.get(), RenderType.translucent());
-            ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_LIQUID_NITROGEN.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_CRYOGENIC_NITROGEN.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_CRYOGENIC_NITROGEN.get(), RenderType.translucent());
 
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_COMBUSTION_CHAMBER.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_NOZZLE_ATMOPSHERE.get(), RenderType.cutout());

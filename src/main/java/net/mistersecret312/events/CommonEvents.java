@@ -19,9 +19,9 @@ public class CommonEvents
     public static void entityTick(LivingEvent.LivingTickEvent event)
     {
         LivingEntity entity = event.getEntity();
-        if(entity.isInFluidType(FluidTypeInit.LIQUID_HYDROGEN_TYPE.get())
-        || entity.isInFluidType(FluidTypeInit.LIQUID_OXYGEN_TYPE.get())
-        || entity.isInFluidType(FluidTypeInit.LIQUID_NITROGEN_TYPE.get()))
+        if(entity.isInFluidType(FluidTypeInit.CRYOGENIC_HYDROGEN_TYPE.get())
+        || entity.isInFluidType(FluidTypeInit.CRYOGENIC_OXYGEN_TYPE.get())
+        || entity.isInFluidType(FluidTypeInit.CRYOGENIC_NITROGEN_TYPE.get()))
         {
             entity.setTicksFrozen(400);
             entity.hurt(new DamageSource(Holder.direct(entity.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(RocketryScienceMod.MODID, "cryogenic"))))), 2f);

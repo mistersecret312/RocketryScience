@@ -21,12 +21,12 @@ public class BlockInit
 {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, RocketryScienceMod.MODID);
 
-    public static final RegistryObject<LiquidBlock> LIQUID_HYDROGEN = BLOCKS.register("liquid_hydrogen",
-            () -> new LiquidBlock(FluidInit.SOURCE_LIQUID_HYDROGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
-    public static final RegistryObject<LiquidBlock> LIQUID_OXYGEN = BLOCKS.register("liquid_oxygen",
-            () -> new LiquidBlock(FluidInit.SOURCE_LIQUID_OXYGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
-    public static final RegistryObject<LiquidBlock> LIQUID_NITROGEN = BLOCKS.register("liquid_nitrogen",
-            () -> new LiquidBlock(FluidInit.SOURCE_LIQUID_NITROGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
+    public static final RegistryObject<LiquidBlock> CRYOGENIC_HYDROGEN = BLOCKS.register("cryogenic_hydrogen",
+            () -> new LiquidBlock(FluidInit.SOURCE_CRYOGENIC_HYDROGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
+    public static final RegistryObject<LiquidBlock> CRYOGENIC_OXYGEN = BLOCKS.register("cryogenic_oxygen",
+            () -> new LiquidBlock(FluidInit.SOURCE_CRYOGENIC_OXYGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
+    public static final RegistryObject<LiquidBlock> CRYOGENIC_NITROGEN = BLOCKS.register("cryogenic_nitrogen",
+            () -> new LiquidBlock(FluidInit.SOURCE_CRYOGENIC_NITROGEN, BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()));
 
     public static final RegistryObject<CombustionChamberBlock> STEEL_COMBUSTION_CHAMBER = registerBlock("steel_combustion_chamber",
             () -> new CombustionChamberBlock(BlockBehaviour.Properties.of().noOcclusion().strength(15).explosionResistance(15).sound(SoundType.COPPER)));

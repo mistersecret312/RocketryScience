@@ -15,36 +15,36 @@ public class FluidInit
 {
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, RocketryScienceMod.MODID);
 
-    public static final RegistryObject<FlowingFluid> SOURCE_LIQUID_HYDROGEN = FLUIDS.register("liquid_hydrogen",
-            () -> new ForgeFlowingFluid.Source(FluidInit.LIQUID_HYDROGEN_PROPERTIES));
-    public static final RegistryObject<FlowingFluid> FLOWING_LIQUID_HYDROGEN = FLUIDS.register("flowing_liquid_hydrogen",
-            () -> new ForgeFlowingFluid.Flowing(FluidInit.LIQUID_HYDROGEN_PROPERTIES));
+    public static final RegistryObject<FlowingFluid> SOURCE_CRYOGENIC_HYDROGEN = FLUIDS.register("cryogenic_hydrogen",
+            () -> new ForgeFlowingFluid.Source(FluidInit.CRYOGENIC_HYDROGEN_PROPERTIES));
+    public static final RegistryObject<FlowingFluid> FLOWING_CRYOGENIC_HYDROGEN = FLUIDS.register("flowing_cryogenic_hydrogen",
+            () -> new ForgeFlowingFluid.Flowing(FluidInit.CRYOGENIC_HYDROGEN_PROPERTIES));
 
-    public static final RegistryObject<FlowingFluid> SOURCE_LIQUID_OXYGEN = FLUIDS.register("liquid_oxygen",
-            () -> new ForgeFlowingFluid.Source(FluidInit.LIQUID_OXYGEN_PROPERTIES));
-    public static final RegistryObject<FlowingFluid> FLOWING_LIQUID_OXYGEN = FLUIDS.register("flowing_liquid_oxygen",
-            () -> new ForgeFlowingFluid.Flowing(FluidInit.LIQUID_OXYGEN_PROPERTIES));
+    public static final RegistryObject<FlowingFluid> SOURCE_CRYOGENIC_OXYGEN = FLUIDS.register("crying_oxygen",
+            () -> new ForgeFlowingFluid.Source(FluidInit.CRYOGENIC_OXYGEN_PROPERTIES));
+    public static final RegistryObject<FlowingFluid> FLOWING_CRYOGENIC_OXYGEN = FLUIDS.register("flowing_cryogenic_oxygen",
+            () -> new ForgeFlowingFluid.Flowing(FluidInit.CRYOGENIC_OXYGEN_PROPERTIES));
 
-    public static final RegistryObject<FlowingFluid> SOURCE_LIQUID_NITROGEN = FLUIDS.register("liquid_nitrogen",
-            () -> new ForgeFlowingFluid.Source(FluidInit.LIQUID_NITROGEN_PROPERTIES));
-    public static final RegistryObject<FlowingFluid> FLOWING_LIQUID_NITROGEN = FLUIDS.register("flowing_liquid_nitrogen",
-            () -> new ForgeFlowingFluid.Flowing(FluidInit.LIQUID_NITROGEN_PROPERTIES));
+    public static final RegistryObject<FlowingFluid> SOURCE_CRYOGENIC_NITROGEN = FLUIDS.register("cryogenic_nitrogen",
+            () -> new ForgeFlowingFluid.Source(FluidInit.CRYOGENIC_NITROGEN_PROPERTIES));
+    public static final RegistryObject<FlowingFluid> FLOWING_CRYOGENIC_NITROGEN = FLUIDS.register("flowing_cryogenic_nitrogen",
+            () -> new ForgeFlowingFluid.Flowing(FluidInit.CRYOGENIC_NITROGEN_PROPERTIES));
 
 
-    public static final ForgeFlowingFluid.Properties LIQUID_HYDROGEN_PROPERTIES = new ForgeFlowingFluid.Properties(
-            FluidTypeInit.LIQUID_HYDROGEN_TYPE, SOURCE_LIQUID_HYDROGEN, FLOWING_LIQUID_HYDROGEN)
-            .slopeFindDistance(4).levelDecreasePerBlock(1).block(BlockInit.LIQUID_HYDROGEN)
-            .bucket(ItemInit.LIQUID_HYDROGEN_BUCKET);
+    public static final ForgeFlowingFluid.Properties CRYOGENIC_HYDROGEN_PROPERTIES = new ForgeFlowingFluid.Properties(
+            FluidTypeInit.CRYOGENIC_HYDROGEN_TYPE, SOURCE_CRYOGENIC_HYDROGEN, FLOWING_CRYOGENIC_HYDROGEN)
+            .slopeFindDistance(4).levelDecreasePerBlock(1).block(BlockInit.CRYOGENIC_HYDROGEN)
+            .bucket(ItemInit.CRYOGENIC_HYDROGEN_BUCKET);
 
-    public static final ForgeFlowingFluid.Properties LIQUID_OXYGEN_PROPERTIES = new ForgeFlowingFluid.Properties(
-            FluidTypeInit.LIQUID_OXYGEN_TYPE, SOURCE_LIQUID_OXYGEN, FLOWING_LIQUID_OXYGEN)
-            .slopeFindDistance(4).levelDecreasePerBlock(1).block(BlockInit.LIQUID_OXYGEN)
-            .bucket(ItemInit.LIQUID_OXYGEN_BUCKET);
+    public static final ForgeFlowingFluid.Properties CRYOGENIC_OXYGEN_PROPERTIES = new ForgeFlowingFluid.Properties(
+            FluidTypeInit.CRYOGENIC_OXYGEN_TYPE, SOURCE_CRYOGENIC_OXYGEN, FLOWING_CRYOGENIC_OXYGEN)
+            .slopeFindDistance(4).levelDecreasePerBlock(1).block(BlockInit.CRYOGENIC_OXYGEN)
+            .bucket(ItemInit.CRYOGENIC_OXYGEN_BUCKET);
 
-    public static final ForgeFlowingFluid.Properties LIQUID_NITROGEN_PROPERTIES = new ForgeFlowingFluid.Properties(
-            FluidTypeInit.LIQUID_NITROGEN_TYPE, SOURCE_LIQUID_NITROGEN, FLOWING_LIQUID_NITROGEN)
-            .slopeFindDistance(4).levelDecreasePerBlock(1).block(BlockInit.LIQUID_NITROGEN)
-            .bucket(ItemInit.LIQUID_NITROGEN_BUCKET);
+    public static final ForgeFlowingFluid.Properties CRYOGENIC_NITROGEN_PROPERTIES = new ForgeFlowingFluid.Properties(
+            FluidTypeInit.CRYOGENIC_NITROGEN_TYPE, SOURCE_CRYOGENIC_NITROGEN, FLOWING_CRYOGENIC_NITROGEN)
+            .slopeFindDistance(4).levelDecreasePerBlock(1).block(BlockInit.CRYOGENIC_NITROGEN)
+            .bucket(ItemInit.CRYOGENIC_NITROGEN_BUCKET);
 
     public static void register(IEventBus bus)
     {

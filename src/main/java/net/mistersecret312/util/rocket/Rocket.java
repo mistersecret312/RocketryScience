@@ -16,6 +16,7 @@ import net.minecraft.world.phys.AABB;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.network.ClientPacketHandler;
+import net.mistersecret312.util.OrbitalMath;
 import net.mistersecret312.util.RocketState;
 
 import java.util.*;
@@ -219,6 +220,20 @@ public class Rocket
         return rocket.position().y-level.getHeight(Heightmap.Types.MOTION_BLOCKING, rocket.blockPosition().getX(), rocket.blockPosition().getZ());
     }
 
+    public CelestialBody getCelestialBody()
+    {
+        Level level = rocket.level();
+
+        Registry<CelestialBody> registry = level.getServer().registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+        for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : registry.entrySet())
+        {
+            if(entry.getValue().getDimension().equals(level.dimension()))
+                return entry.getValue();
+        }
+
+        return null;
+    }
+
     public CelestialBody getCelestialBody(Level level)
     {
         Registry<CelestialBody> registry = level.getServer().registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
@@ -392,8 +407,9 @@ public class Rocket
         double massRatio = mass/(massAccounted);
         double deltaV = 9.8*Isp*Math.log(massRatio);
 
-        System.out.println("Cursed ticks - " + ticksRan);
         System.out.println("Simulated landing fuel - " + fuelUsed);
+        System.out.println("Landing DeltaV to fuel - " + OrbitalMath.deltaVToFuelMass(stage, deltaV));
+        System.out.println("Takeoff DeltaV to fuel - " + OrbitalMath.deltaVToFuelMass(stage, takeoffDeltaV));
         System.out.println("Simulated deltaV - " + takeoffDeltaV + " Landing - " + deltaV);
     }
 

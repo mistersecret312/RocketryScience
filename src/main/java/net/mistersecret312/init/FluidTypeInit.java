@@ -19,25 +19,25 @@ import org.joml.Vector3f;
 
 public class FluidTypeInit
 {
-    public static final ResourceLocation LIQUID_STILL = new ResourceLocation("block/water_still");
-    public static final ResourceLocation LIQUID_FLOW = new ResourceLocation("block/water_flow");
-    public static final ResourceLocation LIQUID_OVERLAY = new ResourceLocation("block/water_overlay");
-    public static final ResourceLocation LIQUID_UNDERWATER = new ResourceLocation("textures/misc/underwater.png");
+    public static final ResourceLocation CRYOGENIC_STILL = new ResourceLocation("block/water_still");
+    public static final ResourceLocation CRYOGENIC_FLOW = new ResourceLocation("block/water_flow");
+    public static final ResourceLocation CRYOGENIC_OVERLAY = new ResourceLocation("block/water_overlay");
+    public static final ResourceLocation CRYOGENIC_UNDERWATER = new ResourceLocation("textures/misc/underwater.png");
 
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, RocketryScienceMod.MODID);
 
-    public static final RegistryObject<FluidType> LIQUID_HYDROGEN_TYPE = registerFluidType("liquid_hydrogen",
-            new LiquidMaterialFluid(LIQUID_STILL, LIQUID_FLOW, LIQUID_OVERLAY, LIQUID_UNDERWATER, 0xFF99CCFF,
+    public static final RegistryObject<FluidType> CRYOGENIC_HYDROGEN_TYPE = registerFluidType("cryogenic_hydrogen",
+            new LiquidMaterialFluid(CRYOGENIC_STILL, CRYOGENIC_FLOW, CRYOGENIC_OVERLAY, CRYOGENIC_UNDERWATER, 0xFF99CCFF,
                     new Vector3f(153f / 255f, 204f / 255f, 1.0f),
                     FluidType.Properties.create().lightLevel(0).viscosity(8).density(15).canExtinguish(false)));
 
-    public static final RegistryObject<FluidType> LIQUID_OXYGEN_TYPE = registerFluidType("liquid_oxygen",
-            new LiquidMaterialFluid(LIQUID_STILL, LIQUID_FLOW, LIQUID_OVERLAY, LIQUID_UNDERWATER,0xFFFF6666,
+    public static final RegistryObject<FluidType> CRYOGENIC_OXYGEN_TYPE = registerFluidType("cryogenic_oxygen",
+            new LiquidMaterialFluid(CRYOGENIC_STILL, CRYOGENIC_FLOW, CRYOGENIC_OVERLAY, CRYOGENIC_UNDERWATER,0xFFFF6666,
                     new Vector3f(1.0f, 102f / 255f, 102f / 255f),
 
                     FluidType.Properties.create().lightLevel(0).viscosity(8).density(15).canExtinguish(false)));
-    public static final RegistryObject<FluidType> LIQUID_NITROGEN_TYPE = registerFluidType("liquid_nitrogen",
-            new LiquidMaterialFluid(LIQUID_STILL, LIQUID_FLOW, LIQUID_OVERLAY, LIQUID_UNDERWATER,0xFF66CC99,
+    public static final RegistryObject<FluidType> CRYOGENIC_NITROGEN_TYPE = registerFluidType("cryogenic_nitrogen",
+            new LiquidMaterialFluid(CRYOGENIC_STILL, CRYOGENIC_FLOW, CRYOGENIC_OVERLAY, CRYOGENIC_UNDERWATER,0xFF66CC99,
                     new Vector3f(102 / 255f, 204f / 255f, 153f / 255f),
                     FluidType.Properties.create().lightLevel(0).viscosity(8).density(15).canExtinguish(false)));
 
@@ -53,10 +53,10 @@ public class FluidTypeInit
     public static void registerFluidInteractions()
     {
         FluidInteractionRegistry.addInteraction(ForgeMod.LAVA_TYPE.get(),
-                new FluidInteractionRegistry.InteractionInformation(LIQUID_HYDROGEN_TYPE.get(),
+                new FluidInteractionRegistry.InteractionInformation(CRYOGENIC_HYDROGEN_TYPE.get(),
                         fluidstate -> Blocks.OBSIDIAN.defaultBlockState()));
         FluidInteractionRegistry.addInteraction(ForgeMod.WATER_TYPE.get(),
-                new FluidInteractionRegistry.InteractionInformation(LIQUID_HYDROGEN_TYPE.get(),
+                new FluidInteractionRegistry.InteractionInformation(CRYOGENIC_HYDROGEN_TYPE.get(),
                         fluidstate ->
                         {
                             if(fluidstate.isSource())
@@ -65,10 +65,10 @@ public class FluidTypeInit
                         }));
 
         FluidInteractionRegistry.addInteraction(ForgeMod.LAVA_TYPE.get(),
-                new FluidInteractionRegistry.InteractionInformation(LIQUID_OXYGEN_TYPE.get(),
+                new FluidInteractionRegistry.InteractionInformation(CRYOGENIC_OXYGEN_TYPE.get(),
                         fluidstate -> Blocks.OBSIDIAN.defaultBlockState()));
         FluidInteractionRegistry.addInteraction(ForgeMod.WATER_TYPE.get(),
-                new FluidInteractionRegistry.InteractionInformation(LIQUID_OXYGEN_TYPE.get(),
+                new FluidInteractionRegistry.InteractionInformation(CRYOGENIC_OXYGEN_TYPE.get(),
                         fluidstate ->
                         {
                             if(fluidstate.isSource())
@@ -77,10 +77,10 @@ public class FluidTypeInit
                         }));
 
         FluidInteractionRegistry.addInteraction(ForgeMod.LAVA_TYPE.get(),
-                new FluidInteractionRegistry.InteractionInformation(LIQUID_NITROGEN_TYPE.get(),
+                new FluidInteractionRegistry.InteractionInformation(CRYOGENIC_NITROGEN_TYPE.get(),
                         fluidstate -> Blocks.OBSIDIAN.defaultBlockState()));
         FluidInteractionRegistry.addInteraction(ForgeMod.WATER_TYPE.get(),
-                new FluidInteractionRegistry.InteractionInformation(LIQUID_NITROGEN_TYPE.get(),
+                new FluidInteractionRegistry.InteractionInformation(CRYOGENIC_NITROGEN_TYPE.get(),
                         fluidstate ->
                         {
                             if(fluidstate.isSource())

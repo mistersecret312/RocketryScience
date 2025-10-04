@@ -4,14 +4,14 @@
 
   "tabs.rocketry_science.main": "Rocketry Science",
 
-  "item.rocketry_science.liquid_hydrogen_bucket": "Liquid Hydrogen Bucket",
-  "item.rocketry_science.liquid_oxygen_bucket": "Liquid Oxygen Bucket",
-  "item.rocketry_science.liquid_nitrogen_bucket": "Liquid Nitrogen Bucket",
+  "item.rocketry_science.cryogenic_hydrogen_bucket": "Cryogenic Hydrogen Bucket",
+  "item.rocketry_science.cryogenic_oxygen_bucket": "Cryogenic Oxygen Bucket",
+  "item.rocketry_science.cryogenic_nitrogen_bucket": "Cryogenic Nitrogen Bucket",
   "item.rocketry_science.steel_turbopump": "Steel Turbopump",
   "item.rocketry_science.steel_combustion_chamber_component": "Steel Combustion Chamber",
 
-  "block.rocketry_science.liquid_oxygen": "Liquid Oxygen",
-  "block.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
+  "block.rocketry_science.cryogenic_oxygen": "Cryogenic Oxygen",
+  "block.rocketry_science.cryogenic_hydrogen": "Cryogenic Hydrogen",
 
   "block.rocketry_science.steel_combustion_chamber": "Steel Combustion Chamber",
   "block.rocketry_science.steel_nozzle_atmosphere": "Atmosphere-Optimized Steel Nozzle",
@@ -29,9 +29,9 @@
 
   "block.rocketry_science.hazard_strip": "Hazard Strip",
 
-  "fluid_type.rocketry_science.liquid_hydrogen": "Liquid Hydrogen",
-  "fluid_type.rocketry_science.liquid_oxygen": "Liquid Oxygen",
-  "fluid_type.rocketry_science.liquid_nitrogen": "Liquid Nitrogen",
+  "fluid_type.rocketry_science.cryogenic_hydrogen": "Liquid Hydrogen",
+  "fluid_type.rocketry_science.cryogenic_oxygen": "Liquid Oxygen",
+  "fluid_type.rocketry_science.cryogenic_nitrogen": "Liquid Nitrogen",
 
   "data.rocketry_science.mass": "Mass: %d ",
   "data.rocketry_science.thrust": "Thrust: %1$d/%2$d ",

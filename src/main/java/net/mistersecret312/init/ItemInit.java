@@ -16,12 +16,12 @@ public class ItemInit
 {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, RocketryScienceMod.MODID);
 
-    public static final RegistryObject<BucketItem> LIQUID_HYDROGEN_BUCKET = ITEMS.register("liquid_hydrogen_bucket",
-            () -> new BucketItem(FluidInit.SOURCE_LIQUID_HYDROGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
-    public static final RegistryObject<BucketItem> LIQUID_OXYGEN_BUCKET = ITEMS.register("liquid_oxygen_bucket",
-            () -> new BucketItem(FluidInit.SOURCE_LIQUID_OXYGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
-    public static final RegistryObject<BucketItem> LIQUID_NITROGEN_BUCKET = ITEMS.register("liquid_nitrogen_bucket",
-            () -> new BucketItem(FluidInit.SOURCE_LIQUID_NITROGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
+    public static final RegistryObject<BucketItem> CRYOGENIC_HYDROGEN_BUCKET = ITEMS.register("cryogenic_hydrogen_bucket",
+            () -> new BucketItem(FluidInit.SOURCE_CRYOGENIC_HYDROGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
+    public static final RegistryObject<BucketItem> CRYOGENIC_OXYGEN_BUCKET = ITEMS.register("cryogenic_oxygen_bucket",
+            () -> new BucketItem(FluidInit.SOURCE_CRYOGENIC_OXYGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
+    public static final RegistryObject<BucketItem> CRYOGENIC_NITROGEN_BUCKET = ITEMS.register("cryogenic_nitrogen_bucket",
+            () -> new BucketItem(FluidInit.SOURCE_CRYOGENIC_NITROGEN, new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
 
     public static final RegistryObject<TurboPumpItem> STEEL_TURBOPUMP = ITEMS.register("steel_turbopump",
             () -> new TurboPumpItem(new Item.Properties().stacksTo(64)));
