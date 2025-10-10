@@ -20,7 +20,7 @@ public class FluidInit
     public static final RegistryObject<FlowingFluid> FLOWING_CRYOGENIC_HYDROGEN = FLUIDS.register("flowing_cryogenic_hydrogen",
             () -> new ForgeFlowingFluid.Flowing(FluidInit.CRYOGENIC_HYDROGEN_PROPERTIES));
 
-    public static final RegistryObject<FlowingFluid> SOURCE_CRYOGENIC_OXYGEN = FLUIDS.register("crying_oxygen",
+    public static final RegistryObject<FlowingFluid> SOURCE_CRYOGENIC_OXYGEN = FLUIDS.register("cryogenic_oxygen",
             () -> new ForgeFlowingFluid.Source(FluidInit.CRYOGENIC_OXYGEN_PROPERTIES));
     public static final RegistryObject<FlowingFluid> FLOWING_CRYOGENIC_OXYGEN = FLUIDS.register("flowing_cryogenic_oxygen",
             () -> new ForgeFlowingFluid.Flowing(FluidInit.CRYOGENIC_OXYGEN_PROPERTIES));
