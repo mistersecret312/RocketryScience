@@ -1,8 +1,6 @@
 {
   "name": "rocketry_science.celestial_body.terra",
   "parent": "rocketry_science:sol",
-  "sphere_of_influence_radius": 1690000000,
-  "orbit_altitude": 149600000000,
   "dimension": "minecraft:overworld",
   "gravity": 1.0,
   "radius": 6378000

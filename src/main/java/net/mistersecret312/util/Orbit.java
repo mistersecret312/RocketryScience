@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.util.rocket.Rocket;
+import net.povstalec.stellarview.client.resourcepack.ViewCenter;
 import org.joml.Vector2f;
 
 public class Orbit

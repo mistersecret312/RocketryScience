@@ -1,7 +1,12 @@
 package net.mistersecret312.util;
 
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.util.rocket.Stage;
+
+import java.util.Map;
 
 public class OrbitalMath
 {
@@ -38,5 +43,17 @@ public class OrbitalMath
         double massWithoutDeltaV = stage.getTotalMass()*Math.pow(2.718, -(deltaV/(stage.getAverageIsp()*stage.getRocket().getCelestialBody().getGravityMS2())));
 
         return (int) (stageMass-massWithoutDeltaV);
+    }
+
+    public static CelestialBody getCelestialBody(Level level)
+    {
+        Registry<CelestialBody> registry = level.getServer().registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+        for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : registry.entrySet())
+        {
+            if(entry.getValue().getDimension().equals(level.dimension()))
+                return entry.getValue();
+        }
+
+        return null;
     }
 }

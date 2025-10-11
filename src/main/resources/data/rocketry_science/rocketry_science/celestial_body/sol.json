@@ -1,6 +1,5 @@
 {
   "name": "rocketry_science.celestial_body.sol",
-  "sphere_of_influence_radius": 5000000000000,
   "gravity": 28.0,
   "radius": 696265000
 }

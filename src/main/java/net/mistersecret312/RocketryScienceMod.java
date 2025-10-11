@@ -3,6 +3,7 @@ package net.mistersecret312;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -43,6 +44,7 @@ import net.mistersecret312.client.renderer.SolidPlumeRenderer;
 import net.mistersecret312.client.screen.CombustionChamberScreen;
 import net.mistersecret312.data.Orbits;
 import net.mistersecret312.datapack.CelestialBody;
+import net.mistersecret312.events.CommonEvents;
 import net.mistersecret312.init.*;
 import net.mistersecret312.util.Orbit;
 import net.mistersecret312.util.rocket.RocketEngineData;
@@ -108,28 +110,10 @@ public class RocketryScienceMod
     public void onServerStarted(ServerStartedEvent event)
     {
         MinecraftServer server = event.getServer();
+        CommonEvents.init(server);
+
         Registry<CelestialBody> registry = server.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
         Set<Map.Entry<ResourceKey<CelestialBody>, CelestialBody>> set = registry.entrySet();
-
-        Orbits orbits = Orbits.get(server);
-        Iterator<Map.Entry<ResourceKey<CelestialBody>, CelestialBody>> iterator = set.iterator();
-        while(iterator.hasNext())
-        {
-            Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry = iterator.next();
-            if(entry.getValue().getParent().isEmpty())
-                continue;
-
-            ResourceKey<CelestialBody> parent = entry.getValue().getParent().get();
-            if(registry.containsKey(parent))
-            {
-                CelestialBody parentBody = registry.get(parent);
-                if(parentBody != null)
-                    parentBody.children.add(entry.getKey());
-
-                if(orbits.orbits.stream().noneMatch(orbit -> orbit.spaceObject == entry.getValue()))
-                    orbits.addOrbit(entry.getValue().orbitAltitude, parentBody, entry.getValue());
-            }
-        }
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

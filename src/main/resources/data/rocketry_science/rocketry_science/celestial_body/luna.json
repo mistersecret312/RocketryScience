@@ -1,0 +1,8 @@
+{
+  "name": "rocketry_science.celestial_body.luna",
+  "parent": "rocketry_science:terra",
+  "dimension": "rocketry_science:luna",
+  "day_length": 192000,
+  "gravity": 0.165,
+  "radius": 1737400
+}

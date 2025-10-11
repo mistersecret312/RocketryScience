@@ -28,8 +28,7 @@ public class CelestialBody implements SpaceObject
             Codec.STRING.fieldOf("name").forGetter(body -> body.name),
             Level.RESOURCE_KEY_CODEC.optionalFieldOf("dimension").forGetter(CelestialBody::getDimension),
             ResourceKey.codec(REGISTRY_KEY).optionalFieldOf("parent").forGetter(CelestialBody::getParent),
-            Codec.DOUBLE.optionalFieldOf("orbit_altitude", 0d).forGetter(body -> body.orbitAltitude),
-            Codec.DOUBLE.fieldOf("sphere_of_influence_radius").forGetter(CelestialBody::getRadiusSphereOfInfluence),
+            Codec.INT.optionalFieldOf("day_length", 20).forGetter(CelestialBody::getDayLength),
             Codec.DOUBLE.fieldOf("gravity").forGetter(CelestialBody::getGravity),
             Codec.DOUBLE.fieldOf("radius").forGetter(CelestialBody::getRadius)
     ).apply(instance, CelestialBody::new));
@@ -37,19 +36,19 @@ public class CelestialBody implements SpaceObject
     public String name;
     public ResourceKey<Level> dimension;
     public ResourceKey<CelestialBody> parent;
-    public double orbitAltitude;
+    public int dayLength;
     public double gravity;
     public double radius;
     public double radiusSOI;
     public List<ResourceKey<CelestialBody>> children = new ArrayList<>();
 
-    public CelestialBody(String name, Optional<ResourceKey<Level>> dimension, Optional<ResourceKey<CelestialBody>> parent, double orbitAltitude, double radiusSOI, double gravity, double radius)
+    public CelestialBody(String name, Optional<ResourceKey<Level>> dimension,
+                         Optional<ResourceKey<CelestialBody>> parent, int dayLength, double gravity, double radius)
     {
         this.name = name;
         this.dimension = dimension.orElse(null);
         this.parent = parent.orElse(null);
-        this.radiusSOI = radiusSOI;
-        this.orbitAltitude = orbitAltitude;
+        this.dayLength = dayLength;
         this.gravity = gravity;
         this.radius = radius;
     }
@@ -67,6 +66,11 @@ public class CelestialBody implements SpaceObject
     public double getRadius()
     {
         return radius;
+    }
+
+    public int getDayLength()
+    {
+        return dayLength;
     }
 
     public double getRadiusSphereOfInfluence()

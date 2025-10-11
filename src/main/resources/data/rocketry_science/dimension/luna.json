@@ -1,0 +1,11 @@
+{
+  "type": "rocketry_science:luna",
+  "generator": {
+    "settings": "rocketry_science:luna",
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "rocketry_science:luna_plains"
+    }
+  }
+}
