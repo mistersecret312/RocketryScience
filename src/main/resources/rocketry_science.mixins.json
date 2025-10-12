@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "rocketry_science.refmap.json",
   "mixins": [
+    "DimensionTypeMixin"
   ],
   "client": [
   ],

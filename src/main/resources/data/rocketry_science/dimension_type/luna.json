@@ -1,8 +1,8 @@
 {
-  "ambient_light": 11,
+  "ambient_light": 0.0,
   "bed_works": true,
   "coordinate_scale": 1,
-  "effects": "minecraft:the_end",
+  "effects": "rocketry_science:luna",
   "has_ceiling": true,
   "has_raids": true,
   "has_skylight": true,

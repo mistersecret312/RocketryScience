@@ -1,15 +1,22 @@
 package net.mistersecret312.util;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.util.rocket.Stage;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class OrbitalMath
 {
+    private static HashMap<ServerLevel, Double> dimensionTime = new HashMap<>();
+
     public static double getOrbitDeltaV(CelestialBody body, double height)
     {
         double altitude = body.getRadius()+height;
@@ -50,10 +57,54 @@ public class OrbitalMath
         Registry<CelestialBody> registry = level.getServer().registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
         for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : registry.entrySet())
         {
-            if(entry.getValue().getDimension().equals(level.dimension()))
+            if(entry.getValue().getDimension().isPresent() &&
+            entry.getValue().getDimension().get().equals(level.dimension()))
                 return entry.getValue();
         }
 
         return null;
+    }
+
+    public static CelestialBody getCelestialBody(ResourceLocation dimensionType)
+    {
+        Level level = Minecraft.getInstance().level;
+        if(level == null)
+            return null;
+
+        Registry<CelestialBody> registry = level.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+        for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : registry.entrySet())
+        {
+            if(entry.getValue().getDimension().isPresent()
+                    && entry.getValue().getDimension().get().location().equals(dimensionType))
+                return entry.getValue();
+        }
+
+        return null;
+    }
+
+    public static long calculateTime(CelestialBody body, ServerLevel level, long currentTime) {
+
+        int dayLength = body.getDayLength();
+
+        // If day length is 0, time is frozen
+        if (dayLength == 0) {
+            return currentTime;
+        }
+
+        // Vanilla day length behavior
+        if (dayLength == 20) {
+            return currentTime + 1L;
+        }
+
+        // Custom day length progression
+        double speedFactor = (20.0 * 60.0) / (dayLength * 60.0); // ticks per tick
+        double accumulated = dimensionTime.getOrDefault(level, 0.0);
+        accumulated += speedFactor;
+
+        long ticksToAdd = (long) accumulated;
+        accumulated -= ticksToAdd;
+
+        dimensionTime.put(level, accumulated);
+        return currentTime + ticksToAdd;
     }
 }

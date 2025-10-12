@@ -31,8 +31,6 @@ public class CommonEvents
 {
     public static ResourceKey<DimensionType> LUNA = ResourceKey.create(Registries.DIMENSION_TYPE, ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "luna"));
 
-    private static HashMap<ServerLevel, Double> dimensionTime = new HashMap<>();
-
     public static void init(MinecraftServer server)
     {
 
@@ -72,37 +70,17 @@ public class CommonEvents
 
         CelestialBody body = OrbitalMath.getCelestialBody(level);
 
-        if(body != null && level instanceof ServerLevel serverLevel)
+        if(level instanceof ServerLevel serverLevel)
         {
+            double timeOfDay = serverLevel.getTimeOfDay(0f);
+            int darken = serverLevel.getSkyDarken();
+            if(darken > 0)
+            {
+
+            }
             //long newTime = calculateTime(serverLevel, body.getDayLength(), serverLevel.getServer());
             //serverLevel.setDayTime(newTime);
         }
 
-    }
-
-    private static long calculateTime(ServerLevel level, int dayLength, MinecraftServer server) {
-
-        server.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY).entrySet();
-
-        // If day length is 0, time is frozen
-        if (dayLength == 0) {
-            return level.getDayTime();
-        }
-
-        // Vanilla day length behavior
-        if (dayLength == 20) {
-            return level.getDayTime() + 1L;
-        }
-
-        // Custom day length progression
-        double speedFactor = (20.0 * 60.0) / (dayLength * 60.0); // ticks per tick
-        double accumulated = dimensionTime.getOrDefault(level, 0.0);
-        accumulated += speedFactor;
-
-        long ticksToAdd = (long) accumulated;
-        accumulated -= ticksToAdd;
-
-        dimensionTime.put(level, accumulated);
-        return level.getDayTime() + ticksToAdd;
     }
 }

@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -35,6 +36,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DataPackRegistryEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.mistersecret312.client.dimension.RocketryDimensionalEffects;
 import net.mistersecret312.client.entity.RocketRenderer;
 import net.mistersecret312.client.model.PlumeModel;
 import net.mistersecret312.client.renderer.FuelTankRenderer;
@@ -145,6 +147,12 @@ public class RocketryScienceMod
                     context -> new FuelTankRenderer());
             event.registerBlockEntityRenderer(BlockEntityInit.SEPARATOR.get(),
                     context -> new SeparatorRenderer());
+        }
+
+        @SubscribeEvent
+        public static void onDimensionEffectRegister(RegisterDimensionSpecialEffectsEvent event)
+        {
+            RocketryDimensionalEffects.register(event);
         }
 
         @SubscribeEvent

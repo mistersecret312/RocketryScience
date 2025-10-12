@@ -57,7 +57,12 @@ side = "BOTH"# Here's another dependency
 [[dependencies."${mod_id}"]]
 modId = "minecraft"
 mandatory = true
-# This version range declares a minimum of the current minecraft version up to but not including the next major version
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+[[dependencies."${mod_id}"]]
+modId = "stellarview"
+mandatory = true
+versionRange = "[0.5.0,0.6.0)"
+ordering = "AFTER"
+side = "CLIENT"
