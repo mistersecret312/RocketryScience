@@ -8,13 +8,14 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeFriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
-import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.RocketBlockDataInit;
+import net.mistersecret312.util.Vessel;
 
 import java.util.*;
 
@@ -29,11 +30,11 @@ public class Stage
 
     public double mass = 10000;
 
-    private Rocket rocket;
+    private Vessel vessel;
 
-    public Stage(Rocket rocket)
+    public Stage(Vessel vessel)
     {
-        this.rocket = rocket;
+        this.vessel = vessel;
 
         this.palette = new ArrayList<>();
         this.blocks = new HashMap<>();
@@ -43,7 +44,7 @@ public class Stage
         this.maxSolidFuel = 0;
     }
 
-    public Stage(Rocket rocket, List<BlockState> palette, HashMap<BlockPos, BlockData> blocks,
+    public Stage(Vessel vessel, List<BlockState> palette, HashMap<BlockPos, BlockData> blocks,
                  List<FluidStack> fluidStacks, List<FluidStack> maxFluids, int solidFuel, int maxSolidFuel)
     {
         this.palette = palette;
@@ -53,22 +54,17 @@ public class Stage
         this.solidFuel = solidFuel;
         this.maxSolidFuel = maxSolidFuel;
 
-        this.rocket = rocket;
+        this.vessel = vessel;
     }
 
     public void tick(Level level)
     {
         if(this.blocks.isEmpty())
         {
-            this.rocket.stages.remove(this);
+            this.vessel.removeStage(this);
             return;
         }
 
-        if(this.blocks.isEmpty() && this.rocket.stages.size() == 1)
-        {
-            this.rocket.getRocketEntity().discard();
-            return;
-        }
         for (Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
         {
             BlockData data = entry.getValue();
@@ -76,10 +72,26 @@ public class Stage
                 data.tick(level);
         }
     }
-
-    public Rocket getRocket()
+    
+    public void orbitalTick(MinecraftServer server)
     {
-        return rocket;
+        if(this.blocks.isEmpty())
+        {
+            this.vessel.removeStage(this);
+            return;
+        }
+
+        for (Map.Entry<BlockPos, BlockData> entry : blocks.entrySet())
+        {
+            BlockData data = entry.getValue();
+            if (data.ticksInSpace(server))
+                data.orbitalTick(server);
+        }
+    }
+
+    public Vessel getVessel()
+    {
+        return vessel;
     }
 
     public double calculateDeltaV()
@@ -170,9 +182,9 @@ public class Stage
         buffer.writeInt(maxSolidFuel);
     }
 
-    public static Stage fromNetwork(FriendlyByteBuf buffer, Rocket rocket)
+    public static Stage fromNetwork(FriendlyByteBuf buffer, Vessel vessel)
     {
-        Stage stage = new Stage(rocket);
+        Stage stage = new Stage(vessel);
 
         List<BlockState> pallete = buffer.readCollection(ArrayList::new, reader -> reader.readById(Block.BLOCK_STATE_REGISTRY));
 
@@ -191,7 +203,7 @@ public class Stage
         int solidFuel = buffer.readInt();
         int maxSolidFuel = buffer.readInt();
 
-        stage.rocket = rocket;
+        stage.vessel = vessel;
         stage.palette = pallete;
         stage.blocks = blocks;
         stage.fluidStacks = fluidStacks;
@@ -235,12 +247,12 @@ public class Stage
         return tag;
     }
 
-    public void load(CompoundTag tag)
+    public void load(CompoundTag tag, MinecraftServer server)
     {
         ListTag paletteTag = tag.getList("palette", Tag.TAG_COMPOUND);
         List<BlockState> palette = new ArrayList<>();
         for(Tag listTag : paletteTag)
-            palette.add(NbtUtils.readBlockState(getRocket().getRocketEntity().level().holderLookup(Registries.BLOCK), (CompoundTag) listTag));
+            palette.add(NbtUtils.readBlockState(server.overworld().holderLookup(Registries.BLOCK), (CompoundTag) listTag));
         this.palette = palette;
 
         ListTag blocksTag = tag.getList("blocks", Tag.TAG_COMPOUND);

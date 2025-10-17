@@ -18,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -66,6 +67,11 @@ public class BlockData
     }
 
     public void tick(Level level)
+    {
+
+    }
+
+    public void orbitalTick(MinecraftServer server)
     {
 
     }
@@ -148,7 +154,7 @@ public class BlockData
     {
         return (stage, pos) ->
         {
-            Level level = stage.getRocket().getRocketEntity().level();
+            Level level = stage.getVessel().getLevel();
             BlockState state = level.getBlockState(pos);
             BlockEntity blockEntity = level.getBlockEntity(pos);
             CompoundTag extraData = new CompoundTag();
@@ -168,6 +174,11 @@ public class BlockData
     public boolean doesTick(Level level)
     {
         return false;
+    }
+
+    public boolean ticksInSpace(MinecraftServer server)
+    {
+        return doesTick(server.overworld());
     }
 
     public void placeInLevel(Level level, BlockPos pos)

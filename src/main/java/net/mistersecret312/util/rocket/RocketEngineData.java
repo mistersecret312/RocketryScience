@@ -1,30 +1,21 @@
 package net.mistersecret312.util.rocket;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
@@ -35,7 +26,6 @@ import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.blocks.CombustionChamberBlock;
 import net.mistersecret312.blocks.NozzleBlock;
-import net.mistersecret312.client.model.PlumeModel;
 import net.mistersecret312.client.renderer.PlumeRenderer;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.fluids.RocketFuelTank;
@@ -79,6 +69,8 @@ public class RocketEngineData extends BlockData
     @Override
     public void tick(Level level)
     {
+        Rocket rocket = ((Rocket) this.getStage().getVessel());
+
         if(level.isClientSide())
         {
             clientTick(level);
@@ -99,13 +91,12 @@ public class RocketEngineData extends BlockData
             this.tanks = datas;
         }
 
-        Rocket rocket = this.getStage().getRocket();
         RocketEntity rocketEntity = rocket.getRocketEntity();
 
         if(!hasFuel() && enabled)
         {
             enabled = false;
-            this.getStage().getRocket().setState(RocketState.COASTING);
+            rocket.setState(RocketState.COASTING);
             return;
         }
         else
@@ -282,7 +273,7 @@ public class RocketEngineData extends BlockData
     {
         return (stage, pos) ->
         {
-            Level level = stage.getRocket().getRocketEntity().level();
+            Level level = stage.getVessel().getLevel();
             BlockState state = level.getBlockState(pos);
             BlockEntity blockEntity = level.getBlockEntity(pos);
             CompoundTag extraData;
@@ -394,7 +385,7 @@ public class RocketEngineData extends BlockData
     public void load(CompoundTag tag, Stage stage)
     {
         super.load(tag, stage);
-        this.nozzleState = NbtUtils.readBlockState(stage.getRocket().getRocketEntity().level().holderLookup(Registries.BLOCK),
+        this.nozzleState = NbtUtils.readBlockState(stage.getVessel().getLevel().holderLookup(Registries.BLOCK),
                                                    tag.getCompound("nozzle"));
     }
 

@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.text.NumberFormat;
 
 import static net.mistersecret312.blocks.CombustionChamberBlock.FACING;
+import static net.mistersecret312.util.OrbitalMath.trimDouble;
 
 public class RocketEngineBlockEntity extends BlockEntity
 {
@@ -190,17 +191,6 @@ public class RocketEngineBlockEntity extends BlockEntity
         Direction direction = this.getBlockState().getValue(FACING).getOpposite();
         AABB box = super.getRenderBoundingBox().expandTowards(direction.getStepX()*length, direction.getStepY()*length, direction.getStepZ()*length);
         return box;
-    }
-
-    public static double trimDouble(double value)
-    {
-        NumberFormat fraction = NumberFormat.getNumberInstance();
-        fraction.setParseIntegerOnly(false);
-        fraction.setMaximumFractionDigits(2);
-        fraction.setMinimumFractionDigits(0);
-        fraction.setGroupingUsed(false);
-
-        return Double.parseDouble(fraction.format(value));
     }
 
     public void stopRunSound()

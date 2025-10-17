@@ -10,6 +10,8 @@
   "item.rocketry_science.steel_turbopump": "Steel Turbopump",
   "item.rocketry_science.steel_combustion_chamber_component": "Steel Combustion Chamber",
 
+  "item.rocketry_science.chromium_ingot": "Chromium Ingot",
+
   "block.rocketry_science.cryogenic_oxygen": "Cryogenic Oxygen",
   "block.rocketry_science.cryogenic_hydrogen": "Cryogenic Hydrogen",
 
@@ -41,6 +43,10 @@
   "desc.rocketry_science.rocket_material.stainless_steel": "Material: Stainless Steel",
 
   "rocket.rocketry_science.steel_rocket_engine": "Steel Rocket Engine",
+
+  "rocketry_science.celestial_body.terra": "Terra",
+  "rocketry_science.celestial_body.luna": "Luna",
+  "rocketry_science.celestial_body.sol": "Sol",
 
   "entity.rocketry_science.rocket": "Rocket",
 

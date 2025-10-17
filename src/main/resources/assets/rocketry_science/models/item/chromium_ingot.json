@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "rocketry_science:item/chromium_ingot"
+  }
+}

@@ -6,10 +6,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.util.rocket.Stage;
+import net.mistersecret312.util.trajectories.EllipticalPath;
+import net.mistersecret312.util.trajectories.HyperbolicPath;
+import net.mistersecret312.util.trajectories.OrbitalPath;
+import org.joml.Vector2d;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +51,7 @@ public class OrbitalMath
     public static int deltaVToFuelMass(Stage stage, double deltaV)
     {
         double stageMass = stage.getTotalMass();
-        double massWithoutDeltaV = stage.getTotalMass()*Math.pow(2.718, -(deltaV/(stage.getAverageIsp()*stage.getRocket().getCelestialBody().getGravityMS2())));
+        double massWithoutDeltaV = stage.getTotalMass()*Math.pow(2.718, -(deltaV/(stage.getAverageIsp()*stage.getVessel().getOrbit().getParent().getGravityMS2())));
 
         return (int) (stageMass-massWithoutDeltaV);
     }
@@ -82,29 +86,54 @@ public class OrbitalMath
         return null;
     }
 
-    public static long calculateTime(CelestialBody body, ServerLevel level, long currentTime) {
+    public static OrbitalPath calculatePath(Vector2d sun, Vector2d departure, Vector2d arrival) {
+        // Step 1: Get Key Measurements (r_A, r_B, theta_B)
+        double rA = departure.distance(sun);
+        double rB = arrival.distance(sun);
 
-        int dayLength = body.getDayLength();
+        Vector2d departureVec = new Vector2d(departure.sub(sun));
+        Vector2d arrivalVec = new Vector2d(arrival.sub(sun));
+        double thetaB = Math.atan2(arrivalVec.x, arrivalVec.y) - Math.atan2(departureVec.x, departureVec.y);
 
-        // If day length is 0, time is frozen
-        if (dayLength == 0) {
-            return currentTime;
+        // Step 2: Calculate Eccentricity
+        double eccentricity = (rB - rA) / (rA - rB * Math.cos(thetaB));
+
+        // Step 3: Determine path type and return the correct object
+        if (eccentricity < 1) {
+            // Path is an Ellipse
+            double semiMajorAxis = rA / (1 - eccentricity);
+
+            // Calculate the vector pointing from the sun to the periapsis (departure point)
+            Vector2d periapsisDir = departureVec.mul(1.0 / rA); // Normalize
+
+            // Calculate the second focus
+            double focalDistance = 2 * semiMajorAxis * eccentricity;
+            Vector2d secondFocus = sun.add(periapsisDir.mul(-focalDistance));
+
+            return new EllipticalPath(sun, secondFocus, semiMajorAxis, departure, arrival);
+        } else {
+            // Path is a Hyperbola (or Parabola if e == 1)
+            // The logic is very similar for creating the object
+            double semiMajorAxis = rA / (1 - eccentricity); // Will be negative
+
+            Vector2d periapsisDir = departureVec.mul(1.0 / rA);
+
+            // For a hyperbola, foci are outside the curve
+            double focalDistance = 2 * Math.abs(semiMajorAxis * eccentricity);
+            Vector2d secondFocus = sun.add(periapsisDir.mul(-focalDistance));
+
+            return new HyperbolicPath(sun, secondFocus, semiMajorAxis, departure, arrival);
         }
+    }
 
-        // Vanilla day length behavior
-        if (dayLength == 20) {
-            return currentTime + 1L;
-        }
+    public static double trimDouble(double value)
+    {
+        NumberFormat fraction = NumberFormat.getNumberInstance();
+        fraction.setParseIntegerOnly(false);
+        fraction.setMaximumFractionDigits(2);
+        fraction.setMinimumFractionDigits(0);
+        fraction.setGroupingUsed(false);
 
-        // Custom day length progression
-        double speedFactor = (20.0 * 60.0) / (dayLength * 60.0); // ticks per tick
-        double accumulated = dimensionTime.getOrDefault(level, 0.0);
-        accumulated += speedFactor;
-
-        long ticksToAdd = (long) accumulated;
-        accumulated -= ticksToAdd;
-
-        dimensionTime.put(level, accumulated);
-        return currentTime + ticksToAdd;
+        return Double.parseDouble(fraction.format(value));
     }
 }

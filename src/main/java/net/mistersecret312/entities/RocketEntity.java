@@ -77,7 +77,7 @@ public class RocketEntity extends Entity
     protected void readAdditionalSaveData(CompoundTag tag)
     {
         Rocket rocket = new Rocket(this, new LinkedHashSet<>());
-        rocket.load(tag.getCompound(ROCKET_DATA));
+        rocket.load(tag.getCompound(ROCKET_DATA), level().getServer());
         this.entityData.set(ROCKET, rocket);
     }
 

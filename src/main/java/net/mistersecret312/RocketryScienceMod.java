@@ -54,10 +54,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import javax.swing.text.html.parser.Entity;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(RocketryScienceMod.MODID)
@@ -116,6 +113,21 @@ public class RocketryScienceMod
 
         Registry<CelestialBody> registry = server.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
         Set<Map.Entry<ResourceKey<CelestialBody>, CelestialBody>> set = registry.entrySet();
+
+        for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : set)
+        {
+            CelestialBody body = entry.getValue();
+            Optional<ResourceKey<CelestialBody>> parent = body.getParent();
+            if(parent.isPresent())
+            {
+                CelestialBody parentBody = registry.get(parent.get());
+                if(parentBody != null)
+                    parentBody.children.add(entry.getKey());
+
+                Orbits.get(server).addOrbit(registry.get(parent.get()), body.getAltitude(), body.getEpoch(), body);
+            }
+
+        }
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

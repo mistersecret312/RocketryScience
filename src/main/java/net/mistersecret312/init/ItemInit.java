@@ -36,6 +36,9 @@ public class ItemInit
     public static final RegistryObject<PadLinkingItem> PAD_LINKING = ITEMS.register("pad_linking",
             () -> new PadLinkingItem(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<Item> CHROMIUM_INGOT = ITEMS.register("chromium_ingot",
+            () -> new Item(new Item.Properties().stacksTo(64)));
+
     public static void register(IEventBus bus)
     {
         ITEMS.register(bus);

@@ -41,7 +41,7 @@ public class SeparatorData extends BlockData
     @Override
     public void tick(Level level)
     {
-        Iterator<Stage> stage = this.getStage().getRocket().stages.iterator();
+        Iterator<Stage> stage = this.getStage().getVessel().getStages().iterator();
         boolean foundSelf = false;
         Stage stage1 = null;
         while(stage.hasNext())
@@ -139,7 +139,7 @@ public class SeparatorData extends BlockData
     {
         return (stage, pos) ->
         {
-            Level level = stage.getRocket().getRocketEntity().level();
+            Level level = stage.getVessel().getLevel();
             BlockState state = level.getBlockState(pos);
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if(blockEntity instanceof SeparatorBlockEntity separator)

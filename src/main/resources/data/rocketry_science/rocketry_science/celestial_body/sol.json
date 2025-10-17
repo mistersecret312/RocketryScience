@@ -1,5 +1,6 @@
 {
   "name": "rocketry_science.celestial_body.sol",
+  "texture": "rocketry_science:textures/gui/sun.png",
   "gravity": 28.0,
   "radius": 696265000
 }

@@ -18,8 +18,13 @@ import net.mistersecret312.util.OrbitalMath;
 import net.mistersecret312.util.rocket.BlockData;
 import net.mistersecret312.util.rocket.Rocket;
 import net.mistersecret312.util.rocket.Stage;
+import net.mistersecret312.util.trajectories.EllipticalPath;
+import net.mistersecret312.util.trajectories.OrbitalPath;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
@@ -112,6 +117,24 @@ public class RocketConstructorBlockEntity extends BlockEntity implements IRocket
             System.out.println("Rocket TWR - " + rocket.getMaxTWR());
             rocket.landingSimulation();
             System.out.println("Target Orbit DeltaV Requirement - " + OrbitalMath.getLaunchDeltaV(rocket.getCelestialBody(pad.getLevel()), 300*1000));
+
+            System.out.println("LEO -> Luna transfer example... calculating...");
+            Vector2d A = new Vector2d(0,0);
+            Vector2d B = new Vector2d(4,0);
+            Vector2d C = new Vector2d(0, 4);
+            OrbitalPath path = OrbitalMath.calculatePath(A, B, C);
+            List<Vector2d> points = path.getPathPoints(10);
+            if(path instanceof EllipticalPath)
+                System.out.println("Elliptical");
+            else System.out.println("Hyperbolic");
+            System.out.println("Retrograde : " + path.isRetrograde());
+            for(int i = 0; i < points.size(); i++)
+            {
+                Vector2d point = points.get(i);
+                System.out.println("Point [" + i + "] is [" + point.x + ", " + point.y + "]");
+            }
+
+
         } else player.displayClientMessage(Component.literal("ERROR: Rocket Pad is empty! Report to developer!"), true);
 
     }

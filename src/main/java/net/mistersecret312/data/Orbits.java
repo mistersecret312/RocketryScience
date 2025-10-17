@@ -69,13 +69,21 @@ public class Orbits extends SavedData
         }
     }
 
-    public void addOrbit(double altitude, CelestialBody parentBody, SpaceObject spaceObject)
+    public void addOrbit(CelestialBody parentBody, double altitude, double epoch, SpaceObject spaceObject)
     {
-        Orbit orbit = new Orbit(parentBody, altitude);
+        Orbit orbit = new Orbit(parentBody, altitude, epoch);
         orbit.spaceObject = spaceObject;
+        spaceObject.setOrbit(orbit);
         this.orbits.add(orbit);
         this.setDirty();
     }
+
+    public void removeOrbit(Orbit orbit)
+    {
+        this.orbits.remove(orbit);
+        this.setDirty();
+    }
+
 
     @Override
     public void setDirty()
@@ -126,4 +134,5 @@ public class Orbits extends SavedData
 
         return storage.computeIfAbsent((tag) -> load(server, tag), () -> create(server), FILE_NAME);
     }
+
 }
