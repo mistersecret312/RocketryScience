@@ -49,6 +49,12 @@ public class RocketryDimensionalEffects
         }
 
         @Override
+        public boolean tickRain(ClientLevel level, int ticks, Camera camera)
+        {
+            return true;
+        }
+
+        @Override
         public boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, LightTexture lightTexture,
                                          double camX, double camY, double camZ)
         {

@@ -2,6 +2,7 @@ package net.mistersecret312.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,9 +18,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.menus.CombustionChamberMenu;
+import net.mistersecret312.util.OrbitalMath;
+import net.mistersecret312.util.trajectories.OrbitalPath;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector2d;
 
+import java.util.List;
 import java.util.Map;
 
 public class CombustionChamberScreen extends AbstractContainerScreen<CombustionChamberMenu>
@@ -49,6 +54,8 @@ public class CombustionChamberScreen extends AbstractContainerScreen<CombustionC
 
         pose.pushPose();
         boolean systemMap = true;
+        long time = level.getDayTime();
+
         if(!systemMap)
         {
             graphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
@@ -56,79 +63,103 @@ public class CombustionChamberScreen extends AbstractContainerScreen<CombustionC
         else
         {
             Registry<CelestialBody> registry = Minecraft.getInstance().level.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+
             for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : registry.entrySet())
             {
+                Vector2d pos = new Vector2d((double) (width - 16)/2, (double) (height - 16) /2);
+
                 CelestialBody body = entry.getValue();
-                Vector2d pos = new Vector2d(0,0);
-                long time = level.getDayTime();
-                if(body.getOrbit() == null)
-                {
-                    pos = new Vector2d(0, 0);
-                }
-                else
-                {
-                    pos = body.getCoordinates(body.getAltitude(), body.getOrbit().getAngle(time)).mul(70);
-                    CelestialBody parentBody = body.getOrbit().getParent();
-                    if(parentBody.getOrbit() != null)
-                        pos.add(parentBody.getCoordinates(parentBody.getAltitude(), parentBody.getOrbit().getAngle(time)).mul(70));
-                }
-                pose.pushPose();
-                pose.translate(width/2, height/2, 0);
+                if(body.getOrbit() != null && body.getOrbit().getParent().getParent().isEmpty())
+                    drawCircle(graphics, (int) pos.x, (int) pos.y,
+                               (float) (45f*body.getAltitude()), 10, 0xFFFFFFFF);
+            }
 
-                if(body.getOrbit() != null)
-                    drawCircle(graphics, x, y, (float) body.getOrbit().getOrbitalAltitude(), 10, ChatFormatting.AQUA.getColor().intValue());
+            CelestialBody referenceBody = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "sol"));
+            if(referenceBody != null)
+            {
+                CelestialBody mars = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "mars"));
+                CelestialBody terra = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "terra"));
+                if(mars == null || terra == null || referenceBody == null)
+                    return;
 
-                graphics.blit(body.getTexture(), (int) (pos.x), (int) (pos.y), 0, 0,
-                              32, 32, 32, 32);
-                graphics.drawString(Minecraft.getInstance().font, body.getName(), (int) (pos.x), (int) (pos.y),
-                                    ChatFormatting.WHITE.getColor().intValue());
-                pose.popPose();
+                drawTransfer(graphics, referenceBody, terra, mars, time);
+
+                Vector2d pos = new Vector2d((double) (width - 16)/2, (double) (height - 16) /2);
+                pos.add(-16, -16);
+
+                referenceBody.render(graphics, pos);
+
+                double childId = 1.1;
+                for(ResourceKey<CelestialBody> childKey : referenceBody.getChildren())
+                {
+                    CelestialBody child = registry.get(childKey);
+                    if(child != null)
+                    {
+                        Vector2d childPos = child.getCoordinates(child.getAltitude(), child.getOrbit().getAngle(time)).mul(40*childId).add(pos);
+                        child.render(graphics, childPos);
+
+                        childId += 0.05;
+                    }
+                }
             }
         }
         pose.popPose();
     }
 
-    private void drawCircle(GuiGraphics graphics, int centerX, int centerY, float radius, int numSegments, int color) {
-        // Get the pose matrix from the GuiGraphics object
-        Matrix4f matrix = graphics.pose().last().pose();
+    private void drawTransfer(GuiGraphics graphics, CelestialBody reference, CelestialBody departure, CelestialBody target, long time)
+    {
+        double efficiency = 65;
 
-        // Get the Tesselator and BufferBuilder instances
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        double speedA = 360D/departure.getOrbit().orbitalPeriod;
+        double speedB = 360D/target.getOrbit().orbitalPeriod;
 
-        // Set the shader to render simple colored vertices
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        double transferTime = 10*Math.pow(((departure.altitude+target.altitude)/2),1.5)/2;
+        transferTime *= Math.max(efficiency, 1)/100;
+        double angleMoved = transferTime * (360/target.getOrbit().orbitalPeriod);
+        double optimalAngle = 180-angleMoved;
 
-        // Extract individual color components (Red, Green, Blue, Alpha)
-        // The bitwise operations isolate each 8-bit color channel.
-        float r = ((color >> 16) & 0xFF) / 255.0F;
-        float g = ((color >> 8) & 0xFF) / 255.0F;
-        float b = (color & 0xFF) / 255.0F;
-        float a = ((color >> 24) & 0xFF) / 255.0F;
+        double angleDiff = (target.getOrbit().getAngle(time)-departure.getOrbit().getAngle(time)) % 360;
+        double catchUp = (optimalAngle-angleDiff) % 360;
 
-        // Begin drawing a "LINE_STRIP", which connects all vertices in order
-        bufferBuilder.begin(VertexFormat.Mode.LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        double windowTime = catchUp/(Math.abs(speedA-speedB));
+        double windowTimeTicks = windowTime*24000D;
+        if(windowTimeTicks != 0)
+        {
+            Vector2d sun = new Vector2d((double) (width - 16)/2, (double) (height - 16) /2);
+            Vector2d a = departure.getCoordinates(departure.getAltitude(),
+                                             departure.getOrbit().getAngle(time)).mul(40*1.1).add(sun);
+            Vector2d b = target.getCoordinates(target.getAltitude(),
+                                             target.getOrbit().getAngle((long) (time+transferTime*20*60*20))).mul(40*1.15).add(sun);
 
-        // Loop from 0 to numSegments to create each vertex of the circle
-        for (int i = 0; i <= numSegments; i++) {
-            // Calculate the angle for the current vertex
-            double angle = i * 2.0 * Math.PI / numSegments;
+            graphics.drawCenteredString(Minecraft.getInstance().font, "[]", (int) b.x, (int) b.y, 0x00FFFF);
 
-            // Calculate the (x, y) position of the vertex using trigonometry
-            float x = (float) (centerX + radius * Math.cos(angle));
-            float y = (float) (centerY + radius * Math.sin(angle));
-
-            // Add the vertex to the buffer with its position and color
-            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
+            OrbitalPath path = OrbitalMath.calculatePath(sun, a, b, efficiency, reference.getGravitationalParameter());
+            if(path != null)
+            {
+                List<Vector2d> points = path.getPathPoints(200);
+                for(Vector2d point : points)
+                {
+                    graphics.drawCenteredString(Minecraft.getInstance().font, ".", (int) point.x, (int) point.y, 0x00FF00);
+                }
+            }
         }
-
-        // Finish and draw all the vertices
-        BufferUploader.drawWithShader(bufferBuilder.end());
-
-        // Reset the shader back to the default for GUI rendering
-        // This is crucial so it doesn't break other rendering operations.
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
     }
+
+    private void drawCircle(GuiGraphics graphics, int centerX, int centerY, float radius, int numSegments, int color)
+    {
+        float rSquared = radius * radius;
+
+        for(int y = (int) -radius; y <= radius; y++)
+        {
+            for(int x = (int) -radius; x <= radius; x++)
+            {
+                if (Math.abs(x * x + y * y - rSquared) < radius)
+                    graphics.fill(centerX + x, centerY + y, centerX + x + 1, centerY + y + 1, color);
+
+            }
+        }
+    }
+
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)

@@ -11,39 +11,39 @@ import java.util.List;
 
 public class EllipticalPath implements OrbitalPath
 {
-    private final Vector2d focus1, focus2, center;
-    private final double semiMajorAxis, semiMinorAxis;
-    private final double rotationAngle;
-    private final Vector2d startPoint, endPoint;
+    private final Vector2d f1, f2, center, pointA, pointB;
+    private final double a, b, c, angle;
+    private final double eccentricAngleA, eccentricAngleB;
 
-    public boolean isRetrograde;
-
-    public EllipticalPath(Vector2d f1, Vector2d f2, double a, Vector2d start, Vector2d end)
+    public EllipticalPath(Vector2d f1, Vector2d f2, double a, Vector2d pointA, Vector2d pointB)
     {
-        this.focus1 = f1;
-        this.focus2 = f2;
-        this.semiMajorAxis = a;
-        this.startPoint = start;
-        this.endPoint = end;
+        this.f1 = f1;
+        this.f2 = f2;
+        this.a = a; // Semi-major axis
+        this.pointA = pointA;
+        this.pointB = pointB;
 
-        // Calculate derived properties needed for drawing
-        this.center = f1.add(f2).mul(0.5d);
-        double c = f1.distance(center);
-        // Ensure semiMinorAxis is not NaN if a and c are very close
-        this.semiMinorAxis = (a * a > c * c) ? Math.sqrt(a * a - c * c) : 0;
-        Vector2d rotVector = f2.sub(f1);
-        this.rotationAngle = Math.atan2(rotVector.x, rotVector.y);
+        // 1. Calculate ellipse properties
+        this.center = new Vector2d((f1.x + f2.x) / 2.0, (f1.y + f2.y) / 2.0);
+        this.c = f1.distance(center); // Focal distance
+        this.b = Math.sqrt(a * a - c * c); // Semi-minor axis
+        this.angle = Math.atan2(f2.y - f1.y, f2.x - f1.x); // Rotation angle
 
-        double startAngle = getParametricAngleForPoint(start);
-        double endAngle = getParametricAngleForPoint(end);
+        // 2. Find the eccentric anomalies for A and B
+        this.eccentricAngleA = getEccentricAngle(pointA);
+        this.eccentricAngleB = getEccentricAngle(pointB);
+    }
 
-        double progradeDistance = endAngle - startAngle;
-        if (progradeDistance < 0) {
-            progradeDistance += 2 * Math.PI;
-        }
+    private double getEccentricAngle(Vector2d p) {
+        // Translate to center and rotate to align with major axis
+        Vector2d p_local = new Vector2d(p).sub(center);
+        double cosA = Math.cos(-angle);
+        double sinA = Math.sin(-angle);
+        double x_prime = p_local.x * cosA - p_local.y * sinA;
+        double y_prime = p_local.x * sinA + p_local.y * cosA;
 
-        double retrogradeDistance = 2 * Math.PI - progradeDistance;
-        this.isRetrograde = retrogradeDistance < progradeDistance;
+        // Find angle
+        return Math.atan2(y_prime / b, x_prime / a);
     }
 
     /**
@@ -55,96 +55,35 @@ public class EllipticalPath implements OrbitalPath
     @Override
     public List<Vector2d> getPathPoints(int numPoints)
     {
-        if (numPoints < 2) {
-            return List.of(startPoint, endPoint);
+        List<Vector2d> points = new ArrayList<>(numPoints + 1);
+        double cosA = Math.cos(angle);
+        double sinA = Math.sin(angle);
+
+        for (int i = 0; i <= numPoints; i++) {
+            double t = i / (double) numPoints;
+            // Interpolate the angle using the short-arc helper
+            double E = OrbitalMath.lerpAngle(eccentricAngleA, eccentricAngleB, t, true);
+
+            // 1. Get point on unit ellipse
+            double x_local = a * Math.cos(E);
+            double y_local = b * Math.sin(E);
+
+            // 2. Rotate to match ellipse orientation
+            double x_rotated = x_local * cosA - y_local * sinA;
+            double y_rotated = x_local * sinA + y_local * cosA;
+
+            // 3. Translate to world position and add
+            points.add(new Vector2d(x_rotated + center.x, y_rotated + center.y));
         }
-
-        List<Vector2d> points = new ArrayList<>();
-
-        // 2. Find the start and end angles on the ellipse
-        double startAngle = getParametricAngleForPoint(startPoint);
-        double endAngle = getParametricAngleForPoint(endPoint);
-
-        // 3. NEW: Determine the shortest direction of travel
-        // Calculate the angular distance if we go counter-clockwise (prograde)
-        double progradeDistance = endAngle - startAngle;
-        if (progradeDistance < 0) {
-            progradeDistance += 2 * Math.PI; // Handle angle wraparound (e.g., from 350 deg to 10 deg)
-        }
-
-        // The clockwise (retrograde) distance is simply the rest of the circle
-        double retrogradeDistance = 2 * Math.PI - progradeDistance;
-
-        double totalAngleToTravel;
-
-        // Choose the smaller of the two angular distances
-        if (progradeDistance <= retrogradeDistance) {
-            // The shorter path is counter-clockwise, so we travel a positive angle
-            totalAngleToTravel = progradeDistance;
-        } else {
-            // The shorter path is clockwise, so we travel a negative angle
-            totalAngleToTravel = -retrogradeDistance;
-        }
-
-        // 4. Generate points along the now-guaranteed shortest arc
-        double angleStep = totalAngleToTravel / (numPoints - 1);
-
-        for (int i = 0; i < numPoints; i++) {
-            double currentAngle = startAngle + i * angleStep;
-
-            Vector2d newPoint = getPointForParametricAngle(currentAngle);
-
-            newPoint.x = trimDouble(newPoint.x);
-            newPoint.y = trimDouble(newPoint.y);
-
-            points.add(newPoint);
-        }
-
+        // Ensure the last point is exactly B
+        points.set(numPoints, new Vector2d(pointB));
         return points;
     }
 
     @Override
     public boolean isRetrograde()
     {
-        return isRetrograde;
-    }
-
-    /**
-     * Converts a parametric angle 't' into a point on this specific rotated ellipse.
-     */
-    private Vector2d getPointForParametricAngle(double t)
-    {
-        // 1. Get the point on a standard, un-rotated ellipse at the origin
-        double x0 = semiMajorAxis * Math.cos(t);
-        double y0 = semiMinorAxis * Math.sin(t);
-
-        // 2. Rotate the point
-        double cosRot = Math.cos(rotationAngle);
-        double sinRot = Math.sin(rotationAngle);
-        double x1 = x0 * cosRot - y0 * sinRot;
-        double y1 = x0 * sinRot + y0 * cosRot;
-
-        // 3. Translate the point to the ellipse's center
-        return new Vector2d(x1, y1).add(center);
-    }
-
-    /**
-     * Converts a point in world coordinates into its corresponding parametric angle on the ellipse.
-     * This is the inverse of the method above.
-     */
-    private double getParametricAngleForPoint(Vector2d point)
-    {
-        // 1. Translate the point to be relative to the center
-        Vector2d p0 = point.sub(center);
-
-        // 2. Un-rotate the point
-        double cosRot = Math.cos(-rotationAngle);
-        double sinRot = Math.sin(-rotationAngle);
-        double x1 = p0.x() * cosRot - p0.y() * sinRot;
-        double y1 = p0.x() * sinRot + p0.y() * cosRot;
-
-        // 3. Find the angle using atan2
-        return Math.atan2(y1 / semiMinorAxis, x1 / semiMajorAxis);
+        return false;
     }
 
     public double trimDouble(double value)

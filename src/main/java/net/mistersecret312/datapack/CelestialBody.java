@@ -2,6 +2,8 @@ package net.mistersecret312.datapack;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -143,10 +145,12 @@ public class CelestialBody implements SpaceObject
         return new Vector2d(x, y);
     }
 
-    public void render(GuiGraphics graphics)
+    public void render(GuiGraphics graphics, Vector2d pos)
     {
         ResourceLocation texture = getTexture();
-        graphics.blit(texture, 100, 100, 0, 0, 16, 16);
+        graphics.blit(texture, (int) (pos.x), (int) (pos.y), 0, 0,
+                      32, 32, 32, 32);
+        graphics.drawCenteredString(Minecraft.getInstance().font, getName(), (int) (pos.x+16), (int) (pos.y), 0x0000FF);
     }
 
     @Override

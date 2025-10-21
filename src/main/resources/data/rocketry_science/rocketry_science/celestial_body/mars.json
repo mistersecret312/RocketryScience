@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.mars",
+  "texture": "rocketry_science:textures/gui/mars.png",
+  "parent": "rocketry_science:sol",
+  "gravity": 0.38,
+  "radius": 3390000,
+  "altitude": 1.52,
+  "epoch": 19.412
+}

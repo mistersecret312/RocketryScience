@@ -122,7 +122,7 @@ public class RocketConstructorBlockEntity extends BlockEntity implements IRocket
             Vector2d A = new Vector2d(0,0);
             Vector2d B = new Vector2d(4,0);
             Vector2d C = new Vector2d(0, 4);
-            OrbitalPath path = OrbitalMath.calculatePath(A, B, C);
+            OrbitalPath path = OrbitalMath.calculatePath(A, B, C, 100, rocket.getCelestialBody().getGravitationalParameter());
             List<Vector2d> points = path.getPathPoints(10);
             if(path instanceof EllipticalPath)
                 System.out.println("Elliptical");

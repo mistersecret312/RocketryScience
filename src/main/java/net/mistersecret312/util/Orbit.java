@@ -102,8 +102,13 @@ public class Orbit
         return orbitalAltitude;
     }
 
-    public double getAngle(long time) {
-        return (epoch+360D/(orbitalPeriod*20*20*60)*time) % 360D;
+    public double getAngle(long time)
+    {
+        double period = orbitalPeriod*20*20*60;
+
+        double velocity = (360D/period);
+        double angle = velocity*time + epoch;
+        return angle % 360D;
     }
 
     public CelestialBody getParent()
