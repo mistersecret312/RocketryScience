@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.mercury",
+  "texture": "stellarview:textures/environment/planet/sol/mercury.png",
+  "parent": "rocketry_science:sol",
+  "gravity": 0.38,
+  "radius": 2439700,
+  "altitude": 0.39,
+  "epoch": 174.796
+}

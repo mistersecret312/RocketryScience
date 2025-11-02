@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.iapetus",
+  "texture": "stellarview:textures/environment/planet/sol/iapetus.png",
+  "parent": "rocketry_science:planets/sol/saturn",
+  "gravity": 0.0228,
+  "radius": 736000,
+  "altitude": 0.35,
+  "epoch": 0
+}

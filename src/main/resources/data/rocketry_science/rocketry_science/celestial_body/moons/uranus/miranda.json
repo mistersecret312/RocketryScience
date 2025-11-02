@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.miranda",
+  "texture": "stellarview:textures/environment/planet/sol/miranda.png",
+  "parent": "rocketry_science:planets/sol/uranus",
+  "gravity": 0.0079,
+  "radius": 235800,
+  "altitude": 0.1,
+  "epoch": 0
+}

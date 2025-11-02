@@ -10,6 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.menus.CombustionChamberMenu;
+import net.mistersecret312.menus.SystemMapMenu;
 
 public class MenuInit
 {
@@ -17,6 +18,8 @@ public class MenuInit
 
     public static final RegistryObject<MenuType<CombustionChamberMenu>> COMBUSTION_CHAMBER =
             registerMenuType(CombustionChamberMenu::new, "combustion_chamber");
+    public static final RegistryObject<MenuType<SystemMapMenu>> SYSTEM_MAP =
+            registerMenuType(SystemMapMenu::new, "system_map");
 
     private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(
             IContainerFactory<T> factory, String name)

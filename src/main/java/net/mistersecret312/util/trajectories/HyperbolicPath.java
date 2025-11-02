@@ -79,6 +79,33 @@ public class HyperbolicPath implements OrbitalPath
     }
 
     @Override
+    public Vector2d getPointOnPath(double progress) {
+        // 1. Interpolate the hyperbolic parameter 'H'
+        double H = H_A + (H_B - H_A) * progress; // Simple linear interpolation
+
+        // 2. Get point on the aligned, non-rotated hyperbola
+        double x_local = a * Math.cosh(H);
+
+        // Ensure we are on the correct branch (matches F1's side)
+        Vector2d f1_local = new Vector2d(f1).sub(center);
+        double cos_angle = Math.cos(-angle);
+        double sin_angle = Math.sin(-angle);
+        double f1_local_x = f1_local.x * cos_angle - f1_local.y * sin_angle;
+        if (f1_local_x < 0) x_local = -x_local;
+
+        double y_local = b * Math.sinh(H);
+
+        // 3. Rotate to match hyperbola orientation
+        double cosA = Math.cos(angle);
+        double sinA = Math.sin(angle);
+        double x_rotated = x_local * cosA - y_local * sinA;
+        double y_rotated = x_local * sinA + y_local * cosA;
+
+        // 4. Translate to world position
+        return new Vector2d(x_rotated + center.x, y_rotated + center.y);
+    }
+
+    @Override
     public boolean isRetrograde()
     {
         return false;

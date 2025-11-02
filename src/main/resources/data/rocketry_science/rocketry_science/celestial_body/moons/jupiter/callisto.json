@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.callisto",
+  "texture": "stellarview:textures/environment/planet/sol/callisto.png",
+  "parent": "rocketry_science:planets/sol/jupiter",
+  "gravity": 0.126,
+  "radius": 2410300,
+  "altitude": 0.25,
+  "epoch": 0
+}

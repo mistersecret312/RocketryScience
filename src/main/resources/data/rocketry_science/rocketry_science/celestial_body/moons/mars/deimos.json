@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.deimos",
+  "texture": "stellarview:textures/environment/planet/sol/deimos.png",
+  "parent": "rocketry_science:planets/sol/mars",
+  "gravity": 0.0003,
+  "radius": 6200,
+  "altitude": 0.125,
+  "epoch": 264
+}

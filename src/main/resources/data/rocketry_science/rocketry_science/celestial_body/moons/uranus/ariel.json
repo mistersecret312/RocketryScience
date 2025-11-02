@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.ariel",
+  "texture": "stellarview:textures/environment/planet/sol/ariel.png",
+  "parent": "rocketry_science:planets/sol/uranus",
+  "gravity": 0.0254,
+  "radius": 578900,
+  "altitude": 0.15,
+  "epoch": 0
+}

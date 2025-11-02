@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.venus",
+  "texture": "stellarview:textures/environment/planet/sol/venus.png",
+  "parent": "rocketry_science:sol",
+  "gravity": 0.904,
+  "radius": 6051800,
+  "altitude": 0.728,
+  "epoch": 50.115
+}

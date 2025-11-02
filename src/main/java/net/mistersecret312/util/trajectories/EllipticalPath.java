@@ -81,6 +81,25 @@ public class EllipticalPath implements OrbitalPath
     }
 
     @Override
+    public Vector2d getPointOnPath(double progress) {
+        // 1. Interpolate the eccentric angle
+        double E = OrbitalMath.lerpAngle(eccentricAngleA, eccentricAngleB, progress, true);
+
+        // 2. Get point on the aligned, non-rotated ellipse
+        double x_local = a * Math.cos(E);
+        double y_local = b * Math.sin(E);
+
+        // 3. Rotate to match ellipse orientation
+        double cosA = Math.cos(angle);
+        double sinA = Math.sin(angle);
+        double x_rotated = x_local * cosA - y_local * sinA;
+        double y_rotated = x_local * sinA + y_local * cosA;
+
+        // 4. Translate to world position
+        return new Vector2d(x_rotated + center.x, y_rotated + center.y);
+    }
+
+    @Override
     public boolean isRetrograde()
     {
         return false;

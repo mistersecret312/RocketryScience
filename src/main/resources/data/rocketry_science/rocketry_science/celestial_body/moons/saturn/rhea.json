@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.rhea",
+  "texture": "stellarview:textures/environment/planet/sol/rhea.png",
+  "parent": "rocketry_science:planets/sol/saturn",
+  "gravity": 0.0269,
+  "radius": 764000,
+  "altitude": 0.3,
+  "epoch": 0
+}

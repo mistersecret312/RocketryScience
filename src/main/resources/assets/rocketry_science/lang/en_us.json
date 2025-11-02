@@ -31,6 +31,8 @@
 
   "block.rocketry_science.hazard_strip": "Hazard Strip",
 
+  "block.rocketry_science.lunar_regolith": "Lunar Regolith",
+
   "fluid_type.rocketry_science.cryogenic_hydrogen": "Liquid Hydrogen",
   "fluid_type.rocketry_science.cryogenic_oxygen": "Liquid Oxygen",
   "fluid_type.rocketry_science.cryogenic_nitrogen": "Liquid Nitrogen",
@@ -44,10 +46,43 @@
 
   "rocket.rocketry_science.steel_rocket_engine": "Steel Rocket Engine",
 
-  "rocketry_science.celestial_body.terra": "Terra",
-  "rocketry_science.celestial_body.mars": "Mars",
-  "rocketry_science.celestial_body.luna": "Luna",
   "rocketry_science.celestial_body.sol": "Sol",
+  "rocketry_science.celestial_body.mercury": "Mercury",
+  "rocketry_science.celestial_body.venus": "Venus",
+
+  "rocketry_science.celestial_body.terra": "Earth",
+  "rocketry_science.celestial_body.luna": "Luna",
+
+  "rocketry_science.celestial_body.mars": "Mars",
+  "rocketry_science.celestial_body.phobos": "Phobos",
+  "rocketry_science.celestial_body.deimos": "Deimos",
+
+  "rocketry_science.celestial_body.ceres": "Ceres",
+
+  "rocketry_science.celestial_body.jupiter": "Jupiter",
+  "rocketry_science.celestial_body.io": "Io",
+  "rocketry_science.celestial_body.europa": "Europa",
+  "rocketry_science.celestial_body.ganymede": "Ganymede",
+  "rocketry_science.celestial_body.callisto": "Callisto",
+
+  "rocketry_science.celestial_body.saturn": "Saturn",
+  "rocketry_science.celestial_body.mimas": "Mimas",
+  "rocketry_science.celestial_body.enceladus": "Enceladus",
+  "rocketry_science.celestial_body.dione": "Dione",
+  "rocketry_science.celestial_body.rhea": "Rhea",
+  "rocketry_science.celestial_body.tethys": "Tethys",
+  "rocketry_science.celestial_body.iapetus": "Iapetus",
+  "rocketry_science.celestial_body.titan": "Titan",
+
+  "rocketry_science.celestial_body.uranus": "Uranus",
+  "rocketry_science.celestial_body.miranda": "Miranda",
+  "rocketry_science.celestial_body.ariel": "Ariel",
+  "rocketry_science.celestial_body.umbriel": "Umbriel",
+  "rocketry_science.celestial_body.titania": "Titania",
+  "rocketry_science.celestial_body.oberon": "Oberon",
+
+  "rocketry_science.celestial_body.neptune": "Neptune",
+  "rocketry_science.celestial_body.triton": "Triton",
 
   "entity.rocketry_science.rocket": "Rocket",
 

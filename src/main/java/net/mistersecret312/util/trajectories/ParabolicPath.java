@@ -83,6 +83,26 @@ public class ParabolicPath implements OrbitalPath
     }
 
     @Override
+    public Vector2d getPointOnPath(double progress) {
+        // 1. Interpolate the true anomaly (polar angle)
+        double theta = OrbitalMath.lerpAngle(thetaA, thetaB, progress, true);
+
+        // 2. Calculate radius at this angle
+        double r = p / (1.0 + Math.cos(theta - omega));
+
+        if (r < 0 || Double.isInfinite(r)) {
+            // Path is invalid, return start or end point
+            return progress < 0.5 ? new Vector2d(pointA) : new Vector2d(pointB);
+        }
+
+        // 3. Convert polar back to cartesian
+        double x = f1.x + r * Math.cos(theta);
+        double y = f1.y + r * Math.sin(theta);
+
+        return new Vector2d(x, y);
+    }
+
+    @Override
     public boolean isRetrograde()
     {
         return false;

@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.enceladus",
+  "texture": "stellarview:textures/environment/planet/sol/enceladus.png",
+  "parent": "rocketry_science:planets/sol/saturn",
+  "gravity": 0.0116,
+  "radius": 252000,
+  "altitude": 0.15,
+  "epoch": 0
+}

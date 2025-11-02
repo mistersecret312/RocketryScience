@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.triton",
+  "texture": "stellarview:textures/environment/planet/sol/triton.png",
+  "parent": "rocketry_science:planets/sol/neptune",
+  "gravity": 0.0794,
+  "radius": 1353400,
+  "altitude": 0.5,
+  "epoch": 0
+}

@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.titan",
+  "texture": "stellarview:textures/environment/planet/sol/titan.png",
+  "parent": "rocketry_science:planets/sol/saturn",
+  "gravity": 0.0138,
+  "radius": 2575000,
+  "altitude": 0.4,
+  "epoch": 0
+}

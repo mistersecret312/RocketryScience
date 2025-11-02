@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.phobos",
+  "texture": "stellarview:textures/environment/planet/sol/phobos.png",
+  "parent": "rocketry_science:planets/sol/mars",
+  "gravity": 0.0006,
+  "radius": 11100,
+  "altitude": 0.1,
+  "epoch": 180
+}

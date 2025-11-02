@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.europa",
+  "texture": "stellarview:textures/environment/planet/sol/europa.png",
+  "parent": "rocketry_science:planets/sol/jupiter",
+  "gravity": 0.134,
+  "radius": 1561000,
+  "altitude": 0.15,
+  "epoch": 0
+}

@@ -49,6 +49,7 @@ public class ItemTabInit
 
                         output.accept(ItemInit.PAD_LINKING.get());
                         output.accept(BlockInit.CONSTRUCTOR.get());
+                        output.accept(BlockInit.SYSTEM_MAP.get());
 
                         output.accept(ItemInit.CHROMIUM_INGOT.get());
                     })

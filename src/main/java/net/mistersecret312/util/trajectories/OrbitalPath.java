@@ -7,5 +7,7 @@ import java.util.List;
 public interface OrbitalPath
 {
     List<Vector2d> getPathPoints(int numPoints);
+    Vector2d getPointOnPath(double progress);
+
     boolean isRetrograde();
 }

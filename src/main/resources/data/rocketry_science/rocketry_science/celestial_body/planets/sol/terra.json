@@ -1,9 +1,8 @@
 {
   "name": "rocketry_science.celestial_body.terra",
-  "texture": "rocketry_science:textures/gui/mars.png",
+  "texture": "rocketry_science:textures/planet/sol/earth.png",
   "parent": "rocketry_science:sol",
   "dimension": "minecraft:overworld",
-  "color": "0x0377fc",
   "gravity": 1.0,
   "radius": 6378000,
   "altitude": 1,

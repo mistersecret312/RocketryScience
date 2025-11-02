@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.DaylightDetectorBlock;
 import net.minecraft.world.level.block.entity.DaylightDetectorBlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
+import net.minecraftforge.fml.ModList;
 import net.mistersecret312.RocketryScienceMod;
 import net.povstalec.sgjourney.client.render.level.StellarViewCompatibility;
 import net.povstalec.stellarview.api.client.StellarViewRendering;
@@ -65,7 +66,7 @@ public class RocketryDimensionalEffects
         public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera,
                                  Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog)
         {
-            return StellarViewCompatibility.renderSky(level, ticks, partialTick, poseStack, camera, projectionMatrix, isFoggy, setupFog);
+            return StellarViewRendering.renderViewCenterSky(level, ticks, partialTick, poseStack, camera, projectionMatrix, isFoggy, setupFog);
         }
 
         @Override

@@ -44,6 +44,7 @@ import net.mistersecret312.client.renderer.PlumeRenderer;
 import net.mistersecret312.client.renderer.SeparatorRenderer;
 import net.mistersecret312.client.renderer.SolidPlumeRenderer;
 import net.mistersecret312.client.screen.CombustionChamberScreen;
+import net.mistersecret312.client.screen.SystemMapScreen;
 import net.mistersecret312.data.Orbits;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.events.CommonEvents;
@@ -172,6 +173,7 @@ public class RocketryScienceMod
         {
             EntityRenderers.register(EntityInit.ROCKET.get(), RocketRenderer::new);
             MenuScreens.register(MenuInit.COMBUSTION_CHAMBER.get(), CombustionChamberScreen::new);
+            MenuScreens.register(MenuInit.SYSTEM_MAP.get(), SystemMapScreen::new);
 
             ItemBlockRenderTypes.setRenderLayer(FluidInit.SOURCE_CRYOGENIC_HYDROGEN.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(FluidInit.FLOWING_CRYOGENIC_HYDROGEN.get(), RenderType.translucent());

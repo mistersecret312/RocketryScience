@@ -150,7 +150,7 @@ public class CelestialBody implements SpaceObject
         ResourceLocation texture = getTexture();
         graphics.blit(texture, (int) (pos.x), (int) (pos.y), 0, 0,
                       32, 32, 32, 32);
-        graphics.drawCenteredString(Minecraft.getInstance().font, getName(), (int) (pos.x+16), (int) (pos.y), 0x0000FF);
+        graphics.drawCenteredString(Minecraft.getInstance().font, getName(), (int) (pos.x+16), (int) (pos.y), 0x53de65);
     }
 
     @Override

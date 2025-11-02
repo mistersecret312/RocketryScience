@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.io",
+  "texture": "stellarview:textures/environment/planet/sol/io.png",
+  "parent": "rocketry_science:planets/sol/jupiter",
+  "gravity": 0.183,
+  "radius": 1821600,
+  "altitude": 0.1,
+  "epoch": 0
+}

@@ -12,6 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.blocks.*;
 
+import java.rmi.registry.Registry;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
@@ -63,6 +64,12 @@ public class BlockInit
 
     public static final RegistryObject<Block> STEEL_ROCKET_ENGINE_STUB = registerBlock("steel_rocket_engine_stub",
             () -> new Block(BlockBehaviour.Properties.of().noOcclusion()));
+
+    public static final RegistryObject<MapBlock> SYSTEM_MAP = registerBlock("solar_system_map",
+            () -> new MapBlock(BlockBehaviour.Properties.of().strength(15)));
+
+    public static final RegistryObject<Block> LUNAR_REGOLITH = registerBlock("lunar_regolith",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block)
     {

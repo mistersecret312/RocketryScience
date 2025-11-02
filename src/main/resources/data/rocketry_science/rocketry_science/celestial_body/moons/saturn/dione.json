@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.dione",
+  "texture": "stellarview:textures/environment/planet/sol/dione.png",
+  "parent": "rocketry_science:planets/sol/saturn",
+  "gravity": 0.025,
+  "radius": 561400,
+  "altitude": 0.25,
+  "epoch": 0
+}

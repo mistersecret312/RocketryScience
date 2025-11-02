@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.uranus",
+  "texture": "rocketry_science:textures/planet/sol/uranus.png",
+  "parent": "rocketry_science:sol",
+  "gravity": 0.886,
+  "radius": 25362000,
+  "altitude": 19.19,
+  "epoch": 142.23
+}

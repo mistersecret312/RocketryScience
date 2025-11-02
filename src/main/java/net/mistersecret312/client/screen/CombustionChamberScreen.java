@@ -53,7 +53,7 @@ public class CombustionChamberScreen extends AbstractContainerScreen<CombustionC
         int y = (height - imageHeight) / 2;
 
         pose.pushPose();
-        boolean systemMap = true;
+        boolean systemMap = false;
         long time = level.getDayTime();
 
         if(!systemMap)
@@ -77,8 +77,8 @@ public class CombustionChamberScreen extends AbstractContainerScreen<CombustionC
             CelestialBody referenceBody = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "sol"));
             if(referenceBody != null)
             {
-                CelestialBody mars = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "mars"));
-                CelestialBody terra = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "terra"));
+                CelestialBody mars = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "jupiter"));
+                CelestialBody terra = registry.get(ResourceLocation.fromNamespaceAndPath(RocketryScienceMod.MODID, "mars"));
                 if(mars == null || terra == null || referenceBody == null)
                     return;
 
@@ -88,17 +88,13 @@ public class CombustionChamberScreen extends AbstractContainerScreen<CombustionC
                 pos.add(-16, -16);
 
                 referenceBody.render(graphics, pos);
-
-                double childId = 1.1;
                 for(ResourceKey<CelestialBody> childKey : referenceBody.getChildren())
                 {
                     CelestialBody child = registry.get(childKey);
                     if(child != null)
                     {
-                        Vector2d childPos = child.getCoordinates(child.getAltitude(), child.getOrbit().getAngle(time)).mul(40*childId).add(pos);
+                        Vector2d childPos = child.getCoordinates(child.getAltitude(), child.getOrbit().getAngle(time)).mul(45).add(pos);
                         child.render(graphics, childPos);
-
-                        childId += 0.05;
                     }
                 }
             }
@@ -108,37 +104,66 @@ public class CombustionChamberScreen extends AbstractContainerScreen<CombustionC
 
     private void drawTransfer(GuiGraphics graphics, CelestialBody reference, CelestialBody departure, CelestialBody target, long time)
     {
-        double efficiency = 65;
+        // --- 1. CALCULATE IDEAL TRANSFER & OPTIMAL ANGLE ---
+        // This is the "base" time for a perfect (100% efficient) Hohmann transfer.
+        double idealTransferTime = 10 * Math.pow(((departure.altitude + target.altitude) / 2), 1.5) / 2;
 
-        double speedA = 360D/departure.getOrbit().orbitalPeriod;
-        double speedB = 360D/target.getOrbit().orbitalPeriod;
+        // Use this ideal time to find the optimal angle
+        double angleMoved = idealTransferTime * (360 / target.getOrbit().orbitalPeriod);
+        double optimalAngle = 180 - angleMoved; // This is the goal angle
 
-        double transferTime = 10*Math.pow(((departure.altitude+target.altitude)/2),1.5)/2;
-        transferTime *= Math.max(efficiency, 1)/100;
-        double angleMoved = transferTime * (360/target.getOrbit().orbitalPeriod);
-        double optimalAngle = 180-angleMoved;
+        // --- 2. CALCULATE CURRENT PHASE ANGLE & EFFICIENCY (NEW) ---
+        double currentPhaseAngle = (target.getOrbit().getAngle(time) - departure.getOrbit().getAngle(time));
+        currentPhaseAngle = (currentPhaseAngle % 360 + 360) % 360; // Normalize to 0-360
 
-        double angleDiff = (target.getOrbit().getAngle(time)-departure.getOrbit().getAngle(time)) % 360;
-        double catchUp = (optimalAngle-angleDiff) % 360;
+        // Find the shortest angular distance (error) between current and optimal
+        double angularError = currentPhaseAngle - optimalAngle;
+        angularError = (angularError % 360 + 360) % 360; // Normalize
+        if (angularError > 180) {
+            angularError -= 360; // Get shortest path (e.g., -10° instead of 350°)
+        }
 
-        double windowTime = catchUp/(Math.abs(speedA-speedB));
-        double windowTimeTicks = windowTime*24000D;
-        if(windowTimeTicks != 0)
+        // Convert the error (from -180 to 180) into an efficiency score (0-100)
+        // cos(0) = 1 (perfect) --> 100%
+        // cos(180) = -1 (worst) --> 0%
+        double efficiencyScore = (Math.cos(Math.toRadians(angularError)) + 1) / 2;
+        double efficiency = efficiencyScore * 100; // This is the 0-100 "grade" you wanted.
+
+        // --- 3. CALCULATE ACTUAL (EFFICIENCY-MODIFIED) TRANSFER TIME ---
+        // This line is from your original code. It seems to make the trip *faster* // if efficiency is lower, implying a brute-force burn.
+        double actualTransferTime = idealTransferTime * (Math.max(efficiency, 1) / 100);
+
+        // --- 4. CALCULATE WAIT TIME ---
+        double speedA = 360D / departure.getOrbit().orbitalPeriod;
+        double speedB = 360D / target.getOrbit().orbitalPeriod;
+        double relativeSpeed = Math.abs(speedA - speedB);
+
+        double catchUp = (optimalAngle - currentPhaseAngle);
+        catchUp = (catchUp % 360 + 360) % 360; // Normalize catchUp
+
+        // Avoid division by zero if planets have the same speed
+        if (relativeSpeed > 1e-9)
         {
-            Vector2d sun = new Vector2d((double) (width - 16)/2, (double) (height - 16) /2);
+            double windowTime = catchUp / relativeSpeed;
+            double windowTimeTicks = windowTime * 24000D;
+
+            Vector2d sun = new Vector2d((double) (width - 16) / 2, (double) (height - 16) / 2);
             Vector2d a = departure.getCoordinates(departure.getAltitude(),
-                                             departure.getOrbit().getAngle(time)).mul(40*1.1).add(sun);
+                                                  departure.getOrbit().getAngle(time)).mul(45).add(sun);
+
+            // **FIXED:** The arrival point 'b' must use the 'actualTransferTime'
+            // to find the correct future position.
+            long arrivalTimeInTicks = time + (long)(actualTransferTime * 24000D);
             Vector2d b = target.getCoordinates(target.getAltitude(),
-                                             target.getOrbit().getAngle((long) (time+transferTime*20*60*20))).mul(40*1.15).add(sun);
+                                               target.getOrbit().getAngle(arrivalTimeInTicks)).mul(45).add(sun);
 
             graphics.drawCenteredString(Minecraft.getInstance().font, "[]", (int) b.x, (int) b.y, 0x00FFFF);
 
-            OrbitalPath path = OrbitalMath.calculatePath(sun, a, b, efficiency, reference.getGravitationalParameter());
-            if(path != null)
-            {
+            // Pass the 0.0-1.0 score to your path calculator
+            OrbitalPath path = OrbitalMath.calculatePath(sun, a, b, efficiencyScore, reference.getGravitationalParameter());
+            if (path != null) {
                 List<Vector2d> points = path.getPathPoints(200);
-                for(Vector2d point : points)
-                {
+                for (Vector2d point : points) {
                     graphics.drawCenteredString(Minecraft.getInstance().font, ".", (int) point.x, (int) point.y, 0x00FF00);
                 }
             }

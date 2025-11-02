@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.oberon",
+  "texture": "stellarview:textures/environment/planet/sol/oberon.png",
+  "parent": "rocketry_science:planets/sol/uranus",
+  "gravity": 0.036,
+  "radius": 761400,
+  "altitude": 0.3,
+  "epoch": 0
+}

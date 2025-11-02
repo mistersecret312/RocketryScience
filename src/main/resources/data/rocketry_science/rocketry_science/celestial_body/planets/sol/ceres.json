@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.ceres",
+  "texture": "stellarview:textures/environment/planet/sol/ceres.png",
+  "parent": "rocketry_science:sol",
+  "gravity": 0.029,
+  "radius": 469700,
+  "altitude": 2.77,
+  "epoch": 291.4
+}

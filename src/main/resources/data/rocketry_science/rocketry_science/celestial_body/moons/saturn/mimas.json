@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.mimas",
+  "texture": "stellarview:textures/environment/planet/sol/mimas.png",
+  "parent": "rocketry_science:planets/sol/saturn",
+  "gravity": 0.006,
+  "radius": 198200,
+  "altitude": 0.1,
+  "epoch": 295
+}

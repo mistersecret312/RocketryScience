@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.ganymede",
+  "texture": "stellarview:textures/environment/planet/sol/ganymede.png",
+  "parent": "rocketry_science:planets/sol/jupiter",
+  "gravity": 0.146,
+  "radius": 2631000,
+  "altitude": 0.2,
+  "epoch": 0
+}

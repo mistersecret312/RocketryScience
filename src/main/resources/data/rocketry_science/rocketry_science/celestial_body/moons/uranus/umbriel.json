@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.umbriel",
+  "texture": "stellarview:textures/environment/planet/sol/umbriel.png",
+  "parent": "rocketry_science:planets/sol/uranus",
+  "gravity": 0.023,
+  "radius": 584700,
+  "altitude": 0.2,
+  "epoch": 0
+}

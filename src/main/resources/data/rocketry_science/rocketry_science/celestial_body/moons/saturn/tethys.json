@@ -1,0 +1,9 @@
+{
+  "name": "rocketry_science.celestial_body.tethys",
+  "texture": "stellarview:textures/environment/planet/sol/tethys.png",
+  "parent": "rocketry_science:planets/sol/saturn",
+  "gravity": 0.0149,
+  "radius": 531100,
+  "altitude": 0.2,
+  "epoch": 0
+}

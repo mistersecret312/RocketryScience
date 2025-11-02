@@ -1,11 +1,11 @@
 {
   "name": "rocketry_science.celestial_body.luna",
   "texture": "rocketry_science:textures/gui/moon.png",
-  "parent": "rocketry_science:terra",
+  "parent": "rocketry_science:planets/sol/terra",
   "dimension": "rocketry_science:luna",
   "day_length": 160,
   "gravity": 0.165,
   "radius": 1737400,
-  "altitude": 0.45,
+  "altitude": 0.1,
   "epoch": 143
 }
