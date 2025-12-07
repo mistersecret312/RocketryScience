@@ -34,6 +34,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.RocketBlockDataInit;
@@ -81,6 +83,7 @@ public class BlockData
         return RocketBlockDataInit.BASE.get();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void render(RocketEntity rocket, BlockRenderDispatcher dispatcher, float yaw, float partial, PoseStack pose,
                        MultiBufferSource buffer, BlockPos.MutableBlockPos mutablePos)
     {

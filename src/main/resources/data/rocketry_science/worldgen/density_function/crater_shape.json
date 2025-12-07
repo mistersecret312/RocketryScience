@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:spline",
+  "spline": {
+    "coordinate": {
+      "type": "minecraft:shifted_noise",
+      "noise": "rocketry_science:crater_noise",
+      "xz_scale": 2.0,
+      "y_scale": 0.0,
+      "shift_x": "minecraft:shift_x",
+      "shift_z": "minecraft:shift_z",
+      "shift_y": 0.0
+    },
+    "points": [
+      {
+        "location": 0.0,
+        "value": -1.5,
+        "derivative": 0.0
+      },
+      {
+        "location": 0.15,
+        "value": 0.6,
+        "derivative": 0.0
+      },
+      {
+        "location": 0.4,
+        "value": 0.0,
+        "derivative": 0.0
+      },
+      {
+        "location": 1.0,
+        "value": 0.0,
+        "derivative": 0.0
+      }
+    ]
+  }
+}

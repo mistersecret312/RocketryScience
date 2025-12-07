@@ -5,7 +5,10 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.util.rocket.Stage;
 import net.mistersecret312.util.trajectories.EllipticalPath;
@@ -60,7 +63,15 @@ public class OrbitalMath
 
     public static CelestialBody getCelestialBody(Level level)
     {
-        Registry<CelestialBody> registry = level.getServer().registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+        Registry<CelestialBody> registry;
+        if(level.isClientSide())
+        {
+            Minecraft minecraft = Minecraft.getInstance();
+            registry = minecraft.level.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+        }
+        else
+            registry = level.getServer().registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
+
         for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : registry.entrySet())
         {
             if(entry.getValue().getDimension().isPresent() &&
@@ -230,5 +241,30 @@ public class OrbitalMath
         fraction.setGroupingUsed(false);
 
         return Double.parseDouble(fraction.format(value));
+    }
+
+    public static void gravityAffect(LivingEntity entity)
+    {
+        if(!entity.isNoGravity() && !entity.isFallFlying()
+                   && !entity.isInWater() && !entity.isInLava()
+                   && !entity.isSwimming() && !entity.isDescending())
+        {
+            if(entity instanceof Player player)
+            {
+                if(player.getAbilities().flying)
+                    return;
+            }
+            double gravity = LivingEntity.DEFAULT_BASE_GRAVITY;
+
+            CelestialBody body = OrbitalMath.getCelestialBody(entity.level());
+            if(body != null)
+            {
+                double localGravity = body.getGravity()*gravity;
+                double reverseAccell = gravity-localGravity;
+                entity.addDeltaMovement(new Vec3(0, reverseAccell, 0));
+
+                entity.fallDistance = (float) (entity.fallDistance * body.getGravity());
+            }
+        }
     }
 }

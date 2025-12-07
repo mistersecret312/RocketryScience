@@ -110,7 +110,6 @@ public class RocketryScienceMod
     public void onServerStarted(ServerStartedEvent event)
     {
         MinecraftServer server = event.getServer();
-        CommonEvents.init(server);
 
         Registry<CelestialBody> registry = server.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
         Set<Map.Entry<ResourceKey<CelestialBody>, CelestialBody>> set = registry.entrySet();
@@ -192,6 +191,8 @@ public class RocketryScienceMod
             ItemBlockRenderTypes.setRenderLayer(BlockInit.LAUNCH_TOWER.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.SEPARATOR.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(BlockInit.STEEL_ROCKET_ENGINE_STUB.get(), RenderType.cutout());
+
+            event.enqueueWork(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
         }
     }
 }

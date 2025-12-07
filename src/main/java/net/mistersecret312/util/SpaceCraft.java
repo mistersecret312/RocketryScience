@@ -11,7 +11,7 @@ import net.mistersecret312.util.rocket.Stage;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 
-public class SpaceCraft implements SpaceObject,Vessel
+public class SpaceCraft implements SpaceObject, Vessel
 {
     public LinkedHashSet<Stage> stages;
 
