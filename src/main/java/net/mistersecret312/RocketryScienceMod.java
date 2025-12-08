@@ -111,22 +111,36 @@ public class RocketryScienceMod
     {
         MinecraftServer server = event.getServer();
 
+        Orbits orbits = Orbits.get(server);
         Registry<CelestialBody> registry = server.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY);
         Set<Map.Entry<ResourceKey<CelestialBody>, CelestialBody>> set = registry.entrySet();
 
-        for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : set)
+        if(orbits.orbits.isEmpty())
         {
-            CelestialBody body = entry.getValue();
-            Optional<ResourceKey<CelestialBody>> parent = body.getParent();
-            if(parent.isPresent())
+            for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : set)
             {
-                CelestialBody parentBody = registry.get(parent.get());
-                if(parentBody != null)
-                    parentBody.children.add(entry.getKey());
+                CelestialBody body = entry.getValue();
+                Optional<ResourceKey<CelestialBody>> parent = body.getParent();
+                if(parent.isPresent())
+                {
+                    CelestialBody parentBody = registry.get(parent.get());
+                    if(parentBody != null)
+                        parentBody.children.add(entry.getKey());
 
-                Orbits.get(server).addOrbit(registry.get(parent.get()), body.getAltitude(), body.getEpoch(), body);
+                    Orbits.get(server).addOrbit(registry.get(parent.get()), body.getAltitude(), body.getEpoch(), body);
+                }
             }
+        }
 
+        if(orbits.orphans.isEmpty())
+        {
+            for(Map.Entry<ResourceKey<CelestialBody>, CelestialBody> entry : set)
+            {
+                CelestialBody body = entry.getValue();
+                Optional<ResourceKey<CelestialBody>> parent = body.getParent();
+                if(parent.isEmpty())
+                    Orbits.get(server).addOrphan(entry.getValue());
+            }
         }
     }
 

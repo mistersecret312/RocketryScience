@@ -168,6 +168,12 @@ public class CelestialBody implements SpaceObject
 
     }
 
+    @Override
+    public void tick()
+    {
+
+    }
+
     public List<ResourceKey<CelestialBody>> getChildren() 
     {
         return children;

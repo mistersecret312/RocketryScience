@@ -40,7 +40,7 @@ public class Orbit
 
     public void tick(Level level)
     {
-
+        spaceObject.tick();
     }
 
     public CompoundTag save(Level level)
@@ -92,12 +92,10 @@ public class Orbit
 
 
 
-    // Orbital period in seconds
     public double getOrbitalPeriod() {
         return orbitalPeriod;
     }
 
-    // Current radius (distance from parent)
     public double getOrbitalAltitude() {
         return orbitalAltitude;
     }

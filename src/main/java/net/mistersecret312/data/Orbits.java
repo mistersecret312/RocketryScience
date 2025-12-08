@@ -3,8 +3,10 @@ package net.mistersecret312.data;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -14,6 +16,7 @@ import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.block_entities.RocketPadBlockEntity;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.util.Orbit;
+import net.mistersecret312.util.OrphanObject;
 import net.mistersecret312.util.SpaceObject;
 import net.mistersecret312.util.infrastructure.RocketPad;
 import net.mistersecret312.util.rocket.Rocket;
@@ -28,6 +31,7 @@ public class Orbits extends SavedData
     private static final String ORBITS = "orbits";
 
     public List<Orbit> orbits = new ArrayList<>();
+    public List<OrphanObject> orphans = new ArrayList<>();
 
     private MinecraftServer server;
 
@@ -40,6 +44,7 @@ public class Orbits extends SavedData
         CompoundTag tag = new CompoundTag();
 
         tag.put(ORBITS, serializeOrbits());
+        tag.put("orphans", serializeOrphans());
 
         return tag;
     }
@@ -55,9 +60,20 @@ public class Orbits extends SavedData
         return objectsTag;
     }
 
+    private ListTag serializeOrphans()
+    {
+        ListTag listTag = new ListTag();
+        this.orphans.forEach(orphan ->
+            {
+                listTag.add(orphan.save(server.overworld()));
+            });
+        return listTag;
+    }
+
     private void deserialize(CompoundTag tag)
     {
         deserializeOrbits(tag.getList(ORBITS, ListTag.TAG_COMPOUND));
+        deserializeOrphans(tag.getList("orphans", ListTag.TAG_COMPOUND));
     }
 
     private void deserializeOrbits(ListTag tag)
@@ -66,6 +82,15 @@ public class Orbits extends SavedData
         {
             CompoundTag compound = ((CompoundTag) taG);
             this.orbits.add(Orbit.load(server.overworld(), compound));
+        }
+    }
+
+    private void deserializeOrphans(ListTag list)
+    {
+        for(Tag tag : list)
+        {
+            CompoundTag compoundTag = ((CompoundTag) tag);
+            this.orphans.add(OrphanObject.load(server.overworld(), compoundTag));
         }
     }
 
@@ -78,12 +103,23 @@ public class Orbits extends SavedData
         this.setDirty();
     }
 
+    public void addOrphan(CelestialBody body)
+    {
+        this.orphans.add(new OrphanObject(body));
+        this.setDirty();
+    }
+
     public void removeOrbit(Orbit orbit)
     {
         this.orbits.remove(orbit);
         this.setDirty();
     }
 
+    public void removeOrphan(CelestialBody body)
+    {
+        this.orphans.remove(body);
+        this.setDirty();
+    }
 
     @Override
     public void setDirty()

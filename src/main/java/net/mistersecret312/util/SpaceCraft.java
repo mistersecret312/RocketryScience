@@ -1,6 +1,8 @@
 package net.mistersecret312.util;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -78,13 +80,34 @@ public class SpaceCraft implements SpaceObject, Vessel
     @Override
     public CompoundTag save(Level level)
     {
-        return null;
+        CompoundTag tag = new CompoundTag();
+
+        ListTag stageTag = new ListTag();
+        for(Stage stage : stages)
+            stageTag.add(stage.save());
+        tag.put("stages", stageTag);
+
+        return tag;
     }
 
     @Override
-    public void load(Level level, CompoundTag compoundTag)
+    public void load(Level level, CompoundTag tag)
     {
+        ListTag stageTag = tag.getList("stages", Tag.TAG_COMPOUND);
+        LinkedHashSet<Stage> stages = new LinkedHashSet<>();
+        for(Tag listTag : stageTag)
+        {
+            Stage stage = new Stage(this);
+            stage.load((CompoundTag) listTag, level.getServer());
+            stages.add(stage);
+        }
+        this.stages = stages;
+    }
 
+    @Override
+    public void tick()
+    {
+        tick(level.getServer());
     }
 
     @Override

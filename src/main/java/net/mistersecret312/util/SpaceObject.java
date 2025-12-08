@@ -13,4 +13,5 @@ public interface SpaceObject
     CompoundTag save(Level level);
     void load(Level level, CompoundTag compoundTag);
 
+    void tick();
 }
