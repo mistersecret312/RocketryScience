@@ -131,6 +131,23 @@ public class RocketryScienceMod
                 }
             }
         }
+        else
+        {
+            for(Orbit orbit : orbits.orbits)
+            {
+                CelestialBody body = orbit.getParent();
+                if(body.getParent().isPresent())
+                {
+                    CelestialBody parent = registry.get(body.getParent().get());
+                    Optional<ResourceKey<CelestialBody>> key = registry.getResourceKey(body);
+
+                    if(key.isPresent() && parent != null && !parent.children.contains(key.get()))
+                        parent.children.add(key.get());
+                }
+            }
+        }
+
+
 
         if(orbits.orphans.isEmpty())
         {

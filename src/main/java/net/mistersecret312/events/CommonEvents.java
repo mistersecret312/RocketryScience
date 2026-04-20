@@ -2,31 +2,22 @@ package net.mistersecret312.events;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.data.Orbits;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.init.FluidTypeInit;
 import net.mistersecret312.util.Orbit;
 import net.mistersecret312.util.OrbitalMath;
-
-import java.util.Iterator;
-import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = RocketryScienceMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonEvents
@@ -48,7 +39,7 @@ public class CommonEvents
 
         //Gravity
 		OrbitalMath.gravityAffect(entity);
-	}
+    }
 
     @SubscribeEvent
     public static void fallEvent(LivingFallEvent event)
@@ -67,7 +58,7 @@ public class CommonEvents
         {
             for(Orbit orbit : Orbits.get(event.getServer()).orbits)
             {
-                //orbit.tick(event.getServer().overworld(), 0.05);
+                orbit.tick(event.getServer().overworld());
             }
         }
     }

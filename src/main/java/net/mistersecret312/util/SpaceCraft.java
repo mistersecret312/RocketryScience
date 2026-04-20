@@ -66,6 +66,12 @@ public class SpaceCraft implements SpaceObject, Vessel
     }
 
     @Override
+    public boolean isInSpace()
+    {
+        return true;
+    }
+
+    @Override
     public LinkedHashSet<Stage> getStages()
     {
         return stages;

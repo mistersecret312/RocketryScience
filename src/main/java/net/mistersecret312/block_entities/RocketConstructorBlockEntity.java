@@ -3,6 +3,7 @@ package net.mistersecret312.block_entities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BarrelBlockEntity;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.mistersecret312.blocks.SeparatorBlock;
+import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.RocketBlockDataInit;
@@ -26,6 +28,7 @@ import org.joml.Vector2f;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
 public class RocketConstructorBlockEntity extends BlockEntity implements IRocketPadConnective
@@ -109,32 +112,32 @@ public class RocketConstructorBlockEntity extends BlockEntity implements IRocket
             pad.getLevel().addFreshEntity(rocketEntity);
             player.displayClientMessage(Component.literal("SUCCESS! Rocket assembled!"), true);
             int stageI = 0;
+            double deltaV = 0;
             for(Stage stage : rocket.stages)
             {
-                System.out.println("Stage[" + stageI + "] = " + stage.calculateDeltaV());
+                double stageDelta = stage.calculateDeltaV();
+                System.out.println("Stage[" + stageI + "] = " + stageDelta);
+                deltaV += stageDelta;
+                stageI++;
             }
+
+            System.out.println("Rocket Total DeltaV - " + deltaV);
 
             System.out.println("Rocket TWR - " + rocket.getMaxTWR());
             rocket.landingSimulation();
-            System.out.println("Target Orbit DeltaV Requirement - " + OrbitalMath.getLaunchDeltaV(rocket.getCelestialBody(pad.getLevel()), 300*1000));
 
-            System.out.println("LEO -> Luna transfer example... calculating...");
-            Vector2d A = new Vector2d(0,0);
-            Vector2d B = new Vector2d(4,0);
-            Vector2d C = new Vector2d(0, 4);
-            OrbitalPath path = OrbitalMath.calculatePath(A, B, C, 100, rocket.getCelestialBody().getGravitationalParameter());
-            List<Vector2d> points = path.getPathPoints(10);
-            if(path instanceof EllipticalPath)
-                System.out.println("Elliptical");
-            else System.out.println("Hyperbolic");
-            System.out.println("Retrograde : " + path.isRetrograde());
-            for(int i = 0; i < points.size(); i++)
-            {
-                Vector2d point = points.get(i);
-                System.out.println("Point [" + i + "] is [" + point.x + ", " + point.y + "]");
-            }
+            double leoHeight = 300*1000;
+            double deltaVToOrbit = OrbitalMath.getLaunchDeltaV(rocket.getCelestialBody(pad.getLevel()), leoHeight);
+            System.out.println("Target Orbit DeltaV Requirement - " + deltaVToOrbit);
 
-
+//            System.out.println("LEO -> Luna transfer example... calculating...");
+//            Vector2d A = new Vector2d(0,0);
+//            Vector2d B = new Vector2d(4,0);
+//            Vector2d C = new Vector2d(0, 4);
+//            OrbitalPath path = OrbitalMath.calculatePath(A, B, C, 100, rocket.getCelestialBody().getGravitationalParameter());
+//            if(path instanceof EllipticalPath)
+//                System.out.println("Elliptical");
+//            else System.out.println("Hyperbolic");
         } else player.displayClientMessage(Component.literal("ERROR: Rocket Pad is empty! Report to developer!"), true);
 
     }

@@ -18,8 +18,6 @@ import java.util.Map;
 
 public class RocketRenderer extends EntityRenderer<RocketEntity>
 {
-    private static int recursion = 0;
-
     BlockRenderDispatcher dispatcher;
     ModelBlockRenderer blockRenderer;
     public RocketRenderer(EntityRendererProvider.Context pContext)

@@ -48,7 +48,11 @@ public class Rocket implements Vessel
         {
             case IDLE ->
             {
+                if(getCurrentStage() == null)
+                    return;
 
+                if(this.canLand())
+                    setState(RocketState.LANDING);
             }
             case LANDING ->
             {
@@ -68,18 +72,32 @@ public class Rocket implements Vessel
             }
             case COASTING ->
             {
-                if(this.rocket.position().y >= getSpaceHeight(level))
-                {
-                    setState(RocketState.ORBIT);
-                }
+                double currentLeftDeltaV = getCurrentStage().calculateDeltaV();
+                getCurrentStage().consumeFuelByDeltaV(currentLeftDeltaV);
 
                 if(this.stages.size() > 1)
                 {
                     for(Stage stage : this.stages)
                         System.out.println("Orbital - " + stage.calculateDeltaV());
+
                     stage(level);
+                }
+
+                double leoHeight = 300*1000;
+                double deltaVRequired = OrbitalMath.getOrbitDeltaV(this.getCelestialBody(), leoHeight)-currentLeftDeltaV;
+
+                System.out.println("Has - " + this.getCurrentStage().calculateDeltaV() + " - Needed - " + deltaVRequired);
+
+                if(this.getCurrentStage().calculateDeltaV() > deltaVRequired)
+                {
+                    System.out.println("Capable of being in orbit, leftover - " + (this.getCurrentStage().calculateDeltaV() - deltaVRequired));
+                    setState(RocketState.ORBIT);
                     return;
                 }
+                else setState(RocketState.IDLE);
+
+                if(this.getCurrentStage() == null)
+                    return;
 
                 if(this.getCurrentStage().getFuelMass() == 0)
                     stage(level);
@@ -132,97 +150,71 @@ public class Rocket implements Vessel
     {
         double altitude = getAltitude(level);
         double velocity = rocket.getDeltaMovement().y;
-        double g = 0.025; // Gravity acceleration
+        double g = 0.025;
         double twr = getMaxTWR();
-        double maxNetAccel = (twr - 1.0) * g; // Max deceleration available
+        double maxNetAccel = (twr - 1.0) * g;
 
-        double thrustLevel = 0.0; // Default to engines off
+        double thrustLevel = 0.0;
 
-        // --- Landing Profile Configuration ---
-        // We'll have two phases:
-        // 1. BRAKING_BURN: Kill most velocity.
-        // 2. FINAL_TOUCHDOWN: Very gentle, controlled descent.
-
-        // Altitude to switch from braking to final touchdown
         double finalTouchdownAltitude = this.rocket.makeBoundingBox().getYsize()*1.5d;
 
-        // Target speeds for each phase
-        double brakingDescentSpeed = -1.0; // Target speed for the main braking burn
-        double safeLandingSpeed = -0.1;    // Target speed for the final, soft touchdown
+        double brakingDescentSpeed = -1.0;
+        double safeLandingSpeed = -0.1;
 
-        // A small altitude buffer to start the burn slightly early
         double altitudeBuffer = 20.0;
 
-        // --- Landing Logic ---
+        if(altitude > getSpaceHeight(level) || velocity > 0)
+        {
+            toggleEngines(false);
+            return;
+        }
 
-        // We only need to run this if we are actually falling and can stop
-        if (altitude > 0.25 && velocity < 0 && maxNetAccel > 0) {
-
-            // This is the "suicide burn" or "hoverslam" calculation.
-            // It's the bare minimum distance needed to stop, based on current velocity.
-            // s = v^2 / (2*a)
-            // We removed the TWR multiplier, which was causing issues.
+        if (altitude > 0.25 && velocity < 0 && maxNetAccel > 0)
+        {
             double stoppingDistance = (velocity * velocity) / (2.0 * maxNetAccel);
             stoppingDistance = Math.max(stoppingDistance, this.rocket.makeBoundingBox().getYsize()*1.5);
 
-            // We decide to start our burn when our altitude is just above
-            // the required stopping distance, plus our buffer.
-            if (altitude <= (stoppingDistance + altitudeBuffer)) {
-
-                // --- BURN IS ACTIVE ---
-                // Fixes flickering: Once the burn starts, engines stay ON.
-                // The PD controller will set thrust to 0.0 if it needs to.
+            if (altitude <= (stoppingDistance + altitudeBuffer))
+            {
                 toggleEngines(true);
 
-                // --- Two-Stage PD Controller ---
                 double desiredVelocity;
-                double Kp; // Proportional gain (reacts to current error)
-                double Kd; // Derivative gain (reacts to rate of change)
+                double Kp;
+                double Kd;
 
-                if (altitude <= finalTouchdownAltitude) {
-                    // --- 2. FINAL TOUCHDOWN PHASE ---
-                    // We are very close to the ground.
-                    // Target the "safeLandingSpeed" to land gently.
+                if (altitude <= finalTouchdownAltitude)
+                {
                     desiredVelocity = safeLandingSpeed;
-                    Kp = 0.7; // Higher gain to be very responsive
+                    Kp = 0.7;
                     Kd = 0.3;
-                } else {
-                    // --- 1. BRAKING BURN PHASE ---
-                    // We are still high up.
-                    // "Brake hard" to kill velocity and target the "brakingDescentSpeed".
+                }
+                else
+                {
                     desiredVelocity = brakingDescentSpeed;
                     Kp = 0.4;
                     Kd = 0.15;
                 }
 
-                // Standard PD controller logic
                 double error = desiredVelocity - velocity;
-                double accelCmd = Kp * error - Kd * velocity; // Calculate desired *net* acceleration
+                double accelCmd = Kp * error - Kd * velocity;
 
-                // Convert desired net acceleration into a thrust fraction [0, 1]
-                // Required Thrust = Desired Net Accel + Gravity
-                // Thrust Fraction = Required Thrust / Max Thrust
                 double requiredThrustAccel = accelCmd + g;
                 double maxThrustAccel = twr * g;
 
                 double thrustFraction = requiredThrustAccel / maxThrustAccel;
 
-                // Clamp thrust to valid [0, 1] range
                 thrustLevel = Mth.clamp(thrustFraction, 0.0, 1.0);
 
-            } else {
-                // We are still free-falling (altitude > stoppingDistance)
-                // Engines stay off.
+            }
+            else
+            {
                 toggleEngines(false);
                 thrustLevel = 0.0;
             }
 
-            // Apply the calculated thrust
             setEngineThrust(thrustLevel);
 
         } else if (altitude <= 0.25) {
-            // --- LANDED ---
-            // We are on the ground.
             toggleEngines(false);
             setState(RocketState.IDLE);
             setEngineThrust(0.0);
@@ -276,9 +268,9 @@ public class Rocket implements Vessel
             }
 
             rocketEntityNew.setPos(this.getRocketEntity().position());
-            this.getRocketEntity().setPos(this.getRocketEntity().position().add(0, height+2, 4));
+            this.getRocketEntity().setPos(this.getRocketEntity().position().add(0, height+4, 0));
             this.getRocketEntity().getRocket().setState(RocketState.COASTING);
-            rocketEntityNew.getRocket().setState(RocketState.COASTING);
+            rocketEntityNew.getRocket().setState(RocketState.IDLE);
             rocketEntityNew.setDeltaMovement(this.getRocketEntity().getDeltaMovement().add(0, -0.8, 0));
 
             level.addFreshEntity(rocketEntityNew);
@@ -398,7 +390,7 @@ public class Rocket implements Vessel
         {
             if(entry.getValue() instanceof RocketEngineData engine)
             {
-                thrustkN += engine.thrust_kN;
+                thrustkN += engine.getThrustkN();
             }
         }
         return (thrustkN);
@@ -616,6 +608,9 @@ public class Rocket implements Vessel
 
     public boolean canLand()
     {
+        if(true)
+            return false;
+
         return getMaxTWR() > 1.0;
     }
 
@@ -711,5 +706,11 @@ public class Rocket implements Vessel
     public Orbit getOrbit()
     {
         return new Orbit(getCelestialBody(this.getRocketEntity().level()), 0, 0);
+    }
+
+    @Override
+    public boolean isInSpace()
+    {
+        return getAltitude(getLevel()) >= getSpaceHeight(getLevel());
     }
 }

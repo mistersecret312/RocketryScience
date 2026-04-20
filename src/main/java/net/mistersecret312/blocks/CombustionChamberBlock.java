@@ -3,23 +3,21 @@ package net.mistersecret312.blocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -28,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -38,7 +35,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.network.NetworkHooks;
 import net.mistersecret312.block_entities.LiquidRocketEngineBlockEntity;
-import net.mistersecret312.block_entities.RocketEngineBlockEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.menus.CombustionChamberMenu;
 import org.jetbrains.annotations.Nullable;
@@ -64,6 +60,13 @@ public class CombustionChamberBlock extends BaseEntityBlock
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                  BlockHitResult hit)
     {
+        ItemStack handStack = player.getItemInHand(hand);
+        if(handStack.getItem() instanceof BlockItem blockItem)
+        {
+            if(blockItem.getBlock() instanceof NozzleBlock)
+                return InteractionResult.PASS;
+        }
+
         if(level.getBlockEntity(pos) instanceof LiquidRocketEngineBlockEntity rocketEngine)
         {
             if(player.getItemInHand(hand).getItem() instanceof BucketItem bucket)
@@ -134,7 +137,10 @@ public class CombustionChamberBlock extends BaseEntityBlock
     {
         boolean invert = false;
         if(context.getPlayer() != null)
-            invert = context.getPlayer().isCrouching();
+            invert = context.getPlayer().isShiftKeyDown();
+        BlockState otherState = context.getLevel().getBlockState(context.getClickedPos().relative(context.getClickedFace().getOpposite()));
+        if(otherState.getBlock() instanceof NozzleBlock)
+            invert = true;
         return this.defaultBlockState().setValue(FACING, invert ? context.getClickedFace() : context.getClickedFace().getOpposite());
     }
 

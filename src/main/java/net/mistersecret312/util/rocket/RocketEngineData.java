@@ -44,8 +44,8 @@ public class RocketEngineData extends BlockData
     public ArrayList<Map.Entry<BlockPos, BlockData>> tanks = new ArrayList<>();
 
     public double mass;
-    public double thrust_kN;
-    public double Isp;
+    private double thrust_kN;
+    private double Isp;
     public double thrustPercentage = 0.0;
 
     public ItemStackHandler handler = new ItemStackHandler(3);
@@ -157,7 +157,7 @@ public class RocketEngineData extends BlockData
         }
 
         double mass = rocket.getMassKilogram();
-        double twr = (thrust_kN*1000)/(mass*9.80665);
+        double twr = (getThrustkN()*1000)/(mass*9.80665);
         double accel = 0.025*twr*thrustPercentage;
         rocketEntity.addDeltaMovement(new Vec3(0, accel, 0));
     }
@@ -194,7 +194,7 @@ public class RocketEngineData extends BlockData
 
     public int calculateMaxFuelUsage()
     {
-        return (int) (((thrust_kN*1000)/(Isp*9.8))/20);
+        return (int) (((getThrustkN()*1000)/(getIsp()*9.8))/20);
     }
 
     public FuelTankData getBestFuelTank()
@@ -234,7 +234,18 @@ public class RocketEngineData extends BlockData
 
     public double getIsp()
     {
+        if(stage.getVessel().isInSpace())
+            return Isp*1.05f;
+
         return Isp;
+    }
+
+    public double getThrustkN()
+    {
+        if(stage.getVessel().isInSpace())
+            return thrust_kN*0.5f;
+
+        return thrust_kN;
     }
 
     @Override
@@ -341,9 +352,6 @@ public class RocketEngineData extends BlockData
         {
             thrust = Math.max(1, Math.min((int) (thrustPercentage*15), 15));
             plume.renderPlume(frame, thrust, getBlockState(), pose, buffer, OverlayTexture.NO_OVERLAY);
-        }
-        else
-        {
         }
         pose.translate(0, -1, 0);
 

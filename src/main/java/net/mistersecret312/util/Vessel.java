@@ -13,4 +13,6 @@ public interface Vessel
 
     Orbit getOrbit();
     Level getLevel();
+
+    boolean isInSpace();
 }

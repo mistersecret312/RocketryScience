@@ -99,7 +99,7 @@ public class NozzleBlock extends Block
 
         boolean invert = false;
         if(context.getPlayer() != null)
-            invert = context.getPlayer().isCrouching() && !(blockState.getBlock() instanceof CombustionChamberBlock);
+            invert = context.getPlayer().isShiftKeyDown() && !(blockState.getBlock() instanceof CombustionChamberBlock);
         return this.defaultBlockState().setValue(FACING, invert ? facing.getOpposite() : facing).setValue(HOT, 0).setValue(ACTIVE, false)
                 .setValue(HAS_PIPE, blockState.getBlock() instanceof CombustionChamberBlock && blockState.getValue(FACING) == facing);
     }

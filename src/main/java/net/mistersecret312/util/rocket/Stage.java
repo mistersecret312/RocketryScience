@@ -14,7 +14,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeFriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.mistersecret312.init.RocketBlockDataInit;
+import net.mistersecret312.util.OrbitalMath;
 import net.mistersecret312.util.Vessel;
 
 import java.util.*;
@@ -143,6 +145,25 @@ public class Stage
         }
 
         return mass;
+    }
+
+    public void consumeFuelByDeltaV(double deltaV)
+    {
+        int fuelMass = OrbitalMath.deltaVToFuelMass(this, deltaV);
+        for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
+        {
+            if(entry.getValue() instanceof FuelTankData tank)
+                fuelMass -= tank.tank.drain(fuelMass/getFuelTypeAmount(), IFluidHandler.FluidAction.EXECUTE).getAmount();
+        }
+
+        if(fuelMass > 0)
+        {
+            for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
+            {
+                if(entry.getValue() instanceof RocketEngineData engine)
+                    fuelMass -= engine.tank.drain(fuelMass/getFuelTypeAmount(), IFluidHandler.FluidAction.EXECUTE).getAmount();
+            }
+        }
     }
 
     public double getAverageIsp()

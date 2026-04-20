@@ -232,7 +232,7 @@ public class SystemMapScreen extends AbstractContainerScreen<SystemMapMenu>
         boolean canRenderChildren = false;
         if (body.getOrbit() == null) {
             canRenderChildren = true;
-        } else if (bodyKey.equals(this.centeredBodyKey)) {
+        } else if (bodyKey.equals(this.centeredBodyKey) || isAncestor(registry, bodyKey, this.centeredBodyKey)) {
             canRenderChildren = true;
         }
 
