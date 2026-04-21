@@ -2,6 +2,10 @@
   "name": "rocketry_science.celestial_body.terra",
   "texture": "rocketry_science:textures/planet/sol/earth.png",
   "parent": "rocketry_science:sol",
+  "children":
+          [
+            "rocketry_science:moons/terra/luna"
+          ],
   "dimension": "minecraft:overworld",
   "gravity": 1.0,
   "radius": 6378000,

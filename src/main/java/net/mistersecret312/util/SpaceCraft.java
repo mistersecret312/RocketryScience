@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.mistersecret312.data.Orbits;
 import net.mistersecret312.util.rocket.Stage;
+import org.joml.Vector2d;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class SpaceCraft implements SpaceObject, Vessel
     public LinkedHashSet<Stage> stages;
 
     public Orbit orbit;
+    public TransferData transferData = null;
     private Level level;
 
     public SpaceCraft(LinkedHashSet<Stage> stages, Level level)
@@ -71,6 +73,16 @@ public class SpaceCraft implements SpaceObject, Vessel
         return true;
     }
 
+    public TransferData getTransferData()
+    {
+        return transferData;
+    }
+
+    public void setTransferData(TransferData transferData)
+    {
+        this.transferData = transferData;
+    }
+
     @Override
     public LinkedHashSet<Stage> getStages()
     {
@@ -81,6 +93,16 @@ public class SpaceCraft implements SpaceObject, Vessel
     public void setOrbit(Orbit orbit)
     {
         this.orbit = orbit;
+    }
+
+    public Vector2d getCoordinates(double altitude, double angle)
+    {
+        double radians = Math.toRadians(angle);
+
+        double x = altitude * Math.cos(radians);
+        double y = altitude * Math.sin(radians);
+
+        return new Vector2d(x, y);
     }
 
     @Override

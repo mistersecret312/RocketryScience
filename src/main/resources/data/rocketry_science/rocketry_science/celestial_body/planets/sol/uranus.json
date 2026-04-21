@@ -2,6 +2,13 @@
   "name": "rocketry_science.celestial_body.uranus",
   "texture": "rocketry_science:textures/planet/sol/uranus.png",
   "parent": "rocketry_science:sol",
+  "children": [
+    "rocketry_science:moons/uranus/ariel",
+    "rocketry_science:moons/uranus/miranda",
+    "rocketry_science:moons/uranus/oberon",
+    "rocketry_science:moons/uranus/titania",
+    "rocketry_science:moons/uranus/umbriel"
+  ],
   "gravity": 0.886,
   "radius": 25362000,
   "altitude": 19.19,

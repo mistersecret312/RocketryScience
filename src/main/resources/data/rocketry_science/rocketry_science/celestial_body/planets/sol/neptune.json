@@ -2,6 +2,9 @@
   "name": "rocketry_science.celestial_body.neptune",
   "texture": "rocketry_science:textures/planet/sol/neptune.png",
   "parent": "rocketry_science:sol",
+  "children": [
+    "rocketry_science:moons/neptune/triton"
+  ],
   "gravity": 1.149,
   "radius": 24622000,
   "altitude": 30,

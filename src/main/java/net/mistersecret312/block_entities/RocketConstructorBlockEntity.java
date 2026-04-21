@@ -16,6 +16,7 @@ import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.init.BlockEntityInit;
 import net.mistersecret312.init.RocketBlockDataInit;
+import net.mistersecret312.util.Orbit;
 import net.mistersecret312.util.OrbitalMath;
 import net.mistersecret312.util.rocket.BlockData;
 import net.mistersecret312.util.rocket.Rocket;
@@ -130,7 +131,10 @@ public class RocketConstructorBlockEntity extends BlockEntity implements IRocket
             double deltaVToOrbit = OrbitalMath.getLaunchDeltaV(rocket.getCelestialBody(pad.getLevel()), leoHeight);
             System.out.println("Target Orbit DeltaV Requirement - " + deltaVToOrbit);
 
-//            System.out.println("LEO -> Luna transfer example... calculating...");
+            CelestialBody body = rocket.getCelestialBody();
+            Orbit orbit = body.getOrbit();
+            double radius = body.getRadius();
+            //            System.out.println("LEO -> Luna transfer example... calculating...");
 //            Vector2d A = new Vector2d(0,0);
 //            Vector2d B = new Vector2d(4,0);
 //            Vector2d C = new Vector2d(0, 4);

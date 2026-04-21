@@ -27,6 +27,7 @@ public class Orbit
     public double orbitalPeriod;
 
     public CelestialBody parent;
+    public ResourceKey<CelestialBody> parentKey;
     public SpaceObject spaceObject;
 
     public Orbit(CelestialBody parent, double altitude, double epoch) {
@@ -35,7 +36,7 @@ public class Orbit
         this.epoch = epoch;
         this.orbitalAltitude = parent.getRadius()+altitude;
 
-        this.orbitalPeriod = 10*Math.pow(altitude, 1.5);
+        this.orbitalPeriod = Math.pow(altitude, 1.5);
     }
 
     public void tick(Level level)
@@ -65,11 +66,13 @@ public class Orbit
     {
         CelestialBody parent = level.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY)
                                     .get(ResourceLocation.parse(tag.getString(PARENT)));
-
+        ResourceKey<CelestialBody> parentKey = level.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY)
+                                                       .getResourceKey(parent).get();
         double altitude = tag.getDouble(ALTITUDE);
         double epoch = tag.getDouble(EPOCH);
 
         Orbit orbit = new Orbit(parent, altitude, epoch);
+        orbit.parentKey = parentKey;
         boolean artificial = tag.getBoolean(IS_ARTIFICIAL);
         SpaceObject object;
         if(artificial)
@@ -112,5 +115,10 @@ public class Orbit
     public CelestialBody getParent()
     {
         return parent;
+    }
+
+    public ResourceKey<CelestialBody> getParentKey()
+    {
+        return parentKey;
     }
 }

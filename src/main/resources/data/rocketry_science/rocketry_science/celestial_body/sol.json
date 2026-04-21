@@ -1,6 +1,17 @@
 {
   "name": "rocketry_science.celestial_body.sol",
   "texture": "rocketry_science:textures/gui/sun.png",
+  "children": [
+    "rocketry_science:planets/sol/mercury",
+    "rocketry_science:planets/sol/venus",
+    "rocketry_science:planets/sol/terra",
+    "rocketry_science:planets/sol/mars",
+    "rocketry_science:planets/sol/ceres",
+    "rocketry_science:planets/sol/jupiter",
+    "rocketry_science:planets/sol/saturn",
+    "rocketry_science:planets/sol/uranus",
+    "rocketry_science:planets/sol/neptune"
+  ],
   "gravity": 28.0,
   "radius": 696265000
 }

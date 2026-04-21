@@ -2,6 +2,15 @@
   "name": "rocketry_science.celestial_body.saturn",
   "texture": "rocketry_science:textures/planet/sol/saturn.png",
   "parent": "rocketry_science:sol",
+  "children": [
+    "rocketry_science:moons/saturn/dione",
+    "rocketry_science:moons/saturn/enceladus",
+    "rocketry_science:moons/saturn/iapetus",
+    "rocketry_science:moons/saturn/mimas",
+    "rocketry_science:moons/saturn/rhea",
+    "rocketry_science:moons/saturn/tethys",
+    "rocketry_science:moons/saturn/titan"
+  ],
   "gravity": 1.07,
   "radius": 58232000,
   "altitude": 9.58,

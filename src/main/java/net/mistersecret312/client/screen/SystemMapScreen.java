@@ -350,7 +350,7 @@ public class SystemMapScreen extends AbstractContainerScreen<SystemMapMenu>
         double speedB = 360D / target.getOrbit().orbitalPeriod;
         double relativeSpeed = Math.abs(speedA - speedB);
 
-        if (relativeSpeed > 1e-9) {
+        if (relativeSpeed > 0) {
             Vector2d sun = referenceScreenPos;
 
             Vector2d a = departure.getCoordinates(departure.getAltitude(),

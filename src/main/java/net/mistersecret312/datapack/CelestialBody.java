@@ -33,6 +33,7 @@ public class CelestialBody implements SpaceObject
             ResourceLocation.CODEC.fieldOf("texture").forGetter(CelestialBody::getTexture),
             Level.RESOURCE_KEY_CODEC.optionalFieldOf("dimension").forGetter(CelestialBody::getDimension),
             ResourceKey.codec(REGISTRY_KEY).optionalFieldOf("parent").forGetter(CelestialBody::getParent),
+            ResourceKey.codec(REGISTRY_KEY).listOf().optionalFieldOf("children", new ArrayList<>()).forGetter(CelestialBody::getChildren),
             Codec.INT.optionalFieldOf("day_length", 20).forGetter(CelestialBody::getDayLength),
             Codec.DOUBLE.optionalFieldOf("epoch", 0D).forGetter(CelestialBody::getEpoch),
             Codec.DOUBLE.optionalFieldOf("altitude", 0D).forGetter(CelestialBody::getAltitude),
@@ -44,6 +45,7 @@ public class CelestialBody implements SpaceObject
     public ResourceLocation texture;
     public ResourceKey<Level> dimension;
     public ResourceKey<CelestialBody> parent;
+    public List<ResourceKey<CelestialBody>> children;
     public int dayLength;
     public double epoch;
     public double altitude;
@@ -51,15 +53,15 @@ public class CelestialBody implements SpaceObject
     public double radius;
 
     public Orbit orbit;
-    public List<ResourceKey<CelestialBody>> children = new ArrayList<>();
 
     public CelestialBody(String name, ResourceLocation texture, Optional<ResourceKey<Level>> dimension,
-                         Optional<ResourceKey<CelestialBody>> parent, int dayLength, double epoch, double altitude, double gravity, double radius)
+                         Optional<ResourceKey<CelestialBody>> parent, List<ResourceKey<CelestialBody>> children, int dayLength, double epoch, double altitude, double gravity, double radius)
     {
         this.name = name;
         this.texture = texture;
         this.dimension = dimension.orElse(null);
         this.parent = parent.orElse(null);
+        this.children = children;
         this.epoch = epoch;
         this.altitude = altitude;
         this.dayLength = dayLength;

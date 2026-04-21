@@ -121,33 +121,9 @@ public class RocketryScienceMod
             {
                 CelestialBody body = entry.getValue();
                 Optional<ResourceKey<CelestialBody>> parent = body.getParent();
-                if(parent.isPresent())
-                {
-                    CelestialBody parentBody = registry.get(parent.get());
-                    if(parentBody != null)
-                        parentBody.children.add(entry.getKey());
-
-                    Orbits.get(server).addOrbit(registry.get(parent.get()), body.getAltitude(), body.getEpoch(), body);
-                }
+				parent.ifPresent(celestialBodyResourceKey -> Orbits.get(server).addOrbit(registry.get(celestialBodyResourceKey), body.getAltitude(), body.getEpoch(), body));
             }
         }
-        else
-        {
-            for(Orbit orbit : orbits.orbits)
-            {
-                CelestialBody body = orbit.getParent();
-                if(body.getParent().isPresent())
-                {
-                    CelestialBody parent = registry.get(body.getParent().get());
-                    Optional<ResourceKey<CelestialBody>> key = registry.getResourceKey(body);
-
-                    if(key.isPresent() && parent != null && !parent.children.contains(key.get()))
-                        parent.children.add(key.get());
-                }
-            }
-        }
-
-
 
         if(orbits.orphans.isEmpty())
         {
