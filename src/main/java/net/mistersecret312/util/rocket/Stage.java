@@ -103,7 +103,7 @@ public class Stage
             return 0;
         double massRatio = getTotalMass()/getTotalDryMass();
         double log = Math.log(massRatio);
-        return 9.8*averageIsp*log;
+        return this.getVessel().getOrbit().getParent().getGravityMS2()*averageIsp*log;
     }
 
     public double getTotalMass()
@@ -150,19 +150,36 @@ public class Stage
     public void consumeFuelByDeltaV(double deltaV)
     {
         int fuelMass = OrbitalMath.deltaVToFuelMass(this, deltaV);
-        for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
-        {
-            if(entry.getValue() instanceof FuelTankData tank)
-                fuelMass -= tank.tank.drain(fuelMass/getFuelTypeAmount(), IFluidHandler.FluidAction.EXECUTE).getAmount();
-        }
-
-        if(fuelMass > 0)
+        consumption : while(fuelMass > 0)
         {
             for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
             {
-                if(entry.getValue() instanceof RocketEngineData engine)
-                    fuelMass -= engine.tank.drain(fuelMass/getFuelTypeAmount(), IFluidHandler.FluidAction.EXECUTE).getAmount();
+                if(entry.getValue() instanceof FuelTankData tank)
+                {
+                    int drained = tank.tank.drain(fuelMass/getFuelTypeAmount(), IFluidHandler.FluidAction.EXECUTE).getAmount();
+                    fuelMass -= drained;
+                    if(drained != 0)
+                        continue consumption;
+                }
             }
+
+            //TODO - does not consume correctly from rocket engines.
+            if(fuelMass > 0)
+            {
+                for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
+                {
+                    if(entry.getValue() instanceof RocketEngineData engineData)
+                    {
+                        int drained = engineData.tank.drain(1, IFluidHandler.FluidAction.EXECUTE).getAmount();
+                        fuelMass -= drained;
+                        if(drained != 0)
+                            continue consumption;
+                    }
+                }
+            }
+
+            if(fuelMass > 0)
+                break;
         }
     }
 

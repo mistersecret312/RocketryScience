@@ -49,7 +49,7 @@ public class SpaceCraft implements SpaceObject, Vessel
 
         if(true)
         {
-            land(server, new Vec3(0.5, 3000, 0.5));
+            land(server, new Vec3(0.5, 500, 0.5));
         }
     }
 
@@ -66,7 +66,7 @@ public class SpaceCraft implements SpaceObject, Vessel
             rocketStages.add(rocketStage);
         }
         rocket.stages = rocketStages;
-        rocket.canLand = true;
+        rocket.canLand = false;
 
         rocketEntity.setRocket(rocket);
 

@@ -83,6 +83,12 @@ public class Rocket implements Vessel
                     stage(level);
                 }
 
+                if(!(this.getCurrentStage().calculateDeltaV() > 0))
+                {
+                    setState(RocketState.IDLE);
+                    return;
+                }
+
                 double leoHeight = 300*1000;
                 double deltaVRequired = OrbitalMath.getOrbitDeltaV(this.getCelestialBody(), leoHeight)-currentLeftDeltaV;
 
@@ -90,7 +96,12 @@ public class Rocket implements Vessel
 
                 if(this.getCurrentStage().calculateDeltaV() > deltaVRequired)
                 {
-                    System.out.println("Capable of being in orbit, leftover - " + (this.getCurrentStage().calculateDeltaV() - deltaVRequired));
+                    System.out.println("Fuel mass before " + getCurrentStage().getFuelMass());
+                    System.out.println("Fuel mass to be consumed " + OrbitalMath.deltaVToFuelMass(getCurrentStage(), deltaVRequired));
+                    getCurrentStage().consumeFuelByDeltaV(deltaVRequired);
+                    System.out.println("Fuel mass after " + getCurrentStage().getFuelMass());
+
+                    System.out.println("Capable of being in orbit, leftover - " + (this.getCurrentStage().calculateDeltaV()));
                     setState(RocketState.ORBIT);
                     return;
                 }
