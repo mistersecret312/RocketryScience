@@ -1,5 +1,6 @@
 package net.mistersecret312.util;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -7,7 +8,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.data.Orbits;
+import net.mistersecret312.entities.RocketEntity;
+import net.mistersecret312.util.rocket.Rocket;
 import net.mistersecret312.util.rocket.Stage;
 import org.joml.Vector2d;
 
@@ -42,11 +46,40 @@ public class SpaceCraft implements SpaceObject, Vessel
         {
             level = level.getServer().getLevel(key.get());
         }
+
+        if(true)
+        {
+            land(server, new Vec3(0.5, 3000, 0.5));
+        }
+    }
+
+    public void land(MinecraftServer server, Vec3 pos)
+    {
+        RocketEntity rocketEntity = new RocketEntity(getLevel());
+        Rocket rocket = new Rocket(rocketEntity, stages);
+
+        LinkedHashSet<Stage> rocketStages = new LinkedHashSet<>();
+        for(Stage stage : stages)
+        {
+            Stage rocketStage = new Stage(rocket);
+            rocketStage.load(stage.save(), server);
+            rocketStages.add(rocketStage);
+        }
+        rocket.stages = rocketStages;
+        rocket.canLand = true;
+
+        rocketEntity.setRocket(rocket);
+
+        rocketEntity.setPos(pos);
+        getLevel().addFreshEntity(rocketEntity);
+
+        System.out.println("Landing the spacecraft!");
+        discard(server);
     }
 
     public void discard(MinecraftServer server)
     {
-        Orbits.get(server).removeOrbit(this.getOrbit());
+        Orbits.get(server).markOrbitForRemoval(getOrbit());
     }
 
     @Override

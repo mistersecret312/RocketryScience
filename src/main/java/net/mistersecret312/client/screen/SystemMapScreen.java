@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.mistersecret312.data.ClientOrbits;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.menus.SystemMapMenu;
 import net.mistersecret312.util.OrbitalMath;
@@ -263,6 +264,34 @@ public class SystemMapScreen extends AbstractContainerScreen<SystemMapMenu>
 
                 renderBodyAndChildren(graphics, registry, childKey, childScreenPos, time);
             }
+
+            for(ClientOrbits.ClientOrbit orbit : ClientOrbits.ORBITS)
+            {
+                if(!orbit.parent.equals(bodyKey) || !orbit.isArtifical)
+                    continue;
+
+                double metersToAuMultiplier = 6.684587122268445e-12;
+                double altitudeAU = (600*orbit.orbitalAltitude)*metersToAuMultiplier;
+
+                float orbitRadius = (float) (altitudeAU * this.zoom * ORBIT_SCALE);
+
+                Vector2d relPos = orbit.getCoordinates(altitudeAU, orbit.getAngle(time));
+                Vector2d orbitCenterPos = new Vector2d(relPos).mul(this.zoom * ORBIT_SCALE).add(screenPos);
+
+                boolean isChildInView = orbitCenterPos.x >= -padding && orbitCenterPos.x <= this.width + padding &&
+                                                orbitCenterPos.y >= -padding && orbitCenterPos.y <= this.height + padding;
+
+                if (orbitRadius > MIN_VISIBLE_RADIUS &&
+                            isCircleInView(screenPos, orbitRadius) && isChildInView)
+                {
+                    if(orbitRadius < MAX_VISIBLE_RADIUS)
+                        drawCircle(graphics, (int) screenPos.x, (int) screenPos.y,
+                                orbitRadius, 10, 0xFF0000FF);
+                }
+                else continue;
+            }
+
+
         }
     }
 

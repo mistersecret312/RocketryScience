@@ -12,13 +12,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.mistersecret312.data.Orbits;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.entities.RocketEntity;
 import net.mistersecret312.network.ClientPacketHandler;
-import net.mistersecret312.util.Orbit;
-import net.mistersecret312.util.OrbitalMath;
-import net.mistersecret312.util.RocketState;
-import net.mistersecret312.util.Vessel;
+import net.mistersecret312.util.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,6 +26,8 @@ public class Rocket implements Vessel
     public RocketState state;
     public LinkedHashSet<Stage> stages;
     public RocketEntity rocket;
+
+    public boolean canLand;
 
     public Rocket(RocketEntity rocket, LinkedHashSet<Stage> stages)
     {
@@ -109,8 +109,22 @@ public class Rocket implements Vessel
             }
             case ORBIT ->
             {
+                double leoHeight = 300*1000;
+                if(level.getServer() == null)
+                    return;
+
+                SpaceCraft spaceCraft = new SpaceCraft(stages, level);
+                Orbit orbit = new Orbit(this.getCelestialBody(), leoHeight, 0);
+                orbit.spaceObject = spaceCraft;
+                spaceCraft.orbit = orbit;
+
+                Orbits orbits = Orbits.get(level.getServer());
+                orbits.orbits.add(orbit);
+                orbit.tick(level);
+                orbits.setDirty();
                 getRocketEntity().discard();
 
+                System.out.println("SUCCESSFULLY PUT INTO ORBIT!");
             }
         }
     }
@@ -218,6 +232,7 @@ public class Rocket implements Vessel
             toggleEngines(false);
             setState(RocketState.IDLE);
             setEngineThrust(0.0);
+            canLand = false;
             System.out.println("LANDED" + " DeltaV Left - " + getCurrentStage().calculateDeltaV());
         }
     }
@@ -608,10 +623,7 @@ public class Rocket implements Vessel
 
     public boolean canLand()
     {
-        if(true)
-            return false;
-
-        return getMaxTWR() > 1.0;
+        return canLand && getMaxTWR() > 1.0;
     }
 
     public RocketEntity getRocketEntity()
@@ -634,6 +646,7 @@ public class Rocket implements Vessel
         buffer.writeInt(this.rocket.getId());
         buffer.writeEnum(this.state);
         buffer.writeCollection(stages, (writer, stage) -> stage.toNetwork(writer));
+        buffer.writeBoolean(this.canLand);
     }
 
     public static Rocket fromNetwork(FriendlyByteBuf buffer)
@@ -643,6 +656,7 @@ public class Rocket implements Vessel
         Rocket rocket = new Rocket(rocketEntity, new LinkedHashSet<>());
         LinkedHashSet<Stage> stages = buffer.readCollection(LinkedHashSet::new, reader -> Stage.fromNetwork(buffer, rocket));
 
+        rocket.canLand = buffer.readBoolean();
         rocket.stages = stages;
         rocket.state = state;
         return rocket;
@@ -658,6 +672,7 @@ public class Rocket implements Vessel
         for(Stage stage : stages)
             stageTag.add(stage.save());
         tag.put("stages", stageTag);
+        tag.putBoolean("can_land", this.canLand);
 
         return tag;
     }
@@ -676,6 +691,7 @@ public class Rocket implements Vessel
             stages.add(stage);
         }
         this.stages = stages;
+        this.canLand = tag.getBoolean("can_land");
     }
 
     @Override

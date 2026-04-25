@@ -1,25 +1,20 @@
 package net.mistersecret312.data;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraftforge.network.PacketDistributor;
 import net.mistersecret312.RocketryScienceMod;
-import net.mistersecret312.block_entities.RocketPadBlockEntity;
 import net.mistersecret312.datapack.CelestialBody;
+import net.mistersecret312.init.NetworkInit;
+import net.mistersecret312.network.packets.ClientOrbitsUpdatePacket;
 import net.mistersecret312.util.Orbit;
 import net.mistersecret312.util.OrphanObject;
 import net.mistersecret312.util.SpaceObject;
-import net.mistersecret312.util.infrastructure.RocketPad;
-import net.mistersecret312.util.rocket.Rocket;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -34,10 +29,6 @@ public class Orbits extends SavedData
     public List<OrphanObject> orphans = new ArrayList<>();
 
     private MinecraftServer server;
-
-    //============================================================================================
-    //*************************************Saving and Loading*************************************
-    //============================================================================================
 
     private CompoundTag serialize()
     {
@@ -99,6 +90,7 @@ public class Orbits extends SavedData
         Orbit orbit = new Orbit(parentBody, altitude, epoch);
         orbit.spaceObject = spaceObject;
         spaceObject.setOrbit(orbit);
+        orbit.tick(server.overworld());
         this.orbits.add(orbit);
         this.setDirty();
     }
@@ -115,6 +107,12 @@ public class Orbits extends SavedData
         this.setDirty();
     }
 
+    public void markOrbitForRemoval(Orbit orbit)
+    {
+        orbit.shouldRemove = true;
+        this.setDirty();
+    }
+
     public void removeOrphan(CelestialBody body)
     {
         this.orphans.remove(body);
@@ -125,6 +123,13 @@ public class Orbits extends SavedData
     public void setDirty()
     {
         super.setDirty();
+        NetworkInit.INSTANCE.send(PacketDistributor.ALL.with(() -> null), new ClientOrbitsUpdatePacket(this.orbits, new ArrayList<>()));
+    }
+
+    public List<Orbit> getOrbits()
+    {
+        this.orbits.removeIf(orbit -> orbit.shouldRemove);
+        return orbits;
     }
 
     public Orbits(MinecraftServer server)

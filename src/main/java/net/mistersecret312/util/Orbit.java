@@ -30,6 +30,8 @@ public class Orbit
     public ResourceKey<CelestialBody> parentKey;
     public SpaceObject spaceObject;
 
+    public boolean shouldRemove = false;
+
     public Orbit(CelestialBody parent, double altitude, double epoch) {
         this.parent = parent;
 
@@ -41,6 +43,13 @@ public class Orbit
 
     public void tick(Level level)
     {
+        if(parentKey == null)
+        {
+            ResourceKey<CelestialBody> parentKey = level.registryAccess().registryOrThrow(CelestialBody.REGISTRY_KEY)
+                                                        .getResourceKey(parent).get();
+            this.parentKey = parentKey;
+        }
+
         spaceObject.tick();
     }
 

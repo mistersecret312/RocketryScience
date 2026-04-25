@@ -12,12 +12,17 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 import net.mistersecret312.RocketryScienceMod;
 import net.mistersecret312.data.Orbits;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.init.FluidTypeInit;
+import net.mistersecret312.init.NetworkInit;
+import net.mistersecret312.network.packets.ClientOrbitsUpdatePacket;
 import net.mistersecret312.util.Orbit;
 import net.mistersecret312.util.OrbitalMath;
+
+import java.util.ArrayList;
 
 @Mod.EventBusSubscriber(modid = RocketryScienceMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonEvents
@@ -56,10 +61,14 @@ public class CommonEvents
     {
         if(event.side.isServer() && event.phase == TickEvent.Phase.END)
         {
-            for(Orbit orbit : Orbits.get(event.getServer()).orbits)
+            for(Orbit orbit : Orbits.get(event.getServer()).getOrbits())
             {
+                if(orbit.shouldRemove)
+                    continue;
+
                 orbit.tick(event.getServer().overworld());
             }
+            NetworkInit.INSTANCE.send(PacketDistributor.ALL.noArg(), new ClientOrbitsUpdatePacket(Orbits.get(event.getServer()).getOrbits(), new ArrayList<>()));
         }
     }
 }
