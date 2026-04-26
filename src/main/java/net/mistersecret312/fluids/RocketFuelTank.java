@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.IFluidTank;
@@ -174,16 +175,17 @@ public class RocketFuelTank implements IFluidHandler
     @Override
     public @NotNull FluidStack drain(int maxDrain, FluidAction action)
     {
+        int drainedAmount = 0;
         for (int tank = 0; tank < tanks; tank++)
         {
             FluidStack tankFluid = this.getFluidInTank(tank);
             if(tankFluid.isEmpty())
                 continue;
 
-            this.drain(new FluidStack(tankFluid, maxDrain), FluidAction.EXECUTE);
+            drainedAmount += this.drain(new FluidStack(tankFluid, maxDrain), FluidAction.EXECUTE).getAmount();
         }
 
-        return FluidStack.EMPTY;
+        return new FluidStack(Fluids.WATER, drainedAmount);
     }
 
     public RocketFuelTank readFromNBT(CompoundTag tag) {

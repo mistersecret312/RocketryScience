@@ -1,10 +1,16 @@
 package net.mistersecret312.client.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
@@ -16,7 +22,9 @@ import net.mistersecret312.data.ClientOrbits;
 import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.menus.SystemMapMenu;
 import net.mistersecret312.util.OrbitalMath;
+import net.mistersecret312.util.TransferData;
 import net.mistersecret312.util.trajectories.OrbitalPath;
+import org.joml.Matrix4f;
 import org.joml.Vector2d;
 
 import java.util.*;
@@ -237,61 +245,102 @@ public class SystemMapScreen extends AbstractContainerScreen<SystemMapMenu>
             canRenderChildren = true;
         }
 
-        if (canRenderChildren) {
+        if (canRenderChildren)
+        {
             final float MIN_VISIBLE_RADIUS = 10F;
             final float MAX_VISIBLE_RADIUS = 700F;
 
-            for (ResourceKey<CelestialBody> childKey : body.getChildren()) {
+            for(ResourceKey<CelestialBody> childKey : body.getChildren())
+            {
                 CelestialBody childBody = registry.get(childKey);
-                if (childBody == null || childBody.getOrbit() == null)
-                    continue;
+                if(childBody == null || childBody.getOrbit() == null) continue;
 
                 float orbitRadius = (float) (childBody.getAltitude() * this.zoom * ORBIT_SCALE);
 
-                Vector2d relPos = childBody.getCoordinates(childBody.getAltitude(), childBody.getOrbit().getAngle(time));
+                Vector2d relPos = childBody.getCoordinates(childBody.getAltitude(),
+                        childBody.getOrbit().getAngle(time));
                 Vector2d childScreenPos = new Vector2d(relPos).mul(this.zoom * ORBIT_SCALE).add(screenPos);
 
-                boolean isChildInView = childScreenPos.x >= -padding && childScreenPos.x <= this.width + padding &&
-                                               childScreenPos.y >= -padding && childScreenPos.y <= this.height + padding;
+                boolean isChildInView = childScreenPos.x >= -padding && childScreenPos.x <= this.width + padding && childScreenPos.y >= -padding && childScreenPos.y <= this.height + padding;
 
-                if (orbitRadius > MIN_VISIBLE_RADIUS &&
-                            isCircleInView(screenPos, orbitRadius) && isChildInView) {
+                if(orbitRadius > MIN_VISIBLE_RADIUS && isCircleInView(screenPos, orbitRadius) && isChildInView)
+                {
                     if(orbitRadius < MAX_VISIBLE_RADIUS)
-                        drawCircle(graphics, (int) screenPos.x, (int) screenPos.y,
-                            orbitRadius, 10, 0xFFFFFFFF);
-                }
-                else continue;
+                        drawCircle(graphics, (int) screenPos.x, (int) screenPos.y, orbitRadius, 10, 0xFFFFFFFF);
+                } else continue;
 
                 renderBodyAndChildren(graphics, registry, childKey, childScreenPos, time);
             }
 
             for(ClientOrbits.ClientOrbit orbit : ClientOrbits.ORBITS)
             {
-                if(!orbit.parent.equals(bodyKey) || !orbit.isArtifical)
-                    continue;
+                if(!orbit.parent.equals(bodyKey) || !orbit.isArtifical) continue;
 
+                // The scale multiplier to convert real meters/km into screen-space pixels
                 double metersToAuMultiplier = 6.684587122268445e-12;
-                double altitudeAU = (600*orbit.orbitalAltitude)*metersToAuMultiplier;
+                double combinedScale = 600 * metersToAuMultiplier * this.zoom * ORBIT_SCALE;
 
-                float orbitRadius = (float) (altitudeAU * this.zoom * ORBIT_SCALE);
+                // Check if the spacecraft is currently executing a transfer
+                TransferData transfer = orbit.getTransferData();
 
-                Vector2d relPos = orbit.getCoordinates(altitudeAU, orbit.getAngle(time));
-                Vector2d orbitCenterPos = new Vector2d(relPos).mul(this.zoom * ORBIT_SCALE).add(screenPos);
-
-                boolean isChildInView = orbitCenterPos.x >= -padding && orbitCenterPos.x <= this.width + padding &&
-                                                orbitCenterPos.y >= -padding && orbitCenterPos.y <= this.height + padding;
-
-                if (orbitRadius > MIN_VISIBLE_RADIUS &&
-                            isCircleInView(screenPos, orbitRadius) && isChildInView)
+                if(transfer != null)
                 {
-                    if(orbitRadius < MAX_VISIBLE_RADIUS)
-                        drawCircle(graphics, (int) screenPos.x, (int) screenPos.y,
-                                orbitRadius, 10, 0xFF0000FF);
+                    // 1. Get the Start and End positions directly in screen-space pixels
+                    ResourceKey<CelestialBody> departureKey =
+                            registry.getResourceKey(transfer.getDepartureBody(Minecraft.getInstance().level.registryAccess())).get();
+
+                    Vector2d endPoint = transfer.getArrivalBody(Minecraft.getInstance().level.registryAccess())
+                            .getCoordinates((600 * (transfer.arrivalAltitude+body.getRadius())) * metersToAuMultiplier, transfer.arrivalAngle).add(screenPos);
+                    Vector2d startPoint = transfer.getDepartureBody(Minecraft.getInstance().level.registryAccess())
+                                                .getCoordinates((600 * (transfer.departureAltitude+body.getRadius())) * metersToAuMultiplier, transfer.departureAngle).add(screenPos);
+
+                    Vector2d startScreenPoint = transfer.getStartPosition(1.0, combinedScale, screenPos, Minecraft.getInstance().level.registryAccess());
+                    Vector2d endScreenPoint = transfer.getEndPosition(1.0, combinedScale, screenPos, Minecraft.getInstance().level.registryAccess());
+
+                    // 2. Draw the straight transfer line
+                    // You will need a method to draw a simple line between two points.
+                    // Depending on your Forge setup, this might be a custom VertexBuffer call.
+                    drawLine(graphics, startPoint, endPoint, 0xFFFFFFFF);
+
+                    // 3. Find the Spacecraft using Linear Interpolation (LERP)
+                    // progress should be a value between 0.0 (just started) and 1.0 (arrived)
+                    double progress = transfer.getProgress();
+
+                    double craftX = startPoint.x + (endPoint.x - startPoint.x) * progress;
+                    double craftY = startPoint.y + (endPoint.y - startPoint.y) * progress;
+                    Vector2d currentScreenCraftPos = new Vector2d(craftX, craftY);
+
+                    // 4. Render the spacecraft blip
+                    boolean isCraftInView = currentScreenCraftPos.x >= -padding && currentScreenCraftPos.x <= this.width + padding &&
+                                                    currentScreenCraftPos.y >= -padding && currentScreenCraftPos.y <= this.height + padding;
+
+                    if (isCraftInView)
+                    {
+                        // Draw the red indicator for the spacecraft
+                        drawCircle(graphics, (int) currentScreenCraftPos.x, (int) currentScreenCraftPos.y, 3, 10, 0xFFFF0000);
+                    }
                 }
-                else continue;
+                else
+                {
+                    // --- 2. STANDARD STATIC ORBIT RENDERING (Your original code) ---
+
+                    double altitudeAU = (600 * orbit.orbitalAltitude) * metersToAuMultiplier;
+                    float orbitRadius = (float) (altitudeAU * this.zoom * ORBIT_SCALE);
+
+                    Vector2d relPos = orbit.getCoordinates(altitudeAU, orbit.getAngle(time));
+                    Vector2d orbitCenterPos = new Vector2d(relPos).mul(this.zoom * ORBIT_SCALE).add(screenPos);
+
+                    boolean isChildInView = orbitCenterPos.x >= -padding && orbitCenterPos.x <= this.width + padding && orbitCenterPos.y >= -padding && orbitCenterPos.y <= this.height + padding;
+
+                    if(orbitRadius > MIN_VISIBLE_RADIUS && isCircleInView(screenPos, orbitRadius) && isChildInView)
+                    {
+                        if(orbitRadius < MAX_VISIBLE_RADIUS)
+                        {
+                            drawCircle(graphics, (int) screenPos.x, (int) screenPos.y, orbitRadius, 10, 0xFF0000FF);
+                        }
+                    }
+                }
             }
-
-
         }
     }
 
@@ -446,6 +495,39 @@ public class SystemMapScreen extends AbstractContainerScreen<SystemMapMenu>
                 graphics.fill(centerX - y, centerY - x, centerX - y + 1, centerY - x + 1, color);
             }
         }
+    }
+
+    public void drawLine(GuiGraphics graphics, Vector2d start, Vector2d end, int color)
+    {
+        // 1. Extract ARGB components from the hex integer
+        float a = (float) (color >> 24 & 255) / 255.0F;
+        float r = (float) (color >> 16 & 255) / 255.0F;
+        float g = (float) (color >> 8 & 255) / 255.0F;
+        float b = (float) (color & 255) / 255.0F;
+
+        // 2. Get the current rendering matrix
+        Matrix4f pose = graphics.pose().last().pose();
+
+        // 3. Prepare the RenderSystem for primitive rendering
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
+
+        // 4. Begin drawing in line mode
+        buffer.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+
+        // 5. Add the start and end vertices
+        buffer.vertex(pose, (float) start.x, (float) start.y, 0.0F).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, (float) end.x, (float) end.y, 0.0F).color(r, g, b, a).endVertex();
+
+        // 6. Draw and push to the screen
+        tesselator.end();
+
+        // 7. Clean up state
+        RenderSystem.disableBlend();
     }
 
     /**

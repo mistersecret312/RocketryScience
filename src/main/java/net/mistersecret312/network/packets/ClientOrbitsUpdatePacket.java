@@ -9,6 +9,7 @@ import net.mistersecret312.datapack.CelestialBody;
 import net.mistersecret312.network.ClientPacketHandler;
 import net.mistersecret312.util.Orbit;
 import net.mistersecret312.util.SpaceCraft;
+import net.mistersecret312.util.TransferData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,16 @@ public class ClientOrbitsUpdatePacket
                 writer.writeBoolean(orbit.spaceObject instanceof SpaceCraft);
 
                 writer.writeResourceKey(orbit.parentKey);
+
+                if(orbit.spaceObject instanceof SpaceCraft craft)
+                {
+                    buffer.writeBoolean(craft.transferData != null);
+                    if(craft.transferData != null)
+                    {
+                        TransferData data = craft.transferData;
+                        data.toNetwork(buffer);
+                    }
+                }
             });
     }
 
@@ -52,7 +63,12 @@ public class ClientOrbitsUpdatePacket
 
                         ResourceKey<CelestialBody> parent = reader.readResourceKey(CelestialBody.REGISTRY_KEY);
 
-                        return new ClientOrbits.ClientOrbit(epoch, altitude, period, parent, isArtifical);
+                        TransferData transferData = null;
+                        if(isArtifical)
+                        {
+                            if(buffer.readBoolean()) transferData = TransferData.fromNetwork(buffer);
+                        }
+                        return new ClientOrbits.ClientOrbit(epoch, altitude, period, parent, isArtifical, transferData);
                     });
 
         return new ClientOrbitsUpdatePacket(new ArrayList<>(), clientOrbitList);

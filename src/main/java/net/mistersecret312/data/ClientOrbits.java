@@ -2,6 +2,7 @@ package net.mistersecret312.data;
 
 import net.minecraft.resources.ResourceKey;
 import net.mistersecret312.datapack.CelestialBody;
+import net.mistersecret312.util.TransferData;
 import org.joml.Vector2d;
 
 import java.util.ArrayList;
@@ -20,9 +21,10 @@ public class ClientOrbits
 		public boolean isArtifical;
 
 		public ResourceKey<CelestialBody> parent;
+		public TransferData transferData;
 
 		public ClientOrbit(double epoch, double orbitalAltitude, double orbitalPeriod,
-						   ResourceKey<CelestialBody> parent, boolean isArtifical)
+						   ResourceKey<CelestialBody> parent, boolean isArtifical, TransferData transferData)
 		{
 			this.epoch = epoch;
 			this.orbitalAltitude = orbitalAltitude;
@@ -31,6 +33,7 @@ public class ClientOrbits
 			this.isArtifical = isArtifical;
 
 			this.parent = parent;
+			this.transferData = transferData;
 		}
 
 		public Vector2d getCoordinates(double altitude, double angle)
@@ -50,6 +53,11 @@ public class ClientOrbits
 			double velocity = (360D/period);
 			double angle = velocity*time + epoch;
 			return angle % 360D;
+		}
+
+		public TransferData getTransferData()
+		{
+			return transferData;
 		}
 	}
 }

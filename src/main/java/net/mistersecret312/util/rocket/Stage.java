@@ -163,14 +163,13 @@ public class Stage
                 }
             }
 
-            //TODO - does not consume correctly from rocket engines.
             if(fuelMass > 0)
             {
                 for(Map.Entry<BlockPos, BlockData> entry : this.blocks.entrySet())
                 {
                     if(entry.getValue() instanceof RocketEngineData engineData)
                     {
-                        int drained = engineData.tank.drain(1, IFluidHandler.FluidAction.EXECUTE).getAmount();
+                        int drained = engineData.tank.drain(fuelMass/getFuelTypeAmount(), IFluidHandler.FluidAction.EXECUTE).getAmount();
                         fuelMass -= drained;
                         if(drained != 0)
                             continue consumption;

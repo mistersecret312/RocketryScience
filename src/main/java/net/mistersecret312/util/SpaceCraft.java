@@ -1,6 +1,5 @@
 package net.mistersecret312.util;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -48,6 +47,23 @@ public class SpaceCraft implements SpaceObject, Vessel
         }
 
         if(true)
+        {
+            if(this.transferData == null)
+            {
+                TransferData data = new TransferData(
+                        getOrbit().getParentKey().location(), getOrbit().getOrbitalAltitude(),
+                        getOrbit().getAngle(level.getGameTime()), level.getGameTime(),
+
+                        getOrbit().getParentKey().location(), getOrbit().getOrbitalAltitude()+(1000*1000),
+                        getOrbit().getAngle(level.getGameTime()+10000), level.getGameTime()+10000,
+
+                        getOrbit().getParentKey().location(), 100d, 0d, TransferData.TransferType.LOCAL_ORBIT);
+
+                this.transferData = data;
+            }
+        }
+
+        if(false)
         {
             land(server, new Vec3(0.5, 500, 0.5));
         }
@@ -148,6 +164,9 @@ public class SpaceCraft implements SpaceObject, Vessel
             stageTag.add(stage.save());
         tag.put("stages", stageTag);
 
+        if(this.transferData != null)
+            tag.put("transfer", this.transferData.save(new CompoundTag()));
+
         return tag;
     }
 
@@ -163,6 +182,9 @@ public class SpaceCraft implements SpaceObject, Vessel
             stages.add(stage);
         }
         this.stages = stages;
+
+        if(tag.contains("transfer"))
+            this.transferData = TransferData.load(tag.getCompound("transfer"));
     }
 
     @Override
